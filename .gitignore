@@ -1,0 +1,45 @@
+# ===============================
+# Frontend (React-JS with vite)
+/frontend/node_modules/
+/frontend/dist/
+/frontend/npm-debug.log*
+
+# IDE and OS clutter
+/frontend/.env
+/frontend/.DS_Store
+/frontend/.vscode/
+
+# ===============================
+# Backend (Python-Flask with uv)
+/backend/__pycache__/
+/backend/*.py[cod]
+/backend/*$py.class
+
+# uv environments and caches
+/backend/.venv/
+/backend/.uv/
+/backend/.cache/
+
+# Flask logs
+/backend/*.log
+
+# Test/cache artifacts
+/backend/.pytest_cache/
+/backend/.coverage
+/backend/htmlcov/
+
+# IDE and OS clutter
+/backend/.DS_Store
+/backend/.vscode/
+
+# ===============================
+# Common at project root
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+*.swo
+.env
+*.env
+*.log
+*.pid
