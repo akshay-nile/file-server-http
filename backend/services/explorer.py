@@ -28,7 +28,7 @@ def get_drive_label(drive_letter: str):
     return "Unknown"
 
 
-def is_item_hidden(item_path, item_name):
+def is_item_hidden(item_path: str, item_name: str):
     try:
         marked_hidden = item_name[0] in '.$'
         actual_hidden = bool(os.stat(item_path).st_file_attributes & FILE_ATTRIBUTE_HIDDEN)
@@ -37,7 +37,23 @@ def is_item_hidden(item_path, item_name):
         return True
 
 
-def deep_search(query, root):
+def get_sub_items_count(item_path: str, show_hidden: bool):
+    folder_count, file_count = 0, 0
+
+    for sub_item_name in os.listdir(item_path):
+        sub_item_path = f'{item_path}/{sub_item_name}'
+        is_hidden = is_item_hidden(sub_item_path, sub_item_name)
+        if not is_hidden or show_hidden:
+            if os.path.isdir(sub_item_path):
+                folder_count += 1
+            elif os.path.isfile(sub_item_path):
+                file_count += 1
+
+    return folder_count, file_count
+
+
+# Performs recursive search in all the sub-folders at given root-path
+def deep_search(query: str, root: str):
     for path, folders, files in os.walk(root):
         for item in folders + files:
             if query in item.lower():
@@ -63,7 +79,7 @@ def get_drives_info():
 
 
 # To get info about folder present at path
-def get_items_info(path: str, sort_by='size', reverse=False, show_hidden=False, search=None):
+def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, search=None):
     files, folders = [], []
 
     if not search:
@@ -87,9 +103,9 @@ def get_items_info(path: str, sort_by='size', reverse=False, show_hidden=False, 
             if os.path.isdir(item_path):
                 item_info['folder_name'] = item_name
                 item_info['folder_path'] = item_path
-                sub_items = tuple(map(lambda i: f'{item_path}/{i}', os.listdir(item_path)))
-                item_info['folder_count'] = len(tuple(filter(os.path.isdir, sub_items)))
-                item_info['file_count'] = len(tuple(filter(os.path.isfile, sub_items)))
+                folder_count, file_count = get_sub_items_count(item_path, show_hidden)
+                item_info['folder_count'] = folder_count
+                item_info['file_count'] = file_count
                 item_info['creation_date'] = int(os.path.getctime(item_path))
                 folders.append(item_info)
             elif os.path.isfile(item_path):
