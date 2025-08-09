@@ -34,6 +34,10 @@ __pycache__
 /backend/.DS_Store
 /backend/.vscode/
 
+# Project final package build
+MyFileServer
+
+
 # ===============================
 # Common at project root
 .DS_Store
