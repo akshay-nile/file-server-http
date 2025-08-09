@@ -1,5 +1,6 @@
 import os
 import ctypes
+import platform
 from shutil import disk_usage
 from stat import FILE_ATTRIBUTE_HIDDEN
 
@@ -15,6 +16,7 @@ def format_size(b: int):
         return f'{b} B'
 
 
+# Works on Windows platform only
 def get_drive_label(drive_letter: str):
     drive_label_buffer = ctypes.create_unicode_buffer(1024)
 
@@ -23,9 +25,10 @@ def get_drive_label(drive_letter: str):
         drive_label_buffer,
         ctypes.sizeof(drive_label_buffer), None, None, None, None, 0)
 
-    if result:
-        return drive_label_buffer.value or f"Drive {drive_letter[:2]}"
-    return "Unknown"
+    if result and drive_label_buffer.value:
+        return drive_label_buffer.value
+
+    return f"Drive {drive_letter}"
 
 
 def is_item_hidden(item_path: str, item_name: str):
@@ -60,9 +63,25 @@ def deep_search(query: str, root: str):
                 yield f'{path.replace("\\", "/")}/{item}'
 
 
-# To get info about storage/disk drives/partitions
+def get_device_info():
+    if platform.system() == 'Windows':
+        return {'hostname': platform.node(), 'platform': 'Windows'}
+    return {'hostname': 'Pydroid', 'platform': 'Android'}
+
+
+# To get info about storage/disk drives/partitions depending on platform
 def get_drives_info():
     drives_info = []
+
+    if platform.system() != 'Windows':
+        path = '/storage/emulated/0'
+        total, used, free = map(format_size, disk_usage(path))
+        drives_info.append({
+            'letter': None, 'label': 'Internal Storage', 'path': path,
+            'total': total, 'used': used, 'free': free
+        })
+
+        return drives_info
 
     for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
         path = f'{letter}:'
