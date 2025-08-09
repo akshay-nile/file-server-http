@@ -1,16 +1,18 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from werkzeug.exceptions import HTTPException
 
 from services.decorators import validate_path
+from services.environment import configure_environment
 from services.explorer import get_drives_info, get_items_info
 
-app = Flask(__name__)
+
+app = configure_environment(Flask(__name__))
 
 
-# To serve the UI app build (under development)
+# To serve the UI build from dist folder after packaging
 @app.route('/', methods=['GET'])
 def home():
-    return jsonify({'message': 'Hello from Python-Flask!'})
+    return render_template('index.html')
 
 
 # To get info about drives or items at the given path
@@ -36,4 +38,10 @@ def handle_http_exception(error):
 
 
 if __name__ == '__main__':
-    app.run(port=8849, debug=True)
+    app.run(
+        host=app.config.get('HOST'),
+        port=app.config.get('PORT'),
+        debug=app.config.get('DEBUG'),
+        # ssl_context=app.config.get('SSL_CONTEXT'),
+        use_reloader=False
+    )

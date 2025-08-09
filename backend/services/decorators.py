@@ -14,7 +14,7 @@ def validate_path(func):
 
         path = unquote(encoded_path).replace('\\', '/')
 
-        if path is '/':     # This path '/' indicates root or top-most level
+        if path == '/':     # This path '/' indicates root or top-most level
             kwargs['path'] = path
             return func(*args, **kwargs)
 
