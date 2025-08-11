@@ -25,8 +25,12 @@ def get_items(path):
         device = get_device_info()
         drives = get_drives_info()
         return jsonify({'device': device, 'drives': drives})
-    search = request.args.get('search', None)
-    folders, files = get_items_info(path, search=search)
+    options = dict()
+    options['search'] = request.args.get('search', None)
+    options['sort_by'] = request.args.get('sort_by', 'name')
+    options['reverse'] = request.args.get('reverse', False)
+    options['show_hidden'] = request.args.get('show_hidden', False)
+    folders, files = get_items_info(path, **options)
     return jsonify({'folders': folders, 'files': files})
 
 

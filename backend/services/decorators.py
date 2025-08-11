@@ -19,11 +19,11 @@ def validate_path(func):
             kwargs['path'] = path
             return func(*args, **kwargs)
 
-        while path.endswith('/'):  # Remove any trailing forward slash '/' from path
-            path = path[:-1]
-
         if not os.path.exists(path):
             abort(404, description=f"no item found at path: {path}")
+
+        if path in ('C:', '/storage/emulated/0'):
+            path += '/'
 
         kwargs['path'] = path
         return func(*args, **kwargs)

@@ -27,7 +27,6 @@ li {
 .breadcrumb {
     display: inline-block;
     margin: 0;
-    margin-left: 0.5em;
 }
 
 .itemlabel {
@@ -39,10 +38,25 @@ li {
     display: inline-block;
     margin: 0;
     margin-top: 0.1em;
-    color: '#303030';
+}
+
+.gray {
+    color: #3A3A3A;
+}
+
+.no-select {
+    user-select: none;
+    /* Vendor prefixes for older browser compatibility */
+    -webkit-user-select: none;
+    /* Chrome, Safari, Opera */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
 }
 
 a:hover,
 .itemlabel:hover {
     color: blue;
+
 }

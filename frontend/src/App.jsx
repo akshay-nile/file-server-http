@@ -17,27 +17,28 @@ function App() {
     setBreadCrumb([]);
   }
 
-  async function loadItemsInfo(path, itemName = null) {
+  async function loadItemsInfo(path, label = null) {
     setItemsInfo(await fetchItemsInfo(path));
-    itemName && setBreadCrumb([...breadCrumb, itemName]);
-    setDeviceInfo({ ...deviceInfo, drives: [] });
+    deviceInfo.drives.length && setDeviceInfo({ ...deviceInfo, drives: [] });
+    if (label) setBreadCrumb([...breadCrumb, { label, path }]);
+
   }
 
   function goBackTo(i) {
     const newBreadCrumb = breadCrumb.slice(0, i + 1);
     setBreadCrumb(newBreadCrumb);
-    i === -1 ? loadDeviceInfo() : loadItemsInfo(newBreadCrumb.join('/'));
+    i === -1 ? loadDeviceInfo() : loadItemsInfo(newBreadCrumb[i].path);
   }
 
   return (
-    <div className="app">
+    <div className="app no-select">
       {
         <div>
           <h3 className="hostname">
-            <a href="#" onClick={() => goBackTo(-1)}>{deviceInfo.device.hostname} {(breadCrumb.length > 0) && ' >> '}</a>
+            <a href="#" onClick={() => goBackTo(-1)}>{deviceInfo.device.hostname}&nbsp; {(breadCrumb.length > 0) && '>>'} &nbsp;</a>
           </h3>
           <h3 className="breadcrumb">
-            {breadCrumb.map((b, i) => <a href="#" key={i} onClick={() => goBackTo(i)}>{b} {(i < breadCrumb.length - 1) && ' / '}</a>)}
+            {breadCrumb.map((b, i) => <a href="#" key={i} onClick={() => goBackTo(i)}>{b.label} {(i < breadCrumb.length - 1) && ' / '}</a>)}
           </h3>
         </div>
       }
@@ -45,10 +46,10 @@ function App() {
       {
         <ul>
           {deviceInfo.drives.map((drive) =>
-            <li key={drive.label} onClick={() => loadItemsInfo(drive.path, drive.path)}>
-              <h3 className="itemlabel">{drive.label}</h3>
-              <span className="iteminfo">
-                Free: {drive.free} | Available: {drive.used} | Total: {drive.total}
+            <li key={drive.label} onClick={() => loadItemsInfo(drive.path, drive.letter + ':')}>
+              <h3 className="itemlabel">{(drive.letter ? drive.letter + ': ' : '') + drive.label}</h3>
+              <span className="iteminfo gray">
+                Free: {drive.size.free} | Used: {drive.size.used} | Total: {drive.size.total}
               </span>
             </li>
           )}
@@ -58,10 +59,10 @@ function App() {
       {
         <ul>
           {itemsInfo.folders.map((folder) =>
-            <li key={folder.folder_name} onClick={() => loadItemsInfo(folder.folder_path, folder.folder_name)}>
-              <h3 className="itemlabel">{folder.folder_name}</h3>
-              <span className="iteminfo">
-                Folders: {folder.folder_count} | Files: {folder.file_count}
+            <li key={folder.name} onClick={() => loadItemsInfo(folder.path, folder.name)}>
+              <h3 className="itemlabel">{folder.name}</h3>
+              <span className="iteminfo gray">
+                Folders: {folder.size[0]} | Files: {folder.size[1]}
               </span>
             </li>
           )}
@@ -71,10 +72,10 @@ function App() {
       {
         <ul>
           {itemsInfo.files.map((file) =>
-            <li key={file.file_name} style={{ cursor: "pointer" }}>
-              <h3 style={{ marginBottom: '5px', marginTop: '1em' }}>{file.file_name}</h3>
-              <span className="iteminfo">
-                File Size: {file.file_size}
+            <li key={file.name}>
+              <h3 className="itemlabel gray">{file.name}</h3>
+              <span className="iteminfo gray">
+                File Size: {file.size}
               </span>
             </li>
           )}
