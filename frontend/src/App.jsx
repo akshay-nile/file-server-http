@@ -7,9 +7,7 @@ function App() {
   const [itemsInfo, setItemsInfo] = useState({ folders: [], files: [] });
   const [breadCrumb, setBreadCrumb] = useState([]);
 
-  useEffect(() => {
-    loadDeviceInfo();
-  }, []);
+  useEffect(() => { loadDeviceInfo() }, []);
 
   async function loadDeviceInfo() {
     setDeviceInfo(await fetchDeviceInfo());
@@ -24,10 +22,9 @@ function App() {
 
   }
 
-  function goBackTo(i) {
-    const newBreadCrumb = breadCrumb.slice(0, i + 1);
-    setBreadCrumb(newBreadCrumb);
-    i === -1 ? loadDeviceInfo() : loadItemsInfo(newBreadCrumb[i].path);
+  function goBackToItemAt(i) {
+    setBreadCrumb(breadCrumb.slice(0, i + 1));
+    i === -1 ? loadDeviceInfo() : loadItemsInfo(breadCrumb[i].path);
   }
 
   return (
@@ -35,10 +32,10 @@ function App() {
       {
         <div>
           <h3 className="hostname">
-            <a href="#" onClick={() => goBackTo(-1)}>{deviceInfo.device.hostname}&nbsp; {(breadCrumb.length > 0) && '>>'} &nbsp;</a>
+            <a href="#" onClick={() => goBackToItemAt(-1)}>{deviceInfo.device.hostname}&nbsp; {(breadCrumb.length > 0) && '>>'} &nbsp;</a>
           </h3>
           <h3 className="breadcrumb">
-            {breadCrumb.map((b, i) => <a href="#" key={i} onClick={() => goBackTo(i)}>{b.label} {(i < breadCrumb.length - 1) && ' / '}</a>)}
+            {breadCrumb.map((b, i) => <a href="#" key={i} onClick={() => goBackToItemAt(i)}>{b.label} {(i < breadCrumb.length - 1) && ' / '}</a>)}
           </h3>
         </div>
       }

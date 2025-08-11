@@ -5,6 +5,9 @@ from shutil import disk_usage
 from stat import FILE_ATTRIBUTE_HIDDEN
 
 
+IS_WIN_OS = platform.system() == 'Windows'
+
+
 def format_size(b: int):
     if b > 1024*1024*1024:
         return f'{round(b/1024/1024/1024, 2)} GB'
@@ -35,16 +38,17 @@ def get_drive_label(drive_letter: str) -> str:
     if result and drive_label_buffer.value:
         return drive_label_buffer.value
 
-    return f"Drive {drive_letter}"
+    return f"{drive_letter}:"
 
 
 def is_item_hidden(item_path: str, item_name: str) -> bool:
     try:
         marked_hidden = item_name[0] in '.$'
-        actual_hidden = bool(os.stat(item_path).st_file_attributes & FILE_ATTRIBUTE_HIDDEN)
+        actual_hidden = IS_WIN_OS and bool(os.stat(item_path).st_file_attributes & FILE_ATTRIBUTE_HIDDEN)
         return marked_hidden or actual_hidden
-    except Exception:
-        return True
+    except AttributeError:
+        print('Attribute Error:', item_path)
+        return marked_hidden
 
 
 def get_sub_items_count(item_path: str, show_hidden: bool):
@@ -71,7 +75,7 @@ def deep_search(query: str, root: str):
 
 
 def get_device_info() -> dict:
-    if platform.system() == 'Windows':
+    if IS_WIN_OS:
         return {'hostname': platform.node(), 'platform': 'Windows'}
     return {'hostname': 'Pydroid', 'platform': 'Android'}
 
@@ -80,8 +84,8 @@ def get_device_info() -> dict:
 def get_drives_info() -> list:
     drives_info = []
 
-    if platform.system() != 'Windows':
-        path = '/storage/emulated/0/'
+    if not IS_WIN_OS:
+        path = '/storage/emulated/0'
         total, used, free = map(format_size, disk_usage(path))
         drives_info.append({
             'letter': None, 'label': 'Internal Storage', 'path': path,
@@ -154,3 +158,6 @@ def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, 
         files.sort(key=lambda x: x[sort_by], reverse=reverse)
 
     return folders, files
+
+
+# print(*get_items_info('C:/'), sep='\n')

@@ -1,6 +1,5 @@
 import os
 from functools import wraps
-import platform
 from flask import request, abort
 from urllib.parse import unquote
 
@@ -21,9 +20,6 @@ def validate_path(func):
 
         if not os.path.exists(path):
             abort(404, description=f"no item found at path: {path}")
-
-        if path in ('C:', '/storage/emulated/0'):
-            path += '/'
 
         kwargs['path'] = path
         return func(*args, **kwargs)
