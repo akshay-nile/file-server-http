@@ -14,6 +14,10 @@ def configure_environment(app: Flask) -> Flask:
         app.config['HOST'] = 'localhost'
         app.config['PORT'] = 8849
         app.config['DEBUG'] = True
+
+        # Enable CORS for all routes in dev mode only
+        from flask_cors import CORS
+        CORS(app)
     else:
         # Add libs abs path to the beginning of sys.path to refer to the local libraries
         libs_path = os.path.abspath('libs')
