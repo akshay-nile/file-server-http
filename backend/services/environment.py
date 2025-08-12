@@ -2,7 +2,7 @@ import os
 import sys
 from flask import Flask
 
-from services.network import publish_socket_address, get_user_selection
+from services.network import publish_server_address, get_user_selection
 
 
 # Identify (or guess) the current environment is dev or prod
@@ -39,7 +39,6 @@ def configure_environment(app: Flask) -> Flask:
 
         # Publish the appropriate socket address to my website
         host, port = app.config['HOST'], app.config['PORT']
-        sock_addr = f'{host}:{port}' if host.count('.') == 3 else f'[{host}]:{port}'
-        publish_socket_address(sock_addr)
+        publish_server_address(f'http://{host}:{port}')
 
     return app

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchItemsInfo, fetchDeviceInfo } from "./services/apiService";
+import { fetchItemsInfo } from "./services/apiService";
 
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
   useEffect(() => { loadDeviceInfo() }, []);
 
   async function loadDeviceInfo() {
-    setDeviceInfo(await fetchDeviceInfo());
+    setDeviceInfo(await fetchItemsInfo('/'));
     setItemsInfo({ folders: [], files: [] });
     setBreadCrumb([]);
   }
@@ -43,7 +43,7 @@ function App() {
       {
         <ul>
           {deviceInfo.drives.map((drive) =>
-            <li key={drive.label} onClick={() => loadItemsInfo(drive.path, drive.letter + ':')}>
+            <li key={drive.label} onClick={() => loadItemsInfo(drive.path, deviceInfo.device.platform === 'Windows' ? drive.letter + ':' : drive.label)}>
               <h3 className="itemlabel">{(drive.letter ? drive.letter + ': ' : '') + drive.label}</h3>
               <span className="iteminfo gray">
                 Free: {drive.size.free} | Used: {drive.size.used} | Total: {drive.size.total}

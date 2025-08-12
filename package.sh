@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # --- SCRIPT DESCRIPTION ---
 # This script automates the process of building the frontend,
 # collecting backend dependencies, and organizing them into a new
@@ -6,10 +7,8 @@
 # This script is designed to be run in a Git Bash or other Unix-like shell environment.
 
 # --- SCRIPT SETUP ---
-# Exit the script immediately if any command fails.
-set -e
+set -e  # Exit on first error
 
-# Define variables for directory and file names.
 MY_FILE_SERVER_DIR="MyFileServer"
 FRONTEND_DIR="frontend"
 BACKEND_DIR="backend"
@@ -19,61 +18,61 @@ LIBS_DIR="libs"
 
 # --- MAIN LOGIC ---
 
-# 1) Make a directory in the project root with the name MyFileServer.
-echo "Step 1: Creating $MY_FILE_SERVER_DIR directory..."
+# 1) Creating MyFileServer folder, Remove old one if already exists
+echo "Step 1: Preparing $MY_FILE_SERVER_DIR directory..."
+if [ -d "$MY_FILE_SERVER_DIR" ]; then
+    echo "   Removing existing $MY_FILE_SERVER_DIR..."
+    rm -rf "$MY_FILE_SERVER_DIR"
+fi
 mkdir -p "$MY_FILE_SERVER_DIR"
 
-# 2) Navigate to the frontend directory and build the UI dist.
+# 2) Navigate to frontend and build
 echo "Step 2: Navigating to $FRONTEND_DIR and building..."
 cd "$FRONTEND_DIR"
 npm run build
 
-# 3) Move the 'dist' folder to the 'MyFileServer' directory.
-echo "Step 3: Moving the '$DIST_DIR' folder..."
+# 3) Move dist to MyFileServer
+echo "Step 3: Moving $DIST_DIR..."
 mv "$DIST_DIR" "../$MY_FILE_SERVER_DIR/"
 
-# Return to the project root to perform backend tasks.
-cd ".."
+cd ".."  # back to root
 
-# 4) Navigate to the backend directory and generate 'requirements.txt' file.
+# 4) Backend: generate requirements.txt
 echo "Step 4: Navigating to $BACKEND_DIR and freezing Python dependencies..."
 cd "$BACKEND_DIR"
 uv pip freeze > "$REQUIREMENTS_FILE"
 
-# 5) Move the 'requirements.txt' file to the 'MyFileServer' directory.
-echo "Step 5: Moving the '$REQUIREMENTS_FILE' file..."
+# 5) Move requirements.txt to MyFileServer
+echo "Step 5: Moving $REQUIREMENTS_FILE..."
 mv "$REQUIREMENTS_FILE" "../$MY_FILE_SERVER_DIR/"
 
-# 6) Copy 'server.py' and the 'services' folder to 'MyFileServer'.
-# Only copy the .py files from the 'services' folder.
+# 6) Copy backend code
 echo "Step 6: Copying backend files..."
 cp "server.py" "../$MY_FILE_SERVER_DIR/"
 mkdir -p "../$MY_FILE_SERVER_DIR/services"
-cp "services/"*.py "../$MY_FILE_SERVER_DIR/services/"
+cp services/*.py "../$MY_FILE_SERVER_DIR/services/"
 
-# Return to the project root.
-cd ".."
+cd ".."  # back to root
 
-# 7) Navigate to the 'MyFileServer' directory and make a directory named 'libs'.
-echo "Step 7: Creating the '$LIBS_DIR' directory..."
+# 7) Create libs folder
+echo "Step 7: Creating $LIBS_DIR..."
 cd "$MY_FILE_SERVER_DIR"
 mkdir -p "$LIBS_DIR"
 
-# 8) Run the command 'pip install --target=libs -r requirements.txt'.
-echo "Step 8: Installing Python dependencies locally into '$LIBS_DIR'..."
+# 8) Install dependencies into libs
+echo "Step 8: Installing dependencies..."
 pip install --target="$LIBS_DIR" -r "$REQUIREMENTS_FILE"
 
-# 9) Delete the 'requirements.txt' file.
-echo "Step 9: Deleting '$REQUIREMENTS_FILE'..."
+# 9) Remove requirements.txt
+echo "Step 9: Removing $REQUIREMENTS_FILE..."
 rm "$REQUIREMENTS_FILE"
 
-# 10) Ensure the 'MyFileServer' directory contains the expected folders and file.
+# 10) Verify structure
 echo "Step 10: Verifying final directory structure..."
 if [ -d "libs" ] && [ -d "dist" ] && [ -d "services" ] && [ -f "server.py" ]; then
     echo ""
     echo "✅ Successfully packaged MyFileServer..!"
-    echo "The final and ready-to-use folder is created."
 else
-    echo "❌ Error occurred during the setup. The final directory structure is not as expected."
+    echo "❌ Setup failed: The final structure not as expected."
     exit 1
 fi

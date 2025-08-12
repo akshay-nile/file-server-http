@@ -21,6 +21,8 @@ def get_local_ip():
 def get_public_ip():
     try:
         ip = requests.get('https://ifconfig.me', timeout=5).text
+        if ip.count('.') != 3:
+            ip = f'[{ip}]'
     except requests.RequestException:
         ip = None
         print('Not connected to Internet')
@@ -46,10 +48,11 @@ def get_user_selection():
     return ip
 
 
-def publish_socket_address(sock: str):
+def publish_server_address(server_address: str):
     def my_socket():
         try:
-            text = requests.post(f'https://akshaynile.pythonanywhere.com/mysocket?socket={sock}', timeout=5).text
+            pythonanywhere = 'https://akshaynile.pythonanywhere.com/mysocket?socket='
+            text = requests.post(pythonanywhere + server_address, timeout=5).text
             if text == 'success':
                 print(' * Socket publication was successful √ \n')
         except requests.RequestException:
