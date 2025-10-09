@@ -19,7 +19,7 @@ def home():
 
 
 # To get info about drives or items at the given path
-@app.route('/api/items', methods=['GET'])
+@app.route('/explore', methods=['GET'])
 @validate_path
 def get_items(path):
     if path == '/':

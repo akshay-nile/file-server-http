@@ -18,8 +18,8 @@ def configure_flask_app(app: Flask):
     app.static_folder = os.path.abspath('public')
 
     if IS_DEV_ENV:
-        # Bind to localhost, set custom port and enable debug mode
-        app.config['HOST'] = 'localhost'
+        # Bind to all IPs, set custom port and enable debug mode
+        app.config['HOST'] = '0.0.0.0'
         app.config['PORT'] = 8849
         app.config['DEBUG'] = True
 
