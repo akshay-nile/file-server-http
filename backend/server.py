@@ -1,20 +1,21 @@
-from flask import Flask, jsonify, render_template, request
-from werkzeug.exceptions import HTTPException
-
+from services import configure_flask_app
 from services.decorators import validate_path
-from services.environment import IS_DEV_ENV, configure_environment
 from services.explorer import get_device_info, get_drives_info, get_items_info
 
+from flask import Flask, jsonify, send_from_directory, request
+from werkzeug.exceptions import HTTPException
 
-app = configure_environment(Flask(__name__))
+
+app = Flask(__name__, static_url_path='/public/')
+configure_flask_app(app)
 
 
 # To serve the UI build from dist folder after packaging
 @app.route('/', methods=['GET'])
 def home():
-    if IS_DEV_ENV:
-        return "<h1>Can not serve 'index.html' in Development Mode!</h1>"
-    return render_template('index.html')
+    if app.config.get('DEBUG'):
+        return "<h1>Cannot serve 'index.html' in Development Mode!</h1>"
+    return send_from_directory('./public', 'index.html')
 
 
 # To get info about drives or items at the given path
@@ -49,7 +50,5 @@ if __name__ == '__main__':
     app.run(
         host=app.config.get('HOST'),
         port=app.config.get('PORT'),
-        debug=app.config.get('DEBUG'),
-        # ssl_context=app.config.get('SSL_CONTEXT'),
-        # use_reloader=False
+        debug=app.config.get('DEBUG')
     )

@@ -33,7 +33,7 @@ npm run build
 
 # 3) Move dist to MyFileServer
 echo "Step 3: Moving $DIST_DIR..."
-mv "$DIST_DIR" "../$MY_FILE_SERVER_DIR/"
+mv "$DIST_DIR" "../$MY_FILE_SERVER_DIR/public"
 
 cd ".."  # back to root
 
@@ -69,7 +69,7 @@ rm "$REQUIREMENTS_FILE"
 
 # 10) Verify structure
 echo "Step 10: Verifying final directory structure..."
-if [ -d "libs" ] && [ -d "dist" ] && [ -d "services" ] && [ -f "server.py" ]; then
+if [ -d "libs" ] && [ -d "public" ] && [ -d "services" ] && [ -f "server.py" ]; then
     echo ""
     echo "✅ Successfully packaged MyFileServer..!"
 else

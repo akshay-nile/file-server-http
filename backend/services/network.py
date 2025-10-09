@@ -51,7 +51,7 @@ def get_user_selection():
 def publish_server_address(server_address: str):
     def my_socket():
         try:
-            pythonanywhere = 'https://akshaynile.pythonanywhere.com/mysocket?socket='
+            pythonanywhere = 'https://akshaynile.pythonanywhere.com/publish?socket='
             text = requests.post(pythonanywhere + server_address, timeout=5).text
             if text == 'success':
                 print(' * Socket publication was successful √ \n')
