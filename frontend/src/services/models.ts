@@ -29,4 +29,9 @@ export interface File extends Item {
 
 export interface Folder extends Item {
     size: [number, number];
-} 
+}
+
+export interface Items {
+    folders: Array<Folder>;
+    files: Array<File>;
+}

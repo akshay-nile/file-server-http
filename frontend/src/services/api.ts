@@ -1,4 +1,4 @@
-import type { Home } from './models';
+import type { Home, Items } from './models';
 
 let baseURL = import.meta.env.VITE_BASE_URL as string;
 let retryCount = 2;
@@ -19,4 +19,8 @@ async function tryToFetch<T>(path: string): Promise<T> {
 
 export async function getHome(): Promise<Home> {
     return await tryToFetch('/explore?path=/');
+}
+
+export async function getItems(path: string): Promise<Items> {
+    return await tryToFetch('/explore?path=' + encodeURIComponent(path));
 }
