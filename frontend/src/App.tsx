@@ -7,30 +7,42 @@ import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from './services/mod
 
 function App() {
   const [loading, setLoading] = useState<boolean>(false);
-  const [path, setPath] = useState<string>('/');
+  const [path, setPath] = useState<string>('');
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [drives, setDrives] = useState<DriveInfo[]>([]);
   const [folders, setFolders] = useState<FolderInfo[]>([]);
   const [files, setFiles] = useState<FileInfo[]>([]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        if (path === '/') {
-          const data = await getHome();
-          setDeviceInfo(data.device);
-          setDrives(data.drives);
-        } else {
-          const data = await getItems(path);
-          setFolders(data.folders);
-          setFiles(data.files);
-        }
+    const url = window.location.href;
+    goToPath(url.includes('?path=') ? url.split('?path=')[1] : '/');
+
+    const onHistory = async (e: PopStateEvent) => {
+      e.preventDefault();
+      await goToPath(e.state.path, true);
+    };
+    window.addEventListener('popstate', onHistory);
+    return () => window.removeEventListener('popstate', onHistory);
+  }, []);
+
+  async function goToPath(newPath: string, isHistory: boolean = false) {
+    try {
+      setLoading(true);
+      if (newPath === '/') {
+        const data = await getHome();
+        setDeviceInfo(data.device);
+        setDrives(data.drives);
+      } else {
+        const data = await getItems(newPath);
+        setFolders(data.folders);
+        setFiles(data.files);
       }
-      catch (error) { console.error(error); }
-      finally { setLoading(false); }
-    })();
-  }, [path]);
+      if (!isHistory) window.history.pushState({ path: newPath }, '', '?path=' + newPath);
+      setPath(newPath);
+    }
+    catch (error) { console.error(error); }
+    finally { setLoading(false); }
+  }
 
   return (
     <div className="flex justify-center">
@@ -39,9 +51,9 @@ function App() {
       <div className="w-full md:w-[60%] lg:w-[40%]">
         {
           path === '/'
-            ? drives.map(drive => <DriveItem key={drive.path} drive={drive} setPath={setPath} />)
+            ? drives.map(drive => <DriveItem key={drive.path} drive={drive} goToPath={goToPath} />)
             : <>
-              {folders.map(folder => <FolderItem key={folder.path} folder={folder} setPath={setPath} />)}
+              {folders.map(folder => <FolderItem key={folder.path} folder={folder} goToPath={goToPath} />)}
               {files.map(file => <FileItem key={file.path} file={file} />)}
             </>
         }

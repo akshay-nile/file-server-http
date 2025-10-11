@@ -20,7 +20,7 @@ def configure_flask_app(app: Flask):
     if IS_DEV_ENV:
         # Bind to all IPs, set custom port and enable debug mode
         app.config['HOST'] = '0.0.0.0'
-        app.config['PORT'] = 8849
+        app.config['PORT'] = 5000
         app.config['DEBUG'] = True
 
         # Enable CORS for all routes in dev mode only
