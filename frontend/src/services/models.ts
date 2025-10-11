@@ -4,8 +4,8 @@ export type DeviceInfo = { hostname: string, platform: Platform };
 
 export type SizeInfo = { total: number, used: number, free: number };
 
-export interface Drive {
-    letter: string;
+export interface DriveInfo {
+    letter: string | null;
     label: string;
     path: string;
     size: SizeInfo;
@@ -13,25 +13,25 @@ export interface Drive {
 
 export interface Home {
     device: DeviceInfo;
-    drives: Array<Drive>;
+    drives: Array<DriveInfo>;
 }
 
-export interface Item {
+export interface ItemInfo {
     name: string;
     path: string;
     hidden: boolean;
     date: number;
 }
 
-export interface File extends Item {
+export interface FileInfo extends ItemInfo {
     size: string;
 }
 
-export interface Folder extends Item {
+export interface FolderInfo extends ItemInfo {
     size: [number, number];
 }
 
 export interface Items {
-    folders: Array<Folder>;
-    files: Array<File>;
+    folders: Array<FolderInfo>;
+    files: Array<FileInfo>;
 }
