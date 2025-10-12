@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import DriveItem from './components/DriveItem';
-import FileItem from './components/FileItem';
-import FolderItem from './components/FolderItem';
+import HomeItems from './components/HomeItems';
+import PathItems from './components/PathItems';
 import { getHome, getItems } from './services/api';
 import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from './services/models';
 
@@ -15,17 +14,19 @@ function App() {
 
   useEffect(() => {
     const url = window.location.href;
-    goToPath(url.includes('?path=') ? url.split('?path=')[1] : '/');
+    const reload = url.includes('/?path=');
+    explore(reload ? url.split('/?path=')[1] : '/', !reload);
 
     const onHistory = async (e: PopStateEvent) => {
       e.preventDefault();
-      await goToPath(e.state.path, true);
+      await explore(e.state.path, false);
     };
+
     window.addEventListener('popstate', onHistory);
     return () => window.removeEventListener('popstate', onHistory);
   }, []);
 
-  async function goToPath(newPath: string, isHistory: boolean = false) {
+  async function explore(newPath: string, pushHistory: boolean = true) {
     try {
       setLoading(true);
       if (newPath === '/') {
@@ -37,7 +38,7 @@ function App() {
         setFolders(data.folders);
         setFiles(data.files);
       }
-      if (!isHistory) window.history.pushState({ path: newPath }, '', '?path=' + newPath);
+      if (pushHistory) window.history.pushState({ path: newPath }, '', '?path=' + newPath);
       setPath(newPath);
     }
     catch (error) { console.error(error); }
@@ -45,21 +46,18 @@ function App() {
   }
 
   return (
-    <div className="flex justify-center">
-      <div className="hidden md:block md:w-[20%] lg:w-[30%]"></div>
+    <div className="flex justify-center w-screen h-screen">
+      <div className="bg-gray-800 h-screen hidden md:block md:w-[20%] lg:w-[33%]"></div>
 
-      <div className="w-full md:w-[60%] lg:w-[40%]">
+      <div className="w-full h-full md:w-[60%] lg:w-[34%]">
         {
           path === '/'
-            ? drives.map(drive => <DriveItem key={drive.path} drive={drive} goToPath={goToPath} />)
-            : <>
-              {folders.map(folder => <FolderItem key={folder.path} folder={folder} goToPath={goToPath} />)}
-              {files.map(file => <FileItem key={file.path} file={file} />)}
-            </>
+            ? <HomeItems drives={drives} explore={explore} />
+            : <PathItems folders={folders} files={files} explore={explore} />
         }
       </div>
 
-      <div className="hidden md:block md:w-[20%] lg:w-[30%]"></div>
+      <div className="bg-gray-800 h-full hidden md:block md:w-[20%] lg:w-[33%]"></div>
     </div>
   );
 }

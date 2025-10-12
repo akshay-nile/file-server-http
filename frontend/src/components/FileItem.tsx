@@ -23,7 +23,7 @@ function FileItem({ file }: Props) {
 
     return (
         <div className='flex items-center mx-3 mt-2 border border-gray-300 rounded shadow'>
-            <img src='/icons/fileicon.jpg' className='w-[50px] h-[50px] m-1 mr-2 rounded-[5px]' />
+            <img src='/icons/file.jpg' className='w-[50px] h-[50px] m-1 mr-2 rounded-[5px]' />
 
             <div className='w-[calc(100%-1.5rem)] flex flex-col group cursor-pointer justify-between'
                 onClick={() => console.warn(file.path)}>

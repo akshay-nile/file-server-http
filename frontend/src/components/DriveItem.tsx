@@ -1,14 +1,14 @@
 import type { DriveInfo } from '../services/models';
 
-type Props = { drive: DriveInfo, goToPath: (path: string) => void };
+type Props = { drive: DriveInfo, explore: (path: string) => void };
 
-function DriveItem({ drive, goToPath }: Props) {
+function DriveItem({ drive, explore }: Props) {
     return (
         <div className='flex items-center mx-3 mt-3 border border-gray-300 rounded shadow'>
-            <img src='/icons/driveicon.jpg' className='w-[60px] h-[50px] m-1 rounded-[5px]' />
+            <img src='/icons/drive.jpg' className='w-[60px] h-[50px] m-1 rounded-[5px]' />
 
             <div className='w-[calc(100%-1.5rem)] flex flex-col group cursor-pointer'
-                onClick={() => goToPath(drive.path)}>
+                onClick={() => explore(drive.path)}>
                 <span className='group-hover:text-blue-700 mr-2 leading-3.75'>
                     {drive.letter !== null && <span className='mr-2'>{drive.letter}:</span>}
                     {drive.label}
