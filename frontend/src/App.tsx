@@ -1,6 +1,9 @@
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
+import EmptyFolder from './components/EmptyFolder';
 import HomeItems from './components/HomeItems';
 import PathItems from './components/PathItems';
+import TopPanel from './components/TopPanel';
 import { getHome, getItems } from './services/api';
 import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from './services/models';
 
@@ -14,8 +17,13 @@ function App() {
 
   useEffect(() => {
     const url = window.location.href;
-    const reload = url.includes('/?path=');
-    explore(reload ? url.split('/?path=')[1] : '/', !reload);
+    const sep = '/?path=';
+
+    if (url.includes(sep)) (async () => {
+      await explore('/', false);
+      await explore(url.split(sep)[1], false);
+    })();
+    else explore('/');
 
     const onHistory = async (e: PopStateEvent) => {
       e.preventDefault();
@@ -51,9 +59,20 @@ function App() {
 
       <div className="w-full h-full md:w-[60%] lg:w-[34%]">
         {
-          path === '/'
-            ? <HomeItems drives={drives} explore={explore} />
-            : <PathItems folders={folders} files={files} explore={explore} />
+          deviceInfo !== null &&
+          <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
+        }
+
+        {
+          loading
+            ? <div className='h-[66%] flex justify-center items-center'>
+              <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
+            </div>
+            : path === '/'
+              ? <HomeItems drives={drives} explore={explore} />
+              : folders.length > 0 || files.length > 0
+                ? <PathItems folders={folders} files={files} explore={explore} />
+                : <EmptyFolder />
         }
       </div>
 

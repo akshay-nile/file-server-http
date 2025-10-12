@@ -1,3 +1,4 @@
+import time
 from services import configure_flask_app
 from services.decorators import validate_path
 from services.explorer import get_device_info, get_drives_info, get_items_info
@@ -22,6 +23,7 @@ def home():
 @app.route('/explore', methods=['GET'])
 @validate_path
 def get_items(path):
+    # time.sleep(2)
     if path == '/':
         device = get_device_info()
         drives = get_drives_info()
