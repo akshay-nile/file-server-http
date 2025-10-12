@@ -25,6 +25,7 @@ if [ -d "$MY_FILE_SERVER_DIR" ]; then
     rm -rf "$MY_FILE_SERVER_DIR"
 fi
 mkdir -p "$MY_FILE_SERVER_DIR"
+touch "$MY_FILE_SERVER_DIR/.nomedia"
 
 # 2) Navigate to frontend and build
 echo "Step 2: Navigating to $FRONTEND_DIR and building..."

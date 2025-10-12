@@ -9,12 +9,12 @@ IS_WIN_OS = platform.system() == 'Windows'
 
 
 def format_size(b: int):
-    if b > 1024*1024*1024:
-        return f'{round(b/1024/1024/1024, 2)} GB'
-    elif b > 1024*1024:
-        return f'{round(b/1024/1024, 1)} MB'
+    if b > 1024 * 1024 * 1024:
+        return f'{round(b / 1024 / 1024 / 1024, 2)} GB'
+    elif b > 1024 * 1024:
+        return f'{round(b / 1024 / 1024, 1)} MB'
     elif b > 1024:
-        return f'{round(b/1024)} KB'
+        return f'{round(b / 1024)} KB'
     else:
         return f'{b} B'
 

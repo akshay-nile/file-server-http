@@ -1,7 +1,10 @@
 import type { Home, Items } from './models';
 
-let baseURL = import.meta.env.VITE_BASE_URL as string;
+let baseURL = window.location.href;
 let retryCount = 2;
+
+if (import.meta.env.VITE_BASE_URL) baseURL = import.meta.env.VITE_BASE_URL;
+else if (baseURL.includes('/?path=')) baseURL = baseURL.split('/?path=')[0];
 
 async function tryToFetch<T>(path: string): Promise<T> {
     try {

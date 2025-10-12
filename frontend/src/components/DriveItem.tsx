@@ -5,7 +5,7 @@ type Props = { drive: DriveInfo, explore: (path: string) => void };
 function DriveItem({ drive, explore }: Props) {
     return (
         <div className='flex items-center mx-3 mt-3 border border-gray-300 rounded shadow'>
-            <img src='/icons/drive.jpg' className='w-[60px] h-[50px] m-1 rounded-[5px]' />
+            <img src='/public/icons/drive.jpg' className='w-[60px] h-[50px] m-1 rounded-[5px]' />
 
             <div className='w-[calc(100%-1.5rem)] flex flex-col group cursor-pointer'
                 onClick={() => explore(drive.path)}>
