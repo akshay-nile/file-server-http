@@ -1,5 +1,6 @@
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
+import Breadcrumb from './components/Breadcrumb';
 import EmptyFolder from './components/EmptyFolder';
 import HomeItems from './components/HomeItems';
 import PathItems from './components/PathItems';
@@ -21,7 +22,7 @@ function App() {
 
     if (url.includes(sep)) (async () => {
       await explore('/', false);
-      await explore(url.split(sep)[1], false);
+      await explore(decodeURI(url.split(sep)[1]), false);
     })();
     else explore('/');
 
@@ -59,8 +60,13 @@ function App() {
 
       <div className="w-full h-full md:w-[60%] lg:w-[34%]">
         {
-          deviceInfo !== null &&
-          <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
+          deviceInfo !== null && <>
+            <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
+            {
+              path !== '' && path !== '/' &&
+              <Breadcrumb path={path} platform={deviceInfo.platform} explore={explore} />
+            }
+          </>
         }
 
         {

@@ -35,3 +35,9 @@ export interface Items {
     folders: Array<FolderInfo>;
     files: Array<FileInfo>;
 }
+
+export interface Settings {
+    sort_by: 'name' | 'type' | 'size' | 'date';
+    show_hidden: boolean;
+    reverse: boolean;
+}

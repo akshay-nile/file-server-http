@@ -1,4 +1,5 @@
 import type { Home, Items } from './models';
+import { getSettings } from './settings';
 
 let baseURL = window.location.href;
 let retryCount = 2;
@@ -24,6 +25,10 @@ export async function getHome(): Promise<Home> {
     return await tryToFetch('/explore?path=/');
 }
 
-export async function getItems(path: string): Promise<Items> {
-    return await tryToFetch('/explore?path=' + encodeURIComponent(path));
+export async function getItems(path: string, search = ''): Promise<Items> {
+    let params = 'path=' + encodeURIComponent(path);
+    if (search.trim().length > 0) params += '&search=' + encodeURIComponent(search);
+    const settings = getSettings();
+    params += `&sort_by=${settings.sort_by}&show_hidden=${settings.show_hidden}&reverse=${settings.reverse}`;
+    return await tryToFetch('/explore?' + params);
 }
