@@ -36,6 +36,12 @@ def get_cached_thumbnails(folderpath: str, base_url: str) -> list[dict]:
 
 
 def get_generated_thumbnail(filepath: str, base_url: str) -> dict:
+    fallback = {'filepath': filepath, 'thumbnailURL': '/public/icons/file.jpg'}
+
+    # Thumbnail generation not allowed for contents inside project folder
+    if filepath.startswith(os.getcwd().replace('\\', '/')):
+        return fallback
+
     # Make thumbnail path to find-in-cache
     filename = filepath.split('/')[-1]
     thumbpath = './public/thumbnails/' + filename + '.png'
@@ -58,8 +64,7 @@ def get_generated_thumbnail(filepath: str, base_url: str) -> dict:
             return thumbnail
 
     # Fallback to the default thumbnail available in frontend
-    thumbnail['thumbnailURL'] = '/public/icons/file.jpg'
-    return thumbnail
+    return fallback
 
 
 def generate_image_thumbnail(filepath: str | BytesIO, thumbpath: str) -> bool:

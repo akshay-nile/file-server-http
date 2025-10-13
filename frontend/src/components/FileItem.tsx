@@ -4,8 +4,8 @@ type Props = { file: FileInfo };
 
 function FileItem({ file }: Props) {
 
-    function formatDate(secondsFromEpoch: number): string {
-        const date = new Date(secondsFromEpoch * 1000);
+    function getFormattedDate(): string {
+        const date = new Date(file.date * 1000);
 
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -21,17 +21,36 @@ function FileItem({ file }: Props) {
         return `${day}-${month}-${year} ${hours12}:${minutes}:${seconds} ${ampm}`;
     }
 
+    function getFileExtention(): string {
+        const splits = file.name.split('.');
+        return splits[splits.length - 1]?.toUpperCase();
+    }
+
+    function shouldShowCSSThumbnail(): boolean {
+        if (!file.name.includes('.')) return false;
+        const extLength = getFileExtention().length;
+        return file.thumbnail === '/public/icons/file.jpg' && extLength > 0 && extLength <= 4;
+    }
+
     return (
         <div className='flex items-center mx-3 mt-2 border border-gray-300 rounded shadow'>
-            <img src={file.thumbnail} className='w-[50px] h-[50px] m-1 mr-2 rounded-[5px]' />
+            <div className='w-[58px] h-[50px] overflow-hidden m-1 mr-2 p-0 cursor-pointer'>
+                {
+                    shouldShowCSSThumbnail()
+                        ? <div className={`h-full flex justify-center items-center font-bold bg-gray-500 text-white rounded-[5px] text-${['2xl', 'lg', 'sm', 'xs'][getFileExtention().length - 1]}`}>
+                            {getFileExtention()}
+                        </div>
+                        : <img src={file.thumbnail} className='w-full h-full object-contain object-center rounded-[5px]' />
+                }
+            </div>
 
-            <div className='w-[calc(100%-1.5rem)] flex flex-col group cursor-pointer justify-between'
+            <div className='w-full flex flex-col group cursor-pointer justify-between'
                 onClick={() => console.warn(file.path)}>
                 <span className='group-hover:text-blue-700 mr-2 text-sm leading-3.75'>{file.name}</span>
 
                 <div className='text-[10px] font-mono tracking-tight ml-0.25 mt-1 '>
                     <span>Size {file.size}</span><span className='mx-2'>|</span>
-                    <span>{formatDate(file.date)}</span>
+                    <span>{getFormattedDate()}</span>
                 </div>
             </div>
         </div>

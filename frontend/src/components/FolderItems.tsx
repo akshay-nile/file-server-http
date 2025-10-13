@@ -15,6 +15,8 @@ function FolderItems({ folders, subFiles, path, explore }: Props) {
     const [files, setFiles] = useState<FileInfo[]>(subFiles);
 
     useEffect(() => {
+        let isMounted = true;
+
         (async () => {
             // Fetch and load all cached thumbnails in a single request
             const thumbnails = await getThumbanils(path);
@@ -38,8 +40,11 @@ function FolderItems({ folders, subFiles, path, explore }: Props) {
                     prevFile.thumbnail = thumbnail.thumbnailURL;
                     return [...prevFiles];
                 });
+                if (!isMounted) break;
             }
         })();
+
+        return () => { isMounted = false; };
     }, [path, subFiles]);
 
     return <>

@@ -7,7 +7,7 @@ function FolderItem({ folder, explore }: Props) {
         <div className='flex items-center mx-3 mt-2 border border-gray-300 rounded shadow'>
             <img src='/public/icons/folder.jpg' className='w-[50px] h-[50px] m-1 mr-2 rounded-[5px]' />
 
-            <div className='w-[calc(100%-1.5rem)] flex flex-col group cursor-pointer'
+            <div className='w-full flex flex-col group cursor-pointer'
                 onClick={() => explore(folder.path)}>
                 <span className='group-hover:text-blue-700 mr-2 text-sm leading-3.75'>{folder.name}</span>
 

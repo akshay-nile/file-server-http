@@ -7,7 +7,7 @@ function DriveItem({ drive, explore }: Props) {
         <div className='flex items-center mx-3 mt-3 border border-gray-300 rounded shadow'>
             <img src='/public/icons/drive.jpg' className='w-[60px] h-[50px] m-1 rounded-[5px]' />
 
-            <div className='w-[calc(100%-1.5rem)] flex flex-col group cursor-pointer'
+            <div className='w-full flex flex-col group cursor-pointer'
                 onClick={() => explore(drive.path)}>
                 <span className='group-hover:text-blue-700 mr-2 leading-3.75'>
                     {drive.letter !== null && <span className='mr-2'>{drive.letter}:</span>}

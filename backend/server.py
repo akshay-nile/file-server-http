@@ -30,8 +30,8 @@ def get_items(path):
     options = dict()
     options['search'] = request.args.get('search', None)
     options['sort_by'] = request.args.get('sort_by', 'name')
-    options['reverse'] = request.args.get('reverse', False)
-    options['show_hidden'] = request.args.get('show_hidden', False)
+    options['reverse'] = request.args.get('reverse', 'false').lower() == 'true'
+    options['show_hidden'] = request.args.get('show_hidden', 'false').lower() == 'true'
     folders, files = get_items_info(path, **options)
     return jsonify({'folders': folders, 'files': files})
 

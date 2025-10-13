@@ -57,10 +57,8 @@ function App() {
   }
 
   return (
-    <div className="flex justify-center w-screen h-screen">
-      <div className="bg-gray-800 h-screen hidden md:block md:w-[20%] lg:w-[33%]"></div>
-
-      <div className="w-full h-full md:w-[60%] lg:w-[34%]">
+    <div className="w-full flex justify-center">
+      <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
         {
           deviceInfo !== null && <>
             <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
@@ -83,8 +81,6 @@ function App() {
                 : <EmptyFolder />
         }
       </div>
-
-      <div className="bg-gray-800 h-full hidden md:block md:w-[20%] lg:w-[33%]"></div>
     </div>
   );
 }
