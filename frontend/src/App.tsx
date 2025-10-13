@@ -2,8 +2,8 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
 import Breadcrumb from './components/Breadcrumb';
 import EmptyFolder from './components/EmptyFolder';
+import FolderItems from './components/FolderItems';
 import HomeItems from './components/HomeItems';
-import PathItems from './components/PathItems';
 import TopPanel from './components/TopPanel';
 import { getHome, getItems } from './services/api';
 import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from './services/models';
@@ -38,15 +38,17 @@ function App() {
   async function explore(newPath: string, pushHistory: boolean = true) {
     try {
       setLoading(true);
+
       if (newPath === '/') {
-        const data = await getHome();
+        const data = await getHome(); // Fetch server-device and drives info
         setDeviceInfo(data.device);
         setDrives(data.drives);
       } else {
-        const data = await getItems(newPath);
+        const data = await getItems(newPath);  // Fetch folder and files info
         setFolders(data.folders);
         setFiles(data.files);
       }
+
       if (pushHistory) window.history.pushState({ path: newPath }, '', '?path=' + newPath);
       setPath(newPath);
     }
@@ -77,7 +79,7 @@ function App() {
             : path === '/'
               ? <HomeItems drives={drives} explore={explore} />
               : folders.length > 0 || files.length > 0
-                ? <PathItems folders={folders} files={files} explore={explore} />
+                ? <FolderItems path={path} folders={folders} subFiles={files} explore={explore} />
                 : <EmptyFolder />
         }
       </div>

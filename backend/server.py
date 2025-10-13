@@ -1,6 +1,6 @@
-import time
 from services import configure_flask_app
 from services.decorators import validate_path
+from services.thumbnails import get_cached_thumbnails, get_generated_thumbnail
 from services.explorer import get_device_info, get_drives_info, get_items_info
 
 from flask import Flask, jsonify, send_from_directory, request
@@ -23,7 +23,6 @@ def home():
 @app.route('/explore', methods=['GET'])
 @validate_path
 def get_items(path):
-    # time.sleep(2)
     if path == '/':
         device = get_device_info()
         drives = get_drives_info()
@@ -35,6 +34,16 @@ def get_items(path):
     options['show_hidden'] = request.args.get('show_hidden', False)
     folders, files = get_items_info(path, **options)
     return jsonify({'folders': folders, 'files': files})
+
+
+# To get the map of all the sub-file paths to their thumbnail paths
+@app.route('/thumbnails', methods=['GET'])
+@validate_path
+def get_thumbnails(path):
+    base_url = request.base_url.replace('/thumbnails', '/public/thumbnails')
+    if request.args.get('cached') == 'true':
+        return jsonify(get_cached_thumbnails(path, base_url))
+    return jsonify(get_generated_thumbnail(path, base_url))
 
 
 # Global http error handler to get jsonified error response

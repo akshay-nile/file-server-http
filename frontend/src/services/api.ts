@@ -1,4 +1,4 @@
-import type { Home, Items } from './models';
+import type { Home, Items, Thumbnail } from './models';
 import { getSettings } from './settings';
 
 let baseURL = window.location.href;
@@ -9,7 +9,7 @@ else if (baseURL.includes('/?path=')) baseURL = baseURL.split('/?path=')[0];
 
 async function tryToFetch<T>(path: string): Promise<T> {
     try {
-        const response = await fetch(baseURL + '/' + path);
+        const response = await fetch(baseURL + path);
         return await (response as Response).json();
     } catch (error) {
         console.error(error);
@@ -31,4 +31,14 @@ export async function getItems(path: string, search = ''): Promise<Items> {
     const settings = getSettings();
     params += `&sort_by=${settings.sort_by}&show_hidden=${settings.show_hidden}&reverse=${settings.reverse}`;
     return await tryToFetch('/explore?' + params);
+}
+
+export async function getThumbanils(path: string): Promise<Thumbnail[]> {
+    const params = 'path=' + encodeURIComponent(path) + '&cached=true';
+    return await tryToFetch('/thumbnails?' + params);
+}
+
+export async function getThumbanil(path: string): Promise<Thumbnail> {
+    const params = 'path=' + encodeURIComponent(path);
+    return await tryToFetch('/thumbnails?' + params);
 }

@@ -141,6 +141,7 @@ def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, 
             elif os.path.isfile(item_path):
                 item_info['size'] = format_size(os.path.getsize(item_path))
                 item_info['date'] = int(os.path.getmtime(item_path))
+                item_info['thumbnail'] = '/public/icons/file.jpg'
                 files.append(item_info)
         except PermissionError:
             print('Access Denied:', item_path)
@@ -158,6 +159,3 @@ def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, 
         files.sort(key=lambda x: x[sort_by], reverse=reverse)
 
     return folders, files
-
-
-# print(*get_items_info('C:/'), sep='\n')

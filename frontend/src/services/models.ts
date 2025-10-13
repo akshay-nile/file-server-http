@@ -25,6 +25,7 @@ export interface ItemInfo {
 
 export interface FileInfo extends ItemInfo {
     size: string;
+    thumbnail: string;
 }
 
 export interface FolderInfo extends ItemInfo {
@@ -40,4 +41,9 @@ export interface Settings {
     sort_by: 'name' | 'type' | 'size' | 'date';
     show_hidden: boolean;
     reverse: boolean;
+}
+
+export interface Thumbnail {
+    filepath: string;
+    thumbnailURL: string;
 }
