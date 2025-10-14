@@ -8,11 +8,11 @@ function TopPanel({ deviceInfo, path, explore }: Props) {
     const style = { width: '2.5rem', height: '2.5rem', padding: '0rem' };
 
     return (
-        <div className='flex justify-between items-center border border-gray-300 rounded shadow m-3 p-2'>
+        <div className='flex justify-between items-center border border-gray-300 rounded shadow m-3 p-2 sticky top-0 bg-gray-50'>
             <span className='flex items-center hover:text-blue-700 cursor-pointer'
                 onClick={() => explore('/')}>
                 <i className={`${icon} m-2 mr-2.25 shadow`} style={{ fontSize: '1.75rem' }} />
-                <span className='text-xl font-semibold'>{deviceInfo?.hostname}</span>
+                <span className='text-xl font-normal'>{deviceInfo?.hostname}</span>
             </span>
 
             <div className="flex">

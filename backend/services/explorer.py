@@ -112,6 +112,10 @@ def get_drives_info() -> list:
 def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, search=None):
     files, folders = [], []
 
+    # Not allowed to explore the contents inside the project folder
+    if path.startswith(os.getcwd().replace('\\', '/')):
+        return folders, files
+
     if not search:
         items = map(lambda i: joiner(path, i), os.listdir(path))
     else:
