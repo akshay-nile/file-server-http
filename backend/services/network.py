@@ -1,7 +1,6 @@
 import requests
 import socket
 import threading
-import time
 
 
 def get_local_ip():
@@ -43,7 +42,7 @@ def get_user_selection():
 
     if ip is None:
         exit()
-    print()     # Extra blank line to saperate the flask's logs
+    print()     # Extra blank line to saperate the server logs
 
     return ip
 
@@ -56,6 +55,5 @@ def publish_server_address(server_address: str):
             if text == 'success':
                 print(' * Socket publication was successful √ \n')
         except requests.RequestException:
-            time.sleep(1)
             print(' * Socket publication attempt failed ╳ \n')
     threading.Thread(target=my_socket).start()

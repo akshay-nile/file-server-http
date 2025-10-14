@@ -1,10 +1,11 @@
-from services import configure_flask_app
+from services import IS_DEV_ENV, configure_flask_app
 from services.decorators import validate_path
 from services.thumbnails import get_cached_thumbnails, get_generated_thumbnail
 from services.explorer import get_device_info, get_drives_info, get_items_info
 
 from flask import Flask, jsonify, send_from_directory, request
 from werkzeug.exceptions import HTTPException
+from waitress import serve
 
 
 app = Flask(__name__, static_url_path='/public/')
@@ -23,6 +24,7 @@ def home():
 @app.route('/explore', methods=['GET'])
 @validate_path
 def get_items(path):
+    print('Explore:', path)
     if path == '/':
         device = get_device_info()
         drives = get_drives_info()
@@ -57,9 +59,9 @@ def handle_http_exception(error):
     return jsonify(response), error.code
 
 
-if __name__ == '__main__':
-    app.run(
-        host=app.config.get('HOST'),
-        port=app.config.get('PORT'),
-        debug=app.config.get('DEBUG')
-    )
+host, port = app.config.get('HOST'), app.config.get('PORT')
+
+if IS_DEV_ENV:
+    app.run(host=host, port=port, debug=True)
+else:
+    serve(app=app, host=host, port=port, threads=64, ident='MyFileServer')
