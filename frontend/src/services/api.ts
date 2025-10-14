@@ -7,9 +7,17 @@ let retryCount = 2;
 if (import.meta.env.VITE_BASE_URL) baseURL = import.meta.env.VITE_BASE_URL;
 else if (baseURL.includes('/?path=')) baseURL = baseURL.split('/?path=')[0];
 
+// This wrapper function is used as an interceptor that inserts X-Browser-ID header in each request
+async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {
+    const browserId = localStorage.getItem('file-server-browser-id');
+    const headers = new Headers(init.headers || {});
+    if (browserId) headers.set('X-Browser-ID', browserId);
+    return await fetch(input, { ...init, headers });
+}
+
 async function tryToFetch<T>(path: string): Promise<T> {
     try {
-        const response = await fetch(baseURL + path);
+        const response = await fetchWithBrowserId(baseURL + path);
         return await (response as Response).json();
     } catch (error) {
         console.error(error);
@@ -19,6 +27,12 @@ async function tryToFetch<T>(path: string): Promise<T> {
         }
     }
     return [] as T;
+}
+
+export async function authenticate(user_code: string | null = null): Promise<{ status: string }> {
+    let params = '';
+    if (user_code) params = '?verify=' + encodeURIComponent(user_code);
+    return await tryToFetch('/authenticate' + params);
 }
 
 export async function getHome(): Promise<Home> {
