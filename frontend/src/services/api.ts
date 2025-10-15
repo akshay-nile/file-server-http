@@ -13,8 +13,8 @@ async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = 
     const headers = new Headers(init.headers || {});
     if (browserId) headers.set('X-Browser-ID', browserId);
     const response = await fetch(input, { ...init, headers });
-    if (response.status === 400 || response.status === 401) {
-        if (browserId) localStorage.removeItem('file-server-browser-id');
+    if (browserId && response.status === 401) {
+        localStorage.removeItem('file-server-browser-id');
         window.location.reload();
     }
     return response;
