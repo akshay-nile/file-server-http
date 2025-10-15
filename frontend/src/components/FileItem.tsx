@@ -1,26 +1,9 @@
 import type { FileInfo } from '../services/models';
+import { formatDate, formatSize } from '../services/utilities';
 
 type Props = { file: FileInfo };
 
 function FileItem({ file }: Props) {
-
-    function getFormattedDate(): string {
-        const date = new Date(file.date * 1000);
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-
-        const hours24 = date.getHours();
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-
-        const ampm = hours24 >= 12 ? 'PM' : 'AM';
-        const hours12 = String(hours24 % 12 || 12).padStart(2, '0');
-
-        return `${day}-${month}-${year} ${hours12}:${minutes}:${seconds} ${ampm}`;
-    }
-
     function getFileExtention(): string {
         const splits = file.name.split('.');
         return splits[splits.length - 1]?.toUpperCase();
@@ -28,29 +11,32 @@ function FileItem({ file }: Props) {
 
     function shouldShowCSSThumbnail(): boolean {
         if (!file.name.includes('.')) return false;
-        const extLength = getFileExtention().length;
-        return file.thumbnail === '/public/icons/file.jpg' && extLength > 0 && extLength <= 4;
+        const extention = getFileExtention();
+        return !file.thumbnail && extention.length > 0 && extention.length <= 4;
     }
 
     return (
         <div className='flex items-center mx-3 mt-2 border border-gray-300 rounded shadow'>
-            <div className='w-[58px] h-[50px] overflow-hidden m-1 mr-2 p-0 cursor-pointer'>
+            <div className={`w-[58px] h-[50px] overflow-hidden m-1 mr-2 p-0 cursor-pointer ${file.hidden && 'opacity-70'}`}>
                 {
                     shouldShowCSSThumbnail()
-                        ? <div className={`h-full flex justify-center items-center font-bold bg-gray-500 text-white rounded-[5px] text-${['2xl', 'lg', 'sm', 'xs'][getFileExtention().length - 1]}`}>
+                        ? <div className={`h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide text-${['2xl', 'lg', 'sm', 'xs'][getFileExtention().length - 1]}`}>
                             {getFileExtention()}
                         </div>
-                        : <img src={file.thumbnail} className='w-full h-full object-contain object-center rounded-[5px]' />
+                        : <img src={file.thumbnail ?? '/public/icons/file.jpg'}
+                            className='w-full h-full object-contain object-center rounded-[5px]' />
                 }
             </div>
 
             <div className='w-full flex flex-col group cursor-pointer justify-between'
                 onClick={() => console.warn(file.path)}>
-                <span className='group-hover:text-blue-700 mr-2 text-sm leading-3.75'>{file.name}</span>
+                <span className=' group-hover:text-blue-700 mr-2 text-sm leading-3.75'>
+                    {file.name}
+                </span>
 
-                <div className='text-[10px] font-mono tracking-tight ml-0.25 mt-1 '>
-                    <span>Size {file.size}</span><span className='mx-2'>|</span>
-                    <span>{getFormattedDate()}</span>
+                <div className='flex gap-4 text-[10px] tracking-wider ml-0.25 mt-1 '>
+                    <span>Size {formatSize(file.size)}</span>
+                    <span>{formatDate(file.date)}</span>
                 </div>
             </div>
         </div>

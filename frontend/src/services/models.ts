@@ -24,8 +24,8 @@ export interface ItemInfo {
 }
 
 export interface FileInfo extends ItemInfo {
-    size: string;
-    thumbnail: string;
+    size: number;
+    thumbnail: string | null;
 }
 
 export interface FolderInfo extends ItemInfo {
@@ -45,5 +45,5 @@ export interface Settings {
 
 export interface Thumbnail {
     filepath: string;
-    thumbnailURL: string;
+    thumbnail: string | null;
 }

@@ -2,49 +2,36 @@ import os
 from io import BytesIO
 from urllib.parse import quote
 
+from flask import request
 from PIL import Image
 
 from mutagen.id3 import ID3
 from mutagen.flac import FLAC
 from mutagen.id3._frames import APIC
 
-from services.explorer import joiner
+# Make sure that the thumbnails folder exists
+os.makedirs('./public/thumbnails', exist_ok=True)
 
 
-def get_cached_thumbnails(folderpath: str, base_url: str) -> list[dict]:
-    # Get all the sub file paths inside the recieved folder path
-    filepaths = filter(os.path.isfile, map(lambda item: joiner(folderpath, item), os.listdir(folderpath)))
-
-    # Make sure that the thumbnails folder exists
-    os.makedirs('./public/thumbnails', exist_ok=True)
-    thumbnails = []
-
-    for filepath in filepaths:
-        # Make thumbnail path to find-in-cache
-        filename = filepath.split('/')[-1]
-        thumbpath = './public/thumbnails/' + filename + '.png'
-
-        # Make url ecoded thumbnail url from base_url and filename
-        thumburl = base_url + '/' + quote(filename, safe='') + '.png'
-
-        # Check if thumbnail is already generated and exists in cache
-        if os.path.isfile(thumbpath):
-            thumbnails.append({'filepath': filepath, 'thumbnailURL': thumburl})
-            continue
-
-    return thumbnails
-
-
-def get_generated_thumbnail(filepath: str, base_url: str) -> dict:
-    fallback = {'filepath': filepath, 'thumbnailURL': '/public/icons/file.jpg'}
-
-    # Make thumbnail path to find-in-cache
+def get_cached_thumbnail(filepath: str) -> str | None:
+    # Make thumbnail path from file-name to find-in-cache
     filename = filepath.split('/')[-1]
     thumbpath = './public/thumbnails/' + filename + '.png'
+    thumbnail = f'{request.host_url}public/thumbnails/{quote(filename, safe='')}.png'
 
-    # Make url ecoded thumbnail url from base_url and filename
-    thumburl = base_url + '/' + quote(filename, safe='') + '.png'
-    thumbnail = {'filepath': filepath, 'thumbnailURL': thumburl}
+    # If thumbnail exists then return the url-encoded thumbnail path
+    if os.path.isfile(thumbpath):
+        return thumbnail
+
+    # If thumbnail doesn't exists in cache
+    return None
+
+
+def get_generated_thumbnail(filepath: str) -> str | None:
+    # Make thumbnail path to generate and store the thumbnail in cache
+    filename = filepath.split('/')[-1]
+    thumbpath = './public/thumbnails/' + filename + '.png'
+    thumbnail = f'{request.host_url}public/thumbnails/{quote(filename, safe='')}.png'
 
     # Extract the file extention
     extention = filename.split('.')[-1].lower()
@@ -59,8 +46,8 @@ def get_generated_thumbnail(filepath: str, base_url: str) -> dict:
         if generate_audio_thumbnail(filepath, thumbpath, extention):
             return thumbnail
 
-    # Fallback to the default thumbnail available in frontend
-    return fallback
+    # Thumbnail not generated either due to error or unsupported format
+    return None
 
 
 def generate_image_thumbnail(filepath: str | BytesIO, thumbpath: str) -> bool:
@@ -69,7 +56,7 @@ def generate_image_thumbnail(filepath: str | BytesIO, thumbpath: str) -> bool:
             img = img.convert('RGB')  # Convert to RGB to avoid issues with color modes
             img.thumbnail((64, 64))  # Create thumbnail of 64x64 pixel
             img.save(thumbpath, format='PNG')  # Save in thumbnails folder
-            img.close()
+            img.close()  # Make sure all the data is flushed
         return True
     except Exception:
         return False

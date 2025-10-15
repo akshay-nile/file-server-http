@@ -1,6 +1,6 @@
 from services import IS_DEV_ENV, configure_flask_app
 from services.decorators import validate_path
-from services.thumbnails import get_cached_thumbnails, get_generated_thumbnail
+from services.thumbnails import get_generated_thumbnail
 from services.explorer import get_device_info, get_drives_info, get_items_info
 from services.authenticator import generate_unique_code, verify_unique_code, require_authentication
 
@@ -41,14 +41,12 @@ def get_items(path):
 
 
 # To get the map of all the sub-file paths to their thumbnail paths
-@app.route('/thumbnails', methods=['GET'])
+@app.route('/thumbnail', methods=['GET'])
 @validate_path
 @require_authentication
-def get_thumbnails(path):
-    base_url = request.base_url.replace('/thumbnails', '/public/thumbnails')
-    if request.args.get('cached') == 'true':
-        return jsonify(get_cached_thumbnails(path, base_url))
-    return jsonify(get_generated_thumbnail(path, base_url))
+def generate_thumbnail(path):
+    thumbnail = get_generated_thumbnail(path)
+    return jsonify({'filepath': path, 'thumbnail': thumbnail})
 
 
 # To generate and verify the unique authentication code
@@ -76,7 +74,8 @@ def handle_http_exception(error):
     return jsonify(response), error.code
 
 
-host, port = app.config.get('HOST'), app.config.get('PORT')
+host = app.config.get('HOST')
+port = app.config.get('PORT')
 
 if IS_DEV_ENV:
     app.run(host=host, port=port, debug=True)

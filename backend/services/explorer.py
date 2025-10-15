@@ -1,22 +1,14 @@
 import os
 import ctypes
 import platform
+
 from shutil import disk_usage
 from stat import FILE_ATTRIBUTE_HIDDEN
 
+from services.thumbnails import get_cached_thumbnail
+
 
 IS_WIN_OS = platform.system() == 'Windows'
-
-
-def format_size(b: int):
-    if b > 1024 * 1024 * 1024:
-        return f'{round(b / 1024 / 1024 / 1024, 2)} GB'
-    elif b > 1024 * 1024:
-        return f'{round(b / 1024 / 1024, 1)} MB'
-    elif b > 1024:
-        return f'{round(b / 1024)} KB'
-    else:
-        return f'{b} B'
 
 
 # To ensure that '//' never appear in any path
@@ -86,12 +78,11 @@ def get_drives_info() -> list:
 
     if not IS_WIN_OS:
         path = '/storage/emulated/0'
-        total, used, free = map(format_size, disk_usage(path))
+        total, used, free = disk_usage(path)
         drives_info.append({
             'letter': None, 'label': 'Internal Storage', 'path': path,
             'size': {'total': total, 'used': used, 'free': free}
         })
-
         return drives_info
 
     for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
@@ -99,57 +90,67 @@ def get_drives_info() -> list:
         if not os.path.exists(path):
             continue
         label = get_drive_label(path)
-        total, used, free = map(format_size, disk_usage(path))
+        total, used, free = disk_usage(path)
         drives_info.append({
             'letter': letter, 'label': label, 'path': path,
             'size': {'total': total, 'used': used, 'free': free}
         })
-
     return drives_info
+
+
+def get_folder_info(folder_path: str, show_hidden: bool) -> dict | None:
+    try:
+        folder_info = dict()
+        folder_info['path'] = folder_path
+        folder_info['name'] = folder_path.split('/')[-1]
+        folder_info['hidden'] = is_item_hidden(folder_path, folder_info['name'])
+        folder_info['size'] = get_sub_items_count(folder_path, show_hidden)
+        folder_info['date'] = int(os.path.getctime(folder_path) * 1000)
+        return folder_info
+    except PermissionError:
+        print('Access Denied:', folder_path)
+        return None
+
+
+def get_file_info(file_path: str) -> dict | None:
+    try:
+        file_info = dict()
+        file_info['path'] = file_path
+        file_info['name'] = file_path.split('/')[-1]
+        file_info['hidden'] = is_item_hidden(file_path, file_info['name'])
+        file_info['size'] = os.path.getsize(file_path)
+        file_info['date'] = round(os.path.getmtime(file_path) * 1000)
+        file_info['thumbnail'] = get_cached_thumbnail(file_path)
+        return file_info
+    except PermissionError:
+        print('Access Denied:', file_path)
+        return None
 
 
 # To get info about folder present at path
 def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, search=None):
     files, folders = [], []
 
-    # Not allowed to explore the contents inside the project folder
+    # Not allowed to explore the items inside the project folder
     if path.startswith(os.getcwd().replace('\\', '/')):
         return folders, files
 
+    # Only filtered items will be considered if the search query is provided
     if not search:
         items = map(lambda i: joiner(path, i), os.listdir(path))
     else:
         items = deep_search(search.lower().strip(), path)
 
-    # Only filtered items will be considered if search query is provided
+    # Skip appending if permission error occured or item is hidden when not show-hidden
     for item_path in items:
-        item_name = item_path.split('/')[-1]
-
-        # Hidden items will be skipped if unless show_hidden is true
-        is_hidden = is_item_hidden(item_path, item_name)
-        if is_hidden and not show_hidden:
-            continue
-
-        # Setting common info regardless on wheather it's a file or a folder
-        item_info = dict()
-        item_info['hidden'] = is_hidden
-        item_info['name'] = item_name
-        item_info['path'] = item_path
-
-        # Setting disctinct info depending on wheather it's a file or a folder
-        try:
-            if os.path.isdir(item_path):
-                item_info['size'] = get_sub_items_count(item_path, show_hidden)
-                item_info['date'] = int(os.path.getctime(item_path))
-                folders.append(item_info)
-            elif os.path.isfile(item_path):
-                item_info['size'] = format_size(os.path.getsize(item_path))
-                item_info['date'] = int(os.path.getmtime(item_path))
-                item_info['thumbnail'] = '/public/icons/file.jpg'
-                files.append(item_info)
-        except PermissionError:
-            print('Access Denied:', item_path)
-            continue
+        if os.path.isdir(item_path):
+            folder_info = get_folder_info(item_path, show_hidden)
+            if folder_info and (show_hidden or not folder_info.get('hidden')):
+                folders.append(folder_info)
+        elif os.path.isfile(item_path):
+            file_info = get_file_info(item_path)
+            if file_info and (show_hidden or not file_info.get('hidden')):
+                files.append(file_info)
 
     # Sorting folders and files saperately depending on the given sort_by key
     if sort_by == 'type':

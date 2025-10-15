@@ -47,12 +47,7 @@ export async function getItems(path: string, search = ''): Promise<Items> {
     return await tryToFetch('/explore?' + params);
 }
 
-export async function getThumbanils(path: string): Promise<Thumbnail[]> {
-    const params = 'path=' + encodeURIComponent(path) + '&cached=true';
-    return await tryToFetch('/thumbnails?' + params);
-}
-
 export async function getThumbanil(path: string): Promise<Thumbnail> {
     const params = 'path=' + encodeURIComponent(path);
-    return await tryToFetch('/thumbnails?' + params);
+    return await tryToFetch('/thumbnail?' + params);
 }

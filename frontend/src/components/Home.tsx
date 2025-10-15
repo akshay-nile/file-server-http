@@ -3,7 +3,7 @@ import DriveItem from './DriveItem';
 
 type Props = { drives: Array<DriveInfo>, explore: (path: string) => void };
 
-function HomeItems({ drives, explore }: Props) {
+function Home({ drives, explore }: Props) {
     return <>
         {
             drives.map(drive => <DriveItem
@@ -14,4 +14,4 @@ function HomeItems({ drives, explore }: Props) {
     </>;
 }
 
-export default HomeItems;
+export default Home;

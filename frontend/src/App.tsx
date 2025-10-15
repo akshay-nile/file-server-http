@@ -2,11 +2,11 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
 import Breadcrumb from './components/Breadcrumb';
 import EmptyFolder from './components/EmptyFolder';
-import FolderItems from './components/FolderItems';
-import HomeItems from './components/HomeItems';
 import TopPanel from './components/TopPanel';
 import { getHome, getItems } from './services/api';
 import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from './services/models';
+import Home from './components/Home';
+import Items from './components/Items';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -75,9 +75,9 @@ function App() {
               <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
             </div>
             : path === '/'
-              ? <HomeItems drives={drives} explore={explore} />
+              ? <Home drives={drives} explore={explore} />
               : folders.length > 0 || files.length > 0
-                ? <FolderItems path={path} folders={folders} subFiles={files} explore={explore} />
+                ? <Items folders={folders} subFiles={files} explore={explore} />
                 : <EmptyFolder />
         }
       </div>
