@@ -51,3 +51,9 @@ export async function getThumbanil(path: string): Promise<Thumbnail> {
     const params = 'path=' + encodeURIComponent(path);
     return await tryToFetch('/thumbnail?' + params);
 }
+
+export function openFile(path: string, stream = true) {
+    let params = 'path=' + encodeURIComponent(path);
+    params += '&stream=' + stream;
+    window.open(baseURL + '/open?' + params);
+}

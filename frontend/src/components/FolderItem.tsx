@@ -9,8 +9,7 @@ function FolderItem({ folder, explore }: Props) {
             <img src='/public/icons/folder.jpg'
                 className={`w-[50px] h-[50px] m-1 mr-2 rounded-[5px] ${folder.hidden && 'opacity-70'}`} />
 
-            <div className='w-full flex flex-col group cursor-pointer'
-                onClick={() => explore(folder.path)}>
+            <div className='w-full flex flex-col group cursor-pointer' onClick={() => explore(folder.path)}>
                 <span className='font-medium group-hover:text-blue-700 mr-2 text-sm leading-3.75'>
                     {folder.name}
                 </span>

@@ -1,6 +1,7 @@
-from services import IS_DEV_ENV, configure_flask_app
+from services import configure_flask_app
 from services.decorators import validate_path
 from services.thumbnails import get_generated_thumbnail
+from services.network import get_stream_or_download_response
 from services.explorer import get_device_info, get_drives_info, get_items_info
 from services.authenticator import generate_unique_code, verify_unique_code, require_authentication
 
@@ -16,7 +17,7 @@ configure_flask_app(app)
 # To serve the UI build from dist folder after packaging
 @app.route('/', methods=['GET'])
 def home():
-    if app.config.get('DEBUG'):
+    if app.config['DEBUG']:
         return "<h1>Cannot serve 'index.html' in Development Mode!</h1>"
     return send_from_directory('./public', 'index.html')
 
@@ -49,35 +50,38 @@ def generate_thumbnail(path):
     return jsonify({'filepath': path, 'thumbnail': thumbnail})
 
 
+# To stream the file contents or download if not streamable
+@app.route('/open', methods=['GET'])
+@validate_path
+def open_file(path):
+    stream = request.args.get('stream') == 'true'
+    range_header = request.headers.get('Range')
+    print('Stream:' if stream else 'Download:', path, range_header)
+    return get_stream_or_download_response(path, stream)
+
+
 # To generate and verify the unique authentication code
 @app.route('/authenticate', methods=['GET'])
 def authenticate():
     user_code = request.args.get('verify')
     if user_code is not None:
         if verify_unique_code(user_code):
-            print('Verified:', user_code)
             return jsonify({'status': 'verified'})
         return jsonify({'status': 'failed'})
     unique_code = generate_unique_code()
-    print('Unique Code Generated:', unique_code)
+    print(f'\nVerification Code: {unique_code}\n')
     return jsonify({'status': 'generated'})
 
 
 # Global http error handler to get jsonified error response
 @app.errorhandler(HTTPException)
 def handle_http_exception(error):
-    response = {
-        "code": error.code,
-        "error": error.name,
-        "message": error.description
-    }
-    return jsonify(response), error.code
+    error_response = {'code': error.code, 'error': error.name, 'message': error.description}
+    return jsonify(error_response), error.code
 
 
-host = app.config.get('HOST')
-port = app.config.get('PORT')
-
-if IS_DEV_ENV:
-    app.run(host=host, port=port, debug=True)
+if app.config['DEBUG']:
+    app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 else:
-    serve(app=app, host=host, port=port, threads=64, ident='MyFileServer')
+    open_file = require_authentication(open_file)
+    serve(app=app, host=app.config['HOST'], port=app.config['PORT'], threads=16, ident='MyFileServer')

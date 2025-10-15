@@ -1,3 +1,4 @@
+import { openFile } from '../services/api';
 import type { FileInfo } from '../services/models';
 import { formatDate, formatSize } from '../services/utilities';
 
@@ -33,9 +34,8 @@ function FileItem({ file }: Props) {
                 }
             </div>
 
-            <div className='w-full flex flex-col group cursor-pointer justify-between'
-                onClick={() => console.warn(file.path)}>
-                <span className=' group-hover:text-blue-700 mr-2 text-sm leading-3.75'>
+            <div className='w-full flex flex-col group cursor-pointer justify-between' onClick={() => openFile(file.path)}>
+                <span className='group-hover:text-blue-700 mr-2 text-sm leading-3.75'>
                     {file.name}
                 </span>
 

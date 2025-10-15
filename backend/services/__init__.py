@@ -21,6 +21,7 @@ def configure_flask_app(app: Flask):
         # Bind to all IPs, set custom port and enable debug mode
         app.config['HOST'] = '0.0.0.0'
         app.config['PORT'] = 5000
+        app.config['DEBUG'] = True
 
         # Enable CORS for all routes in dev mode only
         from flask_cors import CORS
@@ -31,8 +32,9 @@ def configure_flask_app(app: Flask):
         # Bind to actual network ip, set custom port and disable debug mode
         app.config['HOST'] = get_user_selection()
         app.config['PORT'] = 8849
+        app.config['DEBUG'] = False
 
         # Publish the appropriate socket address to my website
-        socket_address = f"http://{app.config['HOST']}:{app.config['PORT']}"
-        publish_server_address(socket_address)
-        print(' * Serving at', socket_address)
+        server_address = f"http://{app.config['HOST']}:{app.config['PORT']}"
+        publish_server_address(server_address)
+        print(' * Serving at', server_address)

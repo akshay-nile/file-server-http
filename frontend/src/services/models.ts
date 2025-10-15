@@ -26,6 +26,7 @@ export interface ItemInfo {
 export interface FileInfo extends ItemInfo {
     size: number;
     thumbnail: string | null;
+    mimetype: string;
 }
 
 export interface FolderInfo extends ItemInfo {

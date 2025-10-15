@@ -1,9 +1,13 @@
+from email.mime import audio
+from fileinput import filename
 import os
 import ctypes
 import platform
 
 from shutil import disk_usage
+from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
+from xml.etree.ElementInclude import include
 
 from services.thumbnails import get_cached_thumbnail
 
@@ -121,6 +125,7 @@ def get_file_info(file_path: str) -> dict | None:
         file_info['size'] = os.path.getsize(file_path)
         file_info['date'] = round(os.path.getmtime(file_path) * 1000)
         file_info['thumbnail'] = get_cached_thumbnail(file_path)
+        file_info['mimetype'] = get_mime_type(file_path)
         return file_info
     except PermissionError:
         print('Access Denied:', file_path)
@@ -164,3 +169,46 @@ def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, 
         files.sort(key=lambda x: x[sort_by], reverse=reverse)
 
     return folders, files
+
+
+def get_mime_type(file_path: str) -> str:
+    guess = guess_type(file_path)[0]
+
+    # Return most generic mime-type from the guessed ones
+    if guess is not None:
+        if guess.startswith('text/'):
+            return 'text/plain'
+        if guess.startswith('image/'):
+            return guess
+        if guess.startswith('audio/'):
+            return guess
+        if guess.startswith('video/'):
+            return 'video/mp4'
+
+    # Return most generic mime-type from custom file extention map
+    if file_path.count('.') > 0:
+        extention = file_path.split('.')[-1].lower()
+
+        audio_extentions = {'flac'}
+        image_extentions = {'heic', 'heif'}
+        video_extentions = {'mkv', 'webm', 'avi', 'mov'}
+        text_extentions = {
+            'cfg', 'ini', 'env', 'log', 'md', 'yaml', 'yml', 'toml',
+            'sql', 'properties', 'lock', 'rs', 'go', 'dart',
+            'ts', 'tsx', 'jsx', 'vue', 'cjs', 'cmd', 'ps1',
+            'docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp',
+            'db', 'sqlite', 'sqlite3', 'pkl', 'dat',
+            'cer', 'crt', 'pem', 'key', 'ics', 'vcf'
+        }
+
+        if extention in text_extentions:
+            return 'text/plain'
+        if extention in image_extentions:
+            return 'image/jpeg'
+        if extention in audio_extentions:
+            return 'audio/mpeg'
+        if extention in video_extentions:
+            return 'video/mp4'
+
+    # Fallback to download if not possible to stream the file
+    return 'application/octet-stream'
