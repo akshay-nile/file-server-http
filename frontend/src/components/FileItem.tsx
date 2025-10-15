@@ -4,24 +4,29 @@ import { formatDate, formatSize } from '../services/utilities';
 type Props = { file: FileInfo };
 
 function FileItem({ file }: Props) {
-    function getFileExtention(): string {
-        const splits = file.name.split('.');
-        return splits[splits.length - 1]?.toUpperCase();
+
+    function getExtention(name: string): string {
+        if (!name.includes('.')) return '';
+        return (name.split('.').at(-1) as string).toUpperCase();
     }
 
-    function shouldShowCSSThumbnail(): boolean {
-        if (!file.name.includes('.')) return false;
-        const extention = getFileExtention();
+    function shouldShowCSSThumbnail(name: string): boolean {
+        const extention = getExtention(name);
         return !file.thumbnail && extention.length > 0 && extention.length <= 4;
+    }
+
+    function getFontSize(name: string): string {
+        const len = getExtention(name).length;
+        return len > 3 ? 'text-xs' : len > 2 ? 'text-sm' : len > 1 ? 'text-lg' : 'text-2xl';
     }
 
     return (
         <div className='flex items-center mx-3 mt-2 border border-gray-300 rounded shadow'>
             <div className={`w-[58px] h-[50px] overflow-hidden m-1 mr-2 p-0 cursor-pointer ${file.hidden && 'opacity-70'}`}>
                 {
-                    shouldShowCSSThumbnail()
-                        ? <div className={`h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide text-${['2xl', 'lg', 'sm', 'xs'][getFileExtention().length - 1]}`}>
-                            {getFileExtention()}
+                    shouldShowCSSThumbnail(file.name)
+                        ? <div className={`h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide ${getFontSize(file.name)}`}>
+                            {getExtention(file.name)}
                         </div>
                         : <img src={file.thumbnail ?? '/public/icons/file.jpg'}
                             className='w-full h-full object-contain object-center rounded-[5px]' />
