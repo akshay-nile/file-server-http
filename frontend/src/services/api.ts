@@ -12,7 +12,12 @@ async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = 
     const browserId = localStorage.getItem('file-server-browser-id');
     const headers = new Headers(init.headers || {});
     if (browserId) headers.set('X-Browser-ID', browserId);
-    return await fetch(input, { ...init, headers });
+    const response = await fetch(input, { ...init, headers });
+    if (response.status === 400 || response.status === 401) {
+        if (browserId) localStorage.removeItem('file-server-browser-id');
+        window.location.reload();
+    }
+    return response;
 }
 
 async function tryToFetch<T>(path: string): Promise<T> {
