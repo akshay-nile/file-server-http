@@ -15,7 +15,7 @@ from services.thumbnails import get_cached_thumbnail
 IS_WIN_OS = platform.system() == 'Windows'
 
 
-# To ensure that '//' never appear in any path
+# To ensure that '//' do not appear in any path
 def joiner(path: str, item_name: str) -> str:
     while path.endswith('/'):
         path = path[:-1]
@@ -132,7 +132,7 @@ def get_file_info(file_path: str) -> dict | None:
         return None
 
 
-# To get info about folder present at path
+# To get info about sub-items inside the given folder-path
 def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, search=None):
     files, folders = [], []
 
@@ -146,7 +146,7 @@ def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, 
     else:
         items = deep_search(search.lower().strip(), path)
 
-    # Skip appending if permission error occured or item is hidden when not show-hidden
+    # Skip appending if permission error or item is hidden when not show-hidden
     for item_path in items:
         if os.path.isdir(item_path):
             folder_info = get_folder_info(item_path, show_hidden)
@@ -178,18 +178,20 @@ def get_mime_type(file_path: str) -> str:
     if guess is not None:
         if guess.startswith('text/'):
             return 'text/plain'
-        if guess.startswith('image/'):
-            return guess
         if guess.startswith('audio/'):
-            return guess
+            return 'audio/mpeg'
         if guess.startswith('video/'):
             return 'video/mp4'
+        if guess.startswith('image/'):
+            return guess
+        if guess.startswith('application/'):
+            return guess
 
     # Return most generic mime-type from custom file extention map
     if file_path.count('.') > 0:
         extention = file_path.split('.')[-1].lower()
 
-        audio_extentions = {'flac'}
+        audio_extentions = {'flac', 'm4a'}
         image_extentions = {'heic', 'heif'}
         video_extentions = {'mkv', 'webm', 'avi', 'mov'}
         text_extentions = {

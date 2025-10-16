@@ -6,15 +6,16 @@ let retryCount = 2;
 
 if (import.meta.env.VITE_BASE_URL) baseURL = import.meta.env.VITE_BASE_URL;
 else if (baseURL.includes('/?path=')) baseURL = baseURL.split('/?path=')[0];
+while (baseURL.endsWith('/')) baseURL = baseURL.substring(0, baseURL.length - 1);
 
-// This wrapper function is used as an interceptor that inserts X-Browser-ID header in each request
+// An interceptor that inserts X-Verification-Code header from local-storage in each request
 async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {
-    const browserId = localStorage.getItem('file-server-browser-id');
+    const verificationCode = localStorage.getItem('verification-code');
     const headers = new Headers(init.headers || {});
-    if (browserId) headers.set('X-Browser-ID', browserId);
+    if (verificationCode) headers.set('X-Verification-Code', verificationCode);
     const response = await fetch(input, { ...init, headers });
-    if (browserId && response.status === 401) {
-        localStorage.removeItem('file-server-browser-id');
+    if (verificationCode && response.status === 401) {
+        localStorage.removeItem('verification-code');
         window.location.reload();
     }
     return response;

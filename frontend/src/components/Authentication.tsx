@@ -17,7 +17,7 @@ function Authentication() {
     async function verify() {
         const response = await authenticate(verificationCode);
         if (response.status === 'verified') {
-            localStorage.setItem('file-server-browser-id', verificationCode);
+            localStorage.setItem('verification-code', verificationCode);
             window.location.reload();
         } else setVerificationCode('');
     }

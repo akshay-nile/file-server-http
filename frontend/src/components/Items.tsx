@@ -27,7 +27,7 @@ function Items({ folders, subFiles, explore }: Props) {
                 if (file.thumbnail || !file.name.includes('.')) continue;
 
                 const extention = file.name.split('.').at(-1) as string;
-                if (!extentions.has(extention)) continue;
+                if (!extentions.has(extention.toLowerCase())) continue;
 
                 const thumbnail = await getThumbanil(file.path);
                 if (!thumbnail.thumbnail) continue;

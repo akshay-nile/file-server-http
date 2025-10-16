@@ -9,6 +9,7 @@ from mutagen.id3 import ID3
 from mutagen.flac import FLAC
 from mutagen.id3._frames import APIC
 
+
 # Make sure that the thumbnails folder exists
 os.makedirs('./public/thumbnails', exist_ok=True)
 

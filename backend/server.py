@@ -1,30 +1,31 @@
 from services import configure_flask_app
-from services.decorators import validate_path
+from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.explorer import get_device_info, get_drives_info, get_items_info
-from services.authenticator import generate_unique_code, verify_unique_code, require_authentication
+from services.authenticator import generate_unique_code, verify_user_code, require_authentication
 
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
 from waitress import serve
 
 
+# Create flask app and configure it for either dev or prod mode
 app = Flask(__name__, static_url_path='/public/')
 configure_flask_app(app)
 
 
-# To serve the UI build from dist folder after packaging
+# To serve the static frontend build from public folder in production
 @app.route('/', methods=['GET'])
 def home():
     if app.config['DEBUG']:
-        return "<h1>Cannot serve 'index.html' in Development Mode!</h1>"
+        return redirect('http://localhost:3000')
     return send_from_directory('./public', 'index.html')
 
 
-# To get info about drives or items at the given path
+# To get info about device, drives and items at the given valid path
 @app.route('/explore', methods=['GET'])
-@validate_path
+@validate_path('folder')
 @require_authentication
 def get_items(path):
     print('Explore:', path)
@@ -41,18 +42,18 @@ def get_items(path):
     return jsonify({'folders': folders, 'files': files})
 
 
-# To get the map of all the sub-file paths to their thumbnail paths
+# To generate the the thumbnail of any supported file and get its url
 @app.route('/thumbnail', methods=['GET'])
-@validate_path
+@validate_path('file')
 @require_authentication
 def generate_thumbnail(path):
     thumbnail = get_generated_thumbnail(path)
     return jsonify({'filepath': path, 'thumbnail': thumbnail})
 
 
-# To stream the file contents or download if not streamable
+# To download or stream file contents in 1MB chunks with Range header
 @app.route('/open', methods=['GET'])
-@validate_path
+@validate_path('file')
 def open_file(path):
     stream = request.args.get('stream') == 'true'
     range_header = request.headers.get('Range')
@@ -60,16 +61,16 @@ def open_file(path):
     return get_stream_or_download_response(path, stream)
 
 
-# To generate and verify the unique authentication code
+# To generate and verify the verification code for authentication
 @app.route('/authenticate', methods=['GET'])
 def authenticate():
     user_code = request.args.get('verify')
     if user_code is not None:
-        if verify_unique_code(user_code):
+        if verify_user_code(user_code):
             return jsonify({'status': 'verified'})
         return jsonify({'status': 'failed'})
-    unique_code = generate_unique_code()
-    print(f'\nVerification Code: {unique_code}\n')
+    verification_code = generate_unique_code()
+    print(f'\nVerification Code:  {verification_code}\n')
     return jsonify({'status': 'generated'})
 
 
@@ -80,6 +81,7 @@ def handle_http_exception(error):
     return jsonify(error_response), error.code
 
 
+# Run the app on dev or prod server depending on current mode
 if app.config['DEBUG']:
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 else:
