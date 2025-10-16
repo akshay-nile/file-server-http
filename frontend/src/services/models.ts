@@ -33,7 +33,7 @@ export interface FolderInfo extends ItemInfo {
     size: [number, number];
 }
 
-export interface Items {
+export interface ItemsInfo {
     folders: Array<FolderInfo>;
     files: Array<FileInfo>;
 }

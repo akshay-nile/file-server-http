@@ -1,4 +1,4 @@
-import type { Home, Items, Thumbnail } from './models';
+import type { Home, ItemsInfo, Thumbnail } from './models';
 import { getSettings } from './settings';
 
 let baseURL = window.location.href;
@@ -45,7 +45,7 @@ export async function getHome(): Promise<Home> {
     return await tryToFetch('/explore?path=/');
 }
 
-export async function getItems(path: string, search = ''): Promise<Items> {
+export async function getItems(path: string, search = ''): Promise<ItemsInfo> {
     let params = 'path=' + encodeURIComponent(path);
     if (search.trim().length > 0) params += '&search=' + encodeURIComponent(search);
     const settings = getSettings();
