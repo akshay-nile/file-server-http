@@ -1,5 +1,12 @@
 
+// Detects Phone/Tablet devices with touch input to avoid tooltip
 const isTouchDevice = window && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+// Supported file extentions for thumbnail generation
+const supportedExtentions = new Set([
+    'jpg', 'jpeg', 'png', 'ico', 'bmp', 'gif', 'webp',  // Supported image exentions
+    'mp3', 'flac', 'wav'    // Supported audio extentions
+]);
 
 export function formatDate(timestamp: number): string {
     const date = new Date(timestamp);
@@ -26,5 +33,11 @@ export function formatSize(bytes: number): string {
 
 export function getTooltip(label: string): string | undefined {
     return !isTouchDevice ? label : undefined;
+}
+
+export function canGenerateThumbnail(filename: string): boolean {
+    if (!filename.includes('.')) return false;
+    const extention = filename.split('.').at(-1) as string;
+    return supportedExtentions.has(extention.toLowerCase());
 }
 

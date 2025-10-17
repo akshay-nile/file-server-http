@@ -38,11 +38,11 @@ function FileItem({ file }: Props) {
     }
 
     return (
-        <div className='flex items-center gap-1 mx-3 mt-2 border border-gray-300 rounded shadow'>
-            <div className={`w-[57px] h-[50px] overflow-hidden m-1 p-0 cursor-pointer ${file.hidden && 'opacity-70'}`} onClick={() => toggleFileSelection(file)}>
+        <div className='flex items-center gap-1'>
+            <div className={`w-[58px] h-[50px] overflow-hidden m-1 p-0 cursor-pointer ${file.hidden && 'opacity-70'}`} onClick={() => toggleFileSelection(file)}>
                 {
                     shouldShowCSSThumbnail(file.name)
-                        ? <div className={`h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide ${getFontSize(file.name)}`}>
+                        ? <div className={`w-full h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide ${getFontSize(file.name)}`}>
                             {getExtention(file.name)}
                         </div>
                         : <img src={file.thumbnail ?? '/public/icons/file.jpg'} className='w-full h-full object-contain object-center rounded-[5px]' />
@@ -56,13 +56,12 @@ function FileItem({ file }: Props) {
                     </span>
                     <div className='flex gap-4 text-[10px] tracking-wider ml-0.25'>
                         <span>Size {formatSize(file.size)}</span>
-                        {/* <span>{formatDate(file.date)}</span> */}
                     </div>
                 </div>
-                <div className='mx-1 mb-0.5 z-0'>
+                <div className='ml-2 mr-1 z-0'>
                     {
                         isAnyItemSelected()
-                            ? <Checkbox checked={isItemSelected(file)} onChange={() => toggleFileSelection(file)}
+                            ? <Checkbox checked={isItemSelected(file)} onChange={() => toggleFileSelection(file)} style={{ zoom: 1.2 }}
                                 tooltip={getTooltip(isItemSelected(file) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />
                             : <Button icon={`pi ${downloading ? 'pi-spin pi-spinner' : 'pi-download'}`} style={{ width: '2rem', height: '2rem', padding: '0rem' }}
                                 tooltip={getTooltip(downloading ? 'Downloading' : 'Download')} tooltipOptions={{ position: 'left' }} onClick={() => downloadFile(file)} />
