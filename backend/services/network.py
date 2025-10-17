@@ -63,6 +63,26 @@ def publish_server_address(server_address: str):
     threading.Thread(target=my_socket).start()
 
 
+def is_stream_request_from_vlc_on_same_network() -> bool:
+    # Check if it's not a file streaming request
+    if '/open?path=' not in request.url or '&stream=true' not in request.url:
+        return False
+
+    # Check if it's not requested from VLC Media Player
+    if 'vlc' not in request.user_agent.string.lower():
+        return False
+
+    # Check if it's is not on the same local network
+    if request.remote_addr is not None:
+        client_network = '.'.join(request.remote_addr.split('.')[:3])
+        server_network = '.'.join(request.host.split(':')[0].split('.')[:3])
+        if client_network != server_network:
+            return False
+
+    # Bypass the authentication for this request
+    return True
+
+
 def chunk_generator(filepath: str, start: int, end: int):
     chunk_size = 1024 * 1024
     with open(filepath, 'rb') as file:

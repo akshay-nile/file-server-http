@@ -3,6 +3,8 @@ import random
 import string
 
 from functools import wraps
+from services.network import is_stream_request_from_vlc_on_same_network
+
 from flask import abort, request
 
 
@@ -42,6 +44,8 @@ def verify_user_code(user_code: str) -> bool:
 def require_authentication(f):
     @wraps(f)
     def authenticate(*args, **kwargs):
+        if is_stream_request_from_vlc_on_same_network():
+            return f(*args, **kwargs)
         verification_code = request.headers.get("X-Verification-Code")
         if not verification_code:
             abort(400, 'Missing Request Header: X-Verification-Code')

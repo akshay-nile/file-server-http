@@ -54,6 +54,7 @@ def generate_thumbnail(path):
 # To download or stream file contents in 1MB chunks with Range header
 @app.route('/open', methods=['GET'])
 @validate_path('file')
+@(require_authentication if not app.config['DEBUG'] else lambda fun: fun)
 def open_file(path):
     stream = request.args.get('stream') == 'true'
     range_header = request.headers.get('Range')
@@ -85,5 +86,4 @@ def handle_http_exception(error):
 if app.config['DEBUG']:
     app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
 else:
-    open_file = require_authentication(open_file)
     serve(app=app, host=app.config['HOST'], port=app.config['PORT'], threads=16, ident='MyFileServer')

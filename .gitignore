@@ -40,7 +40,6 @@ backend/public/thumbnails/*.png
 # Project final package build
 MyFileServer
 
-
 # ===============================
 # Common at project root
 .DS_Store
@@ -52,3 +51,4 @@ Thumbs.db
 *.env
 *.log
 *.pid
+*.zip
