@@ -48,3 +48,11 @@ export interface Thumbnail {
     filepath: string;
     thumbnail: string | null;
 }
+
+export interface SelectedItemsState {
+    selectedFiles: FileInfo[];
+    selectedFolders: FolderInfo[];
+    toggleFileSelection: (file: FileInfo) => void;
+    toggleFolderSelection: (folder: FolderInfo) => void;
+    clearSelection: () => void;
+}

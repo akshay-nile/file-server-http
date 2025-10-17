@@ -7,6 +7,7 @@ import { getHome, getItems } from './services/api';
 import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from './services/models';
 import Home from './components/Home';
 import Items from './components/Items';
+import SelectedItemsProvider from './global-states/SelectedItems/SelectedItemsProvider';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -58,29 +59,30 @@ function App() {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
-        {
-          deviceInfo !== null && <>
-            <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
-            {
-              path !== '' && path !== '/' &&
-              <Breadcrumb path={path} platform={deviceInfo.platform} explore={explore} />
-            }
-          </>
-        }
-
-        {
-          loading
-            ? <div className='h-[66%] flex justify-center items-center'>
-              <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
-            </div>
-            : path === '/'
-              ? <Home drives={drives} explore={explore} />
-              : folders.length > 0 || files.length > 0
-                ? <Items folders={folders} subFiles={files} explore={explore} />
-                : <EmptyFolder />
-        }
-      </div>
+      <SelectedItemsProvider>
+        <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
+          {
+            deviceInfo !== null && <>
+              <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
+              {
+                path !== '' && path !== '/' &&
+                <Breadcrumb path={path} platform={deviceInfo.platform} explore={explore} />
+              }
+            </>
+          }
+          {
+            loading
+              ? <div className='h-[66%] flex justify-center items-center'>
+                <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
+              </div>
+              : path === '/'
+                ? <Home drives={drives} explore={explore} />
+                : folders.length > 0 || files.length > 0
+                  ? <Items folders={folders} subFiles={files} explore={explore} />
+                  : <EmptyFolder />
+          }
+        </div>
+      </SelectedItemsProvider>
     </div>
   );
 }

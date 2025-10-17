@@ -58,8 +58,12 @@ export async function getThumbanil(path: string): Promise<Thumbnail> {
     return await tryToFetch('/thumbnail?' + params);
 }
 
-export function openFile(path: string, stream = true) {
-    let params = 'path=' + encodeURIComponent(path);
-    params += '&stream=' + stream;
+export function streamFile(path: string) {
+    const params = 'path=' + encodeURIComponent(path) + '&stream=true';
     window.open(baseURL + '/open?' + params);
+}
+
+export function getDownloadURL(path: string) {
+    const params = 'path=' + encodeURIComponent(path) + '&stream=false';
+    return baseURL + '/open?' + params;
 }

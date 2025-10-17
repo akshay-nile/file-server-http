@@ -1,4 +1,6 @@
 
+const isTouchDevice = window && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
 export function formatDate(timestamp: number): string {
     const date = new Date(timestamp);
 
@@ -20,5 +22,9 @@ export function formatSize(bytes: number): string {
     if (bytes > 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
     if (bytes > 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return bytes + ' B';
+}
+
+export function getTooltip(label: string): string | undefined {
+    return !isTouchDevice ? label : undefined;
 }
 

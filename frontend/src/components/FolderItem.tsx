@@ -1,6 +1,7 @@
 import { Checkbox } from 'primereact/checkbox';
-import { useState } from 'react';
+import useSelectedItems from '../global-states/SelectedItems/useSelectedItems';
 import type { FolderInfo } from '../services/models';
+import { getTooltip } from '../services/utilities';
 
 type Props = {
     folder: FolderInfo,
@@ -8,11 +9,11 @@ type Props = {
 };
 
 function FolderItem({ folder, explore }: Props) {
-    const [checked, setChecked] = useState<boolean>(false);
+    const { selectedFiles, selectedFolders, toggleFolderSelection } = useSelectedItems();
 
     return (
         <div className='flex items-center gap-1 mx-3 mt-2 border border-gray-300 rounded shadow'>
-            <img src='/public/icons/folder.jpg' className={`w-[50px] h-[50px] m-1 p-0 rounded-[5px] ${folder.hidden && 'opacity-70'}`} />
+            <img src='/public/icons/folder.jpg' className={`w-[50px] h-[50px] m-1 p-0 rounded-[5px] ${folder.hidden && 'opacity-70'}`} onClick={() => toggleFolderSelection(folder)} />
             <div className="w-full flex justify-between items-center">
                 <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer' onClick={() => explore(folder.path)}>
                     <span className='font-medium group-hover:text-blue-700 text-sm leading-3.75'>
@@ -24,9 +25,13 @@ function FolderItem({ folder, explore }: Props) {
                         {/* <span>{formatDate(folder.date)}</span> */}
                     </div>
                 </div>
-                <div className='mx-2 mb-0.5 z-0'>
-                    <Checkbox onChange={e => setChecked(e.checked ?? false)} checked={checked}></Checkbox>
-                </div>
+                {
+                    (selectedFiles.length > 0 || selectedFolders.length > 0) &&
+                    <div className='mx-2 mb-0.5 z-0'>
+                        <Checkbox checked={selectedFolders.includes(folder)} onChange={() => toggleFolderSelection(folder)}
+                            tooltip={getTooltip(selectedFolders.includes(folder) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />
+                    </div>
+                }
             </div>
         </div>
     );
