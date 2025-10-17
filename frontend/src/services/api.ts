@@ -59,6 +59,7 @@ export async function getThumbanil(path: string): Promise<Thumbnail> {
 }
 
 export function getFileURL(path: string, stream: boolean) {
-    const params = 'path=' + encodeURIComponent(path) + '&stream=' + stream;
+    const token = localStorage.getItem('verification-code');
+    const params = 'path=' + encodeURIComponent(path) + '&stream=' + stream + '&token=' + token;
     return baseURL + '/open?' + params;
 }
