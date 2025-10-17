@@ -54,5 +54,7 @@ export interface SelectedItemsState {
     selectedFolders: FolderInfo[];
     toggleFileSelection: (file: FileInfo) => void;
     toggleFolderSelection: (folder: FolderInfo) => void;
+    isItemSelected: (item: ItemInfo) => boolean;
+    isAnyItemSelected: () => boolean;
     clearSelection: () => void;
 }

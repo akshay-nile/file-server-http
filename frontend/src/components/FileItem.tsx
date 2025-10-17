@@ -12,7 +12,7 @@ function FileItem({ file }: Props) {
     const downloadAnchorRef = useRef<HTMLAnchorElement>(null);
     const [downloading, setDownloading] = useState<boolean>(false);
 
-    const { selectedFiles, selectedFolders, toggleFileSelection } = useSelectedItems();
+    const { toggleFileSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
     function getExtention(name: string): string {
         if (!name.includes('.')) return '';
@@ -61,9 +61,9 @@ function FileItem({ file }: Props) {
                 </div>
                 <div className='mx-1 mb-0.5 z-0'>
                     {
-                        (selectedFiles.length > 0 || selectedFolders.length > 0)
-                            ? <Checkbox checked={selectedFiles.includes(file)} onChange={() => toggleFileSelection(file)}
-                                tooltip={getTooltip(selectedFiles.includes(file) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />
+                        isAnyItemSelected()
+                            ? <Checkbox checked={isItemSelected(file)} onChange={() => toggleFileSelection(file)}
+                                tooltip={getTooltip(isItemSelected(file) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />
                             : <Button icon={`pi ${downloading ? 'pi-spin pi-spinner' : 'pi-download'}`} style={{ width: '2rem', height: '2rem', padding: '0rem' }}
                                 tooltip={getTooltip(downloading ? 'Downloading' : 'Download')} tooltipOptions={{ position: 'left' }} onClick={() => downloadFile(file)} />
                     }

@@ -9,7 +9,7 @@ type Props = {
 };
 
 function FolderItem({ folder, explore }: Props) {
-    const { selectedFiles, selectedFolders, toggleFolderSelection } = useSelectedItems();
+    const { toggleFolderSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
     return (
         <div className='flex items-center gap-1 mx-3 mt-2 border border-gray-300 rounded shadow'>
@@ -26,10 +26,10 @@ function FolderItem({ folder, explore }: Props) {
                     </div>
                 </div>
                 {
-                    (selectedFiles.length > 0 || selectedFolders.length > 0) &&
+                    isAnyItemSelected() &&
                     <div className='mx-2 mb-0.5 z-0'>
-                        <Checkbox checked={selectedFolders.includes(folder)} onChange={() => toggleFolderSelection(folder)}
-                            tooltip={getTooltip(selectedFolders.includes(folder) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />
+                        <Checkbox checked={isItemSelected(folder)} onChange={() => toggleFolderSelection(folder)}
+                            tooltip={getTooltip(isItemSelected(folder) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />
                     </div>
                 }
             </div>
