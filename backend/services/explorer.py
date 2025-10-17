@@ -1,5 +1,3 @@
-from email.mime import audio
-from fileinput import filename
 import os
 import ctypes
 import platform
@@ -73,7 +71,7 @@ def deep_search(query: str, root: str):
 def get_device_info() -> dict:
     if IS_WIN_OS:
         return {'hostname': platform.node(), 'platform': 'Windows'}
-    return {'hostname': 'Pydroid', 'platform': 'Android'}
+    return {'hostname': 'Pydroid-3', 'platform': 'Android'}
 
 
 # To get info about storage/disk drives/partitions depending on platform
