@@ -5,11 +5,11 @@ import platform
 from shutil import disk_usage
 from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
-from xml.etree.ElementInclude import include
 
 from services.thumbnails import get_cached_thumbnail
 
 
+root = '/storage/emulated/0'  # Android's Internal Storage
 IS_WIN_OS = platform.system() == 'Windows'
 
 
@@ -18,6 +18,10 @@ def joiner(path: str, item_name: str) -> str:
     while path.endswith('/'):
         path = path[:-1]
     return f'{path}/{item_name}'
+
+
+def formatPath(path: str) -> str:
+    return path if IS_WIN_OS else path.replace(root, 'IS:')
 
 
 # Works on Windows platform only
@@ -79,10 +83,9 @@ def get_drives_info() -> list:
     drives_info = []
 
     if not IS_WIN_OS:
-        path = '/storage/emulated/0'
-        total, used, free = disk_usage(path)
+        total, used, free = disk_usage(root)
         drives_info.append({
-            'letter': None, 'label': 'Internal Storage', 'path': path,
+            'letter': None, 'label': 'Internal Storage', 'path': root,
             'size': {'total': total, 'used': used, 'free': free}
         })
         return drives_info

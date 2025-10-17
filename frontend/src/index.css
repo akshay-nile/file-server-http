@@ -3,3 +3,7 @@
 .p-button:focus {
     box-shadow: none !important;
 }
+
+.p-checkbox-box {
+    border-radius: 50% !important;
+}

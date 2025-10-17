@@ -2,7 +2,7 @@ from services import configure_flask_app
 from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
-from services.explorer import get_device_info, get_drives_info, get_items_info
+from services.explorer import formatPath, get_device_info, get_drives_info, get_items_info
 from services.authenticator import generate_unique_code, verify_user_code, require_authentication
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
@@ -28,7 +28,7 @@ def home():
 @validate_path('folder')
 @require_authentication
 def get_items(path):
-    print('Explore:', path)
+    print('Explore -', formatPath(path))
     if path == '/':
         device = get_device_info()
         drives = get_drives_info()
@@ -57,7 +57,7 @@ def generate_thumbnail(path):
 def open_file(path):
     stream = request.args.get('stream') == 'true'
     range_header = request.headers.get('Range')
-    print('Stream:' if stream else 'Download:', path, range_header)
+    print('Stream -' if stream else 'Download -', formatPath(path), range_header)
     return get_stream_or_download_response(path, stream)
 
 

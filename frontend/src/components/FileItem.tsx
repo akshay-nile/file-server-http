@@ -1,8 +1,8 @@
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { useRef, useState } from 'react';
-import useSelectedItems from '../global-states/SelectedItems/useSelectedItems';
-import { getDownloadURL, streamFile } from '../services/api';
+import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
+import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
 import { formatSize, getTooltip } from '../services/utilities';
 
@@ -37,6 +37,11 @@ function FileItem({ file }: Props) {
         setTimeout(() => setDownloading(false), timeoutMs * 10);
     }
 
+    function streamFile(file: FileInfo) {
+        if (file.mimetype === 'application/octet-stream') return;
+        window.open(getFileURL(file.path, true));
+    }
+
     return (
         <div className='flex items-center gap-1'>
             <div className={`w-[58px] h-[50px] overflow-hidden m-1 p-0 cursor-pointer ${file.hidden && 'opacity-70'}`} onClick={() => toggleFileSelection(file)}>
@@ -50,7 +55,7 @@ function FileItem({ file }: Props) {
             </div>
 
             <div className="w-full flex justify-between items-center">
-                <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer justify-between' onClick={() => streamFile(file.path)}>
+                <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer justify-between' onClick={() => streamFile(file)}>
                     <span className='group-hover:text-blue-700 text-sm leading-3.75'>
                         {file.name}
                     </span>
@@ -67,7 +72,7 @@ function FileItem({ file }: Props) {
                                 tooltip={getTooltip(downloading ? 'Downloading' : 'Download')} tooltipOptions={{ position: 'left' }} onClick={() => downloadFile(file)} />
                     }
                 </div>
-                <a ref={downloadAnchorRef} href={getDownloadURL(file.path)} className='hidden' />
+                <a ref={downloadAnchorRef} href={getFileURL(file.path, false)} className='hidden' />
             </div>
         </div>
     );

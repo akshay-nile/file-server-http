@@ -22,28 +22,34 @@ function Authentication() {
         } else setVerificationCode('');
     }
 
+    function onEnterOrEscapeKey(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') { verify(); return; }
+        if (e.key === 'Escape' || e.key === 'Esc') setVerificationCode('');
+    }
+
     return (
-        <div className="w-full flex justify-center">
-            <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
-                <div className="h-[80%] flex flex-col justify-center items-center gap-2">
-                    <label htmlFor="verification-code" className='text-xl font-medium'>
+        <div className='w-full flex justify-center'>
+            <div className='bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]'>
+                <div className='h-[80%] flex flex-col justify-center items-center gap-2'>
+                    <label htmlFor='verification-code' className='text-xl font-medium'>
                         Verification Code
                     </label>
-                    <InputText id="verification-code" aria-describedby="verification-code-info"
-                        value={verificationCode}
+                    <InputText id='verification-code' aria-describedby='verification-code-info'
+                        spellCheck={false} autoCorrect='off' autoCapitalize='off'
+                        value={verificationCode} autoFocus onKeyDown={onEnterOrEscapeKey}
                         onChange={e => setVerificationCode(e.target.value.toUpperCase())}
                         style={{
                             border: '1px solid blue', textAlign: 'center',
-                            fontSize: 'larger', fontWeight: 'bold',
+                            fontSize: 'larger', fontWeight: 'bold', letterSpacing: '0.25rem',
                             padding: '0.5rem', width: '13ch'
                         }} />
-                    <small id="verification-code-info" className='text-sm font-light'>
+                    <small id='verification-code-info' className='text-sm font-light'>
                         {showHelp
                             ? 'Enter the verification code shown in the server logs'
                             : 'Generating verification code... Please wait...'}
                     </small>
                     <Button label='Verify'
-                        disabled={verificationCode.length < 4 || !showHelp}
+                        disabled={verificationCode.trim().length === 0 || !showHelp}
                         onClick={verify}
                         style={{ marginTop: '1rem' }} />
                 </div>

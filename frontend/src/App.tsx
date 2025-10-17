@@ -7,7 +7,7 @@ import { getHome, getItems } from './services/api';
 import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from './services/models';
 import Home from './components/Home';
 import Items from './components/Items';
-import SelectedItemsProvider from './global-states/SelectedItems/SelectedItemsProvider';
+import SelectedItemsProvider from './contexts/SelectedItems/SelectedItemsProvider';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(false);

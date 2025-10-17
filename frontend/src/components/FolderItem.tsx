@@ -1,5 +1,5 @@
 import { Checkbox } from 'primereact/checkbox';
-import useSelectedItems from '../global-states/SelectedItems/useSelectedItems';
+import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import type { FolderInfo } from '../services/models';
 import { getTooltip } from '../services/utilities';
 
