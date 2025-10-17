@@ -54,11 +54,12 @@ def generate_thumbnail(path):
 # To download or stream file contents in 1MB chunks with Range header
 @app.route('/open', methods=['GET'])
 @validate_path('file')
-@(require_authentication if not app.config['DEBUG'] else lambda fun: fun)
+@require_authentication
 def open_file(path):
+    token = request.args.get('token')
     stream = request.args.get('stream') == 'true'
     range_header = request.headers.get('Range')
-    print('Stream -' if stream else 'Download -', formatPath(path), range_header)
+    print('Stream -' if stream else 'Download -', formatPath(path), range_header, token)
     return get_stream_or_download_response(path, stream)
 
 
