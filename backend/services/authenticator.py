@@ -6,35 +6,35 @@ from functools import wraps
 from flask import abort, request
 
 
-filename = '.verified'
-verified: set[str] = set()
-unique_code: str | None = None
+filename = '.tokens'
+tokens: set[str] = set()
+token: str | None = None
 
 if os.path.isfile(filename):
     with open(filename, 'rt') as file:
         lines = file.read().split('\n')
         striped = map(lambda b: b.strip(), lines)
         filtered = filter(lambda b: len(b) == 4, striped)
-        verified = set(filtered)
+        tokens = set(filtered)
 else:
     open(filename, 'wt').close()
 
 
-def generate_unique_code() -> str:
-    global unique_code
-    if unique_code is None:
+def generate_unique_token() -> str:
+    global token
+    if token is None:
         chars = string.ascii_uppercase + string.digits
-        unique_code = ''.join(random.choices(chars, k=4))
-    return unique_code
+        token = ''.join(random.choices(chars, k=4))
+    return token
 
 
-def verify_user_code(user_code: str) -> bool:
-    global unique_code
-    if unique_code and user_code == unique_code:
-        verified.add(unique_code)
+def verify_user_token(user_token: str) -> bool:
+    global token
+    if token and user_token == token:
+        tokens.add(token)
         with open(filename, 'wt') as file:
-            file.write('\n'.join(verified))
-        unique_code = None
+            file.write('\n'.join(tokens))
+        token = None
         return True
     return False
 
@@ -42,14 +42,13 @@ def verify_user_code(user_code: str) -> bool:
 def require_authentication(f):
     @wraps(f)
     def authenticate(*args, **kwargs):
-        url_token = request.args.get('token')
-        verification_code = request.headers.get('X-Verification-Code')
+        token = request.headers.get('X-Token') or request.args.get('token')
 
-        if not url_token and not verification_code:
-            abort(400, 'Either Verification Code or URL Token is required')
+        if not token:
+            abort(400, 'Missing Token')
 
-        if url_token not in verified and verification_code not in verified:
-            abort(401, 'Neither Verification Code nor URL Token are authentic')
+        if token not in tokens:
+            abort(401, 'Unauthentic Token: ' + token)
 
         return f(*args, **kwargs)
     return authenticate

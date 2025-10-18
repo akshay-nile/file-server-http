@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.explorer import formatPath, get_device_info, get_drives_info, get_items_info
-from services.authenticator import generate_unique_code, verify_user_code, require_authentication
+from services.authenticator import generate_unique_token, verify_user_token, require_authentication
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -63,16 +63,16 @@ def open_file(path):
     return get_stream_or_download_response(path, stream)
 
 
-# To generate and verify the verification code for authentication
+# To generate and verify the unique token for authentication
 @app.route('/authenticate', methods=['GET'])
 def authenticate():
-    user_code = request.args.get('verify')
-    if user_code is not None:
-        if verify_user_code(user_code):
+    user_token = request.args.get('verify')
+    if user_token is not None:
+        if verify_user_token(user_token):
             return jsonify({'status': 'verified'})
         return jsonify({'status': 'failed'})
-    verification_code = generate_unique_code()
-    print(f'\nVerification Code:  {verification_code}\n')
+    token = generate_unique_token()
+    print(f'\nToken Generated:  {token}\n')
     return jsonify({'status': 'generated'})
 
 

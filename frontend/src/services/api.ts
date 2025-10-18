@@ -3,12 +3,12 @@ import { getSettings } from './settings';
 
 // An interceptor that inserts X-Verification-Code header from local-storage in each request
 async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {
-    const verificationCode = localStorage.getItem('verification-code');
+    const token = localStorage.getItem('token');
     const headers = new Headers(init.headers || {});
-    if (verificationCode) headers.set('X-Verification-Code', verificationCode);
+    if (token) headers.set('X-Token', token);
     const response = await fetch(input, { ...init, headers });
-    if (verificationCode && response.status === 401) {
-        localStorage.removeItem('verification-code');
+    if (token && response.status === 401) {
+        localStorage.removeItem('token');
         window.dispatchEvent(new Event('authentication'));
     }
     return response;
@@ -31,9 +31,8 @@ async function tryToFetch<T>(path: string): Promise<T> {
     return [] as T;
 }
 
-export async function authenticate(user_code: string | null = null): Promise<{ status: string }> {
-    let params = '';
-    if (user_code) params = '?verify=' + encodeURIComponent(user_code);
+export async function authenticate(token: string | null = null): Promise<{ status: string }> {
+    const params = token ? '?verify=' + encodeURIComponent(token) : '';
     return await tryToFetch('/authenticate' + params);
 }
 
@@ -55,7 +54,7 @@ export async function getThumbanil(path: string): Promise<Thumbnail> {
 }
 
 export function getFileURL(path: string, stream: boolean) {
-    const token = localStorage.getItem('verification-code');
+    const token = localStorage.getItem('token');
     const params = 'path=' + encodeURIComponent(path) + '&stream=' + stream + '&token=' + token;
     return baseURL + '/open?' + params;
 }
