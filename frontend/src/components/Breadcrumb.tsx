@@ -43,7 +43,7 @@ function Breadcrumb({ platform, path, explore }: Props) {
     }
 
     return (
-        <div className='flex flex-wrap items-center border border-gray-300 text-[15px] leading-5 sticky top-15.25 bg-gray-50  z-50 rounded shadow m-3 p-3'>
+        <div className='flex flex-wrap items-center border border-gray-300 text-[15px] leading-5 rounded shadow m-3 p-3'>
             {items.map((item, i) => getItemTempate(item, items.length === i + 1))}
         </div>
     );

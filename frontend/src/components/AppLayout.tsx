@@ -63,13 +63,14 @@ function AppLayout() {
             <SelectedItemsProvider>
                 <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
                     {
-                        deviceInfo !== null && <>
+                        deviceInfo !== null &&
+                        <div className='sticky top-0 bg-gray-50 z-10'>
                             <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
                             {
-                                path !== '' && path !== '/' &&
+                                (path !== '' && path !== '/') &&
                                 <Breadcrumb path={path} platform={deviceInfo.platform} explore={explore} />
                             }
-                        </>
+                        </div>
                     }
                     {
                         loading
@@ -78,7 +79,7 @@ function AppLayout() {
                             </div>
                             : path === '/'
                                 ? <Home drives={drives} explore={explore} />
-                                : folders.length > 0 || files.length > 0
+                                : (folders.length > 0 || files.length > 0)
                                     ? <Items folders={folders} subFiles={files} explore={explore} />
                                     : <EmptyFolder />
                     }
