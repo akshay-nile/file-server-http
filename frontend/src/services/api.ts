@@ -1,13 +1,6 @@
 import type { Home, ItemsInfo, Thumbnail } from './models';
 import { getSettings } from './settings';
 
-let baseURL = window.location.href;
-let retryCount = 2;
-
-if (import.meta.env.VITE_BASE_URL) baseURL = import.meta.env.VITE_BASE_URL;
-else if (baseURL.includes('/?path=')) baseURL = baseURL.split('/?path=')[0];
-while (baseURL.endsWith('/')) baseURL = baseURL.substring(0, baseURL.length - 1);
-
 // An interceptor that inserts X-Verification-Code header from local-storage in each request
 async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {
     const verificationCode = localStorage.getItem('verification-code');
@@ -16,10 +9,13 @@ async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = 
     const response = await fetch(input, { ...init, headers });
     if (verificationCode && response.status === 401) {
         localStorage.removeItem('verification-code');
-        window.location.reload();
+        window.dispatchEvent(new Event('authentication'));
     }
     return response;
 }
+
+let baseURL = import.meta.env.VITE_BASE_URL || window.location.origin;
+let retryCount = 2;
 
 async function tryToFetch<T>(path: string): Promise<T> {
     try {

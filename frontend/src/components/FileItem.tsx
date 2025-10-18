@@ -1,6 +1,6 @@
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
@@ -9,9 +9,7 @@ import { formatSize, getTooltip } from '../services/utilities';
 type Props = { file: FileInfo };
 
 function FileItem({ file }: Props) {
-    const downloadAnchorRef = useRef<HTMLAnchorElement>(null);
     const [downloading, setDownloading] = useState<boolean>(false);
-
     const { toggleFileSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
     function getExtention(name: string): string {
@@ -30,11 +28,11 @@ function FileItem({ file }: Props) {
     }
 
     function downloadFile(file: FileInfo) {
-        if (downloading || !downloadAnchorRef.current) return;
+        if (downloading) return;
         setDownloading(true);
-        downloadAnchorRef.current.click();
+        window.location.href = getFileURL(file.path, false);
         const timeoutMs = Math.max(1, file.size / 1024 / 1024);
-        setTimeout(() => setDownloading(false), timeoutMs * 10);
+        setTimeout(() => setDownloading(false), timeoutMs);
     }
 
     function streamFile(file: FileInfo) {
@@ -72,7 +70,6 @@ function FileItem({ file }: Props) {
                                 tooltip={getTooltip(downloading ? 'Downloading' : 'Download')} tooltipOptions={{ position: 'left' }} onClick={() => downloadFile(file)} />
                     }
                 </div>
-                <a ref={downloadAnchorRef} href={getFileURL(file.path, false)} className='hidden' />
             </div>
         </div>
     );
