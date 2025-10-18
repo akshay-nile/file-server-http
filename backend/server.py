@@ -2,8 +2,8 @@ from services import configure_flask_app
 from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
-from services.explorer import formatPath, get_device_info, get_drives_info, get_items_info
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
+from services.explorer import formatPath, get_device_info, get_drives_info, get_items_info, getSavePath
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -61,6 +61,18 @@ def open_file(path):
     range_header = request.headers.get('Range')
     print('Stream -' if stream else 'Download -', formatPath(path), range_header, token)
     return get_stream_or_download_response(path, stream)
+
+
+# To save an uploaded file in Downlaods folder
+@app.route('/upload', methods=['POST'])
+@require_authentication
+def save_files():
+    file = request.files.get('file', None)
+    if file is None:
+        return jsonify({'status': 'failed'})
+    file.save(f'{getSavePath()}/{file.filename}')
+    print('Upload -', file.filename)
+    return jsonify({'status': 'uploaded'})
 
 
 # To generate and verify the unique token for authentication

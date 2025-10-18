@@ -58,3 +58,11 @@ export function getFileURL(path: string, stream: boolean) {
     const params = 'path=' + encodeURIComponent(path) + '&stream=' + stream + '&token=' + token;
     return baseURL + '/open?' + params;
 }
+
+export async function uploadFile(file: File): Promise<{ status: 'uploaded' | 'failed' }> {
+    const token = localStorage.getItem('token') as string;
+    const body = new FormData();
+    body.append('file', file);
+    const response = await fetch(baseURL + '/upload', { method: 'POST', headers: { 'X-Token': token }, body: body });
+    return await response.json();
+}

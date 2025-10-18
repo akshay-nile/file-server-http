@@ -4,7 +4,7 @@ import type { DeviceInfo } from '../services/models';
 import { getTooltip } from '../services/utilities';
 import SearchPanel from './SearchPanel';
 import SettingsPanel from './SettingsPanel';
-import UploadPanel from './UploadPanel';
+import UploadFiles from './UploadFiles';
 
 type Props = { deviceInfo: DeviceInfo, path: string, explore: (path: string) => void };
 
@@ -67,8 +67,8 @@ function TopPanel({ deviceInfo, path, explore }: Props) {
                 </div>
             </div>
 
-            <div className={`${panelOpened ? 'max-h-64 my-5 opacity-100' : 'max-h-0 my-0 opacity-0'} overflow-hidden transition-all duration-300 ease-in-out`}>
-                <div className={panelContent === 'upload' ? 'block' : 'hidden'}><UploadPanel /></div>
+            <div className={`${panelOpened ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden transition-all duration-300 ease-in-out`}>
+                <div className={panelContent === 'upload' ? 'block' : 'hidden'}><UploadFiles /></div>
                 <div className={panelContent === 'search' ? 'block' : 'hidden'}><SearchPanel /></div>
                 <div className={panelContent === 'settings' ? 'block' : 'hidden'}><SettingsPanel /></div>
             </div>

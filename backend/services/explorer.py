@@ -12,6 +12,15 @@ from services.thumbnails import get_cached_thumbnail
 root = '/storage/emulated/0'  # Android's Internal Storage
 IS_WIN_OS = platform.system() == 'Windows'
 
+if IS_WIN_OS:
+    username = os.getenv('USERNAME') or os.getenv('USER')
+    root = os.getenv('USERPROFILE') or f'C:/{username}'
+    if not os.path.exists(root):
+        print('Warning: root path not found')
+        root = '.'
+    else:
+        root = root.replace('\\', '/')
+
 
 # To ensure that '//' do not appear in any path
 def joiner(path: str, item_name: str) -> str:
@@ -22,6 +31,13 @@ def joiner(path: str, item_name: str) -> str:
 
 def formatPath(path: str) -> str:
     return path if IS_WIN_OS else path.replace(root, 'IS:')
+
+
+# Returns the path of Downloads folder to save the uploaded files
+def getSavePath() -> str:
+    savepath = root + ('/Downloads' if IS_WIN_OS else '/Download')
+    os.makedirs(savepath, exist_ok=True)
+    return savepath
 
 
 # Works on Windows platform only
