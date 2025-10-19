@@ -1,4 +1,4 @@
-import type { Home, ItemsInfo, Thumbnail } from './models';
+import type { HomeInfo, ItemsInfo, Thumbnail } from './models';
 import { getSettings } from './settings';
 
 // An interceptor that inserts X-Verification-Code header from local-storage in each request
@@ -36,7 +36,7 @@ export async function authenticate(token: string | null = null): Promise<{ statu
     return await tryToFetch('/authenticate' + params);
 }
 
-export async function getHome(): Promise<Home> {
+export async function getHome(): Promise<HomeInfo> {
     return await tryToFetch('/explore?path=/');
 }
 

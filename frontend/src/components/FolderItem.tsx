@@ -1,21 +1,20 @@
 import { Checkbox } from 'primereact/checkbox';
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import type { FolderInfo } from '../services/models';
 import { getTooltip } from '../services/utilities';
 
-type Props = {
-    folder: FolderInfo,
-    explore: (path: string) => void
-};
+type Props = { folder: FolderInfo };
 
-function FolderItem({ folder, explore }: Props) {
+function FolderItem({ folder }: Props) {
+    const { explore } = useExplorerItems();
     const { toggleFolderSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
     return (
         <div className='flex items-center gap-1'>
             <img src='/public/icons/folder.jpg' className={`w-[50px] h-[50px] m-1 p-0 rounded-[5px] ${folder.hidden && 'opacity-70'}`} onClick={() => toggleFolderSelection(folder)} />
             <div className="w-full flex justify-between items-center">
-                <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer' onClick={() => explore(folder.path)}>
+                <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer' onClick={() => explore(folder.path, true)}>
                     <span className='font-medium group-hover:text-blue-700 text-sm leading-3.75'>
                         {folder.name}
                     </span>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AppLayout from './components/AppLayout';
 import Authentication from './components/Authentication';
+import ExplorerItemsProvider from './contexts/ExplorerItems/ExplorerItemsProvider';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState('token' in localStorage);
@@ -11,7 +12,13 @@ function App() {
     return () => window.removeEventListener('authentication', onAuthentication);
   }, []);
 
-  return <>{isAuthenticated ? <AppLayout /> : <Authentication />}</>;
+  return <>
+    {
+      isAuthenticated
+        ? <ExplorerItemsProvider><AppLayout /></ExplorerItemsProvider>
+        : <Authentication />
+    }
+  </>;
 }
 
 export default App;

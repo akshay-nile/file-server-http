@@ -1,14 +1,17 @@
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import type { DriveInfo } from '../services/models';
 import { formatSize } from '../services/utilities';
 
-type Props = { drive: DriveInfo, explore: (path: string) => void };
+type Props = { drive: DriveInfo };
 
-function DriveItem({ drive, explore }: Props) {
+function DriveItem({ drive }: Props) {
+    const { explore } = useExplorerItems();
+
     return (
         <div className='flex items-center gap-1'>
             <img src='/public/icons/drive.jpg' className='w-[60px] h-[50px] m-1 p-0 rounded-[5px]' />
 
-            <div className='w-full flex flex-col my-1 gap-1.75 group cursor-pointer' onClick={() => explore(drive.path)}>
+            <div className='w-full flex flex-col my-1 gap-1.75 group cursor-pointer' onClick={() => explore(drive.path, true)}>
                 <span className='font-medium group-hover:text-blue-700 leading-3.75'>
                     {drive.letter !== null && <span className='mr-1.5'>{drive.letter}:</span>}
                     {drive.label}

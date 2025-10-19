@@ -1,4 +1,4 @@
-export type Platform = 'Windows' | 'Android';
+export type Platform = 'Windows' | 'Android' | undefined;
 
 export type DeviceInfo = { hostname: string, platform: Platform };
 
@@ -11,7 +11,7 @@ export interface DriveInfo {
     size: SizeInfo;
 }
 
-export interface Home {
+export interface HomeInfo {
     device: DeviceInfo;
     drives: Array<DriveInfo>;
 }
@@ -57,4 +57,20 @@ export interface SelectedItemsState {
     isItemSelected: (item: ItemInfo) => boolean;
     isAnyItemSelected: () => boolean;
     clearSelection: () => void;
+}
+
+export interface ExplorerItemsState {
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
+
+    path: string;
+    setPath: (path: string) => void;
+
+    home: HomeInfo;
+    setHome: (home: HomeInfo) => void;
+
+    items: ItemsInfo;
+    setItems: (items: ItemsInfo) => void;
+
+    explore: (path: string, pushHistory: boolean) => Promise<void>;
 }

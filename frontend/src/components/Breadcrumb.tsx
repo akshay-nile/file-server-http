@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
-import type { Platform } from '../services/models';
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 
-type Item = { label: string, path: string };
-type Props = { path: string, platform: Platform, explore: (path: string) => void };
+type BreadcrumbItem = { label: string, path: string };
 
-function Breadcrumb({ platform, path, explore }: Props) {
-    const [items, setItems] = useState<Item[]>([]);
+function Breadcrumb() {
+    const { path, home, explore } = useExplorerItems();
+    const [items, setItems] = useState<BreadcrumbItem[]>([]);
 
     useEffect(() => {
-        const items: Item[] = [];
+        const items: BreadcrumbItem[] = [];
         let labels: string[] = [];
 
-        if (platform === 'Android') {
+        if (home.device.platform === 'Android') {
             const root = '/storage/emulated/0';
             labels = path.replace(root, 'IS:').split('/');
             items.push({ label: 'IS:', path: root });
         }
 
-        if (platform === 'Windows') {
+        if (home.device.platform === 'Windows') {
             labels = path.split('/');
             items.push({ label: labels[0], path: labels[0] + '/' });
         }
@@ -30,12 +30,12 @@ function Breadcrumb({ platform, path, explore }: Props) {
         }
 
         setItems(items);
-    }, [path, platform]);
+    }, [path, home.device.platform]);
 
-    function getItemTempate(item: Item, isLast: boolean) {
+    function getItemTempate(item: BreadcrumbItem, isLast: boolean) {
         return (
             <span key={item.path}>
-                <span className='hover:text-blue-700 cursor-pointer' onClick={() => explore(item.path)}>
+                <span className='hover:text-blue-700 cursor-pointer' onClick={() => explore(item.path, true)}>
                     {item.label}
                 </span>
                 {!isLast && <span className='mx-1.5'>/</span>}

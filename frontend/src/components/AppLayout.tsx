@@ -1,21 +1,15 @@
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
+import SelectedItemsProvider from '../contexts/SelectedItems/SelectedItemsProvider';
 import Breadcrumb from './Breadcrumb';
 import EmptyFolder from './EmptyFolder';
-import TopPanel from './TopPanel';
-import { getHome, getItems } from '../services/api';
-import type { DeviceInfo, DriveInfo, FileInfo, FolderInfo } from '../services/models';
 import Home from './Home';
 import Items from './Items';
-import SelectedItemsProvider from '../contexts/SelectedItems/SelectedItemsProvider';
+import TopPanel from './TopPanel';
 
 function AppLayout() {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [path, setPath] = useState<string>('');
-    const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
-    const [drives, setDrives] = useState<DriveInfo[]>([]);
-    const [folders, setFolders] = useState<FolderInfo[]>([]);
-    const [files, setFiles] = useState<FileInfo[]>([]);
+    const { loading, path, items, explore } = useExplorerItems();
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -35,56 +29,29 @@ function AppLayout() {
 
         window.addEventListener('popstate', onHistory);
         return () => window.removeEventListener('popstate', onHistory);
-    }, []);
-
-    async function explore(newPath: string, pushHistory: boolean = true) {
-        try {
-            setLoading(true);
-
-            if (newPath === '/') {
-                const data = await getHome(); // Fetch server-device and drives info
-                setDeviceInfo(data.device);
-                setDrives(data.drives);
-            } else {
-                const data = await getItems(newPath); // Fetch folder and files info
-                setFolders(data.folders);
-                setFiles(data.files);
-            }
-
-            if (pushHistory) window.history.pushState({ path: newPath }, '', '?path=' + newPath);
-            setPath(newPath);
-        }
-        catch (error) { console.error(error); }
-        finally { setLoading(false); }
-    }
+    }, [explore]);
 
     return (
         <div className="w-full flex justify-center">
-            <SelectedItemsProvider>
-                <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
-                    {
-                        deviceInfo !== null &&
-                        <div className='sticky top-0 bg-gray-50 z-10'>
-                            <TopPanel deviceInfo={deviceInfo} path={path} explore={explore} />
-                            {
-                                (path !== '' && path !== '/') &&
-                                <Breadcrumb path={path} platform={deviceInfo.platform} explore={explore} />
-                            }
-                        </div>
-                    }
+            <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
+                <div className='sticky top-0 bg-gray-50 z-10'>
+                    <TopPanel />
+                    {path !== '/' && <Breadcrumb />}
+                </div>
+                <SelectedItemsProvider>
                     {
                         loading
                             ? <div className='h-[66%] flex justify-center items-center'>
                                 <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
                             </div>
                             : path === '/'
-                                ? <Home drives={drives} explore={explore} />
-                                : (folders.length > 0 || files.length > 0)
-                                    ? <Items folders={folders} subFiles={files} explore={explore} />
+                                ? <Home />
+                                : (items.folders.length > 0 || items.files.length > 0)
+                                    ? <Items />
                                     : <EmptyFolder />
                     }
-                </div>
-            </SelectedItemsProvider>
+                </SelectedItemsProvider>
+            </div>
         </div>
     );
 }
