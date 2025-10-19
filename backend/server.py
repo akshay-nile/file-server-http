@@ -97,6 +97,18 @@ def handle_http_exception(error):
 
 # Run the app on dev or prod server depending on current mode
 if app.config['DEBUG']:
-    app.run(host=app.config['HOST'], port=app.config['PORT'], debug=app.config['DEBUG'])
+    app.run(
+        host=app.config['HOST'],
+        port=app.config['PORT'],
+        debug=app.config['DEBUG']
+    )
 else:
-    serve(app=app, host=app.config['HOST'], port=app.config['PORT'], threads=16, ident='MyFileServer')
+    serve(
+        app=app,
+        host=app.config['HOST'],
+        port=app.config['PORT'],
+        threads=16,                                     # Max concurrent connections 16
+        max_request_body_size=8 * 1024 * 1024 * 1024,   # Max upload size limit (8 GB)
+        channel_timeout=15 * 60,                        # Max request timeout (15 Minutes)
+        ident='MyFileServer'
+    )
