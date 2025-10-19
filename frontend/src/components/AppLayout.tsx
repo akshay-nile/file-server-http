@@ -24,7 +24,7 @@ function AppLayout() {
         (async () => {
             if (path) {
                 await explore('/', false);
-                await explore(path, false);
+                if (path !== '/') await explore(path, false);
             } else await explore('/', true);
         })();
 
