@@ -2,21 +2,18 @@
 
 # --- SCRIPT DESCRIPTION ---
 # This script automates the process of building the frontend,
-# collecting backend dependencies, and organizing them into a new
+# collecting required backend files and organizing them into a new
 # directory named 'MyFileServer' in the project root.
-# This script is designed to be run in a Git Bash or other Unix-like shell environment.
+# This script is designed to run in a Git Bash or other Unix-like shell environment.
 
 # --- SCRIPT SETUP ---
-set -e  # Exit on first error
+set -e  # Exit if any error occures
 
 MY_FILE_SERVER_DIR="MyFileServer"
 FRONTEND_DIR="frontend"
 BACKEND_DIR="backend"
-DIST_DIR="dist"
-REQUIREMENTS_FILE="requirements.txt"
-LIBS_DIR="libs"
 
-# --- MAIN LOGIC ---
+# --- MAIN LOGIC --- #
 
 # 1) Creating MyFileServer folder, Remove old one if already exists
 echo "Step 1: Preparing $MY_FILE_SERVER_DIR directory..."
@@ -24,7 +21,8 @@ if [ -d "$MY_FILE_SERVER_DIR" ]; then
     echo "   Removing existing $MY_FILE_SERVER_DIR..."
     rm -rf "$MY_FILE_SERVER_DIR"
 fi
-mkdir -p "$MY_FILE_SERVER_DIR"
+
+mkdir -p "$MY_FILE_SERVER_DIR/services"
 touch "$MY_FILE_SERVER_DIR/.nomedia"
 
 # 2) Navigate to frontend and build
@@ -33,45 +31,24 @@ cd "$FRONTEND_DIR"
 npm run build
 
 # 3) Move dist to MyFileServer
-echo "Step 3: Moving $DIST_DIR..."
-mv "$DIST_DIR" "../$MY_FILE_SERVER_DIR/public"
+echo "Step 3: Moving dist and rename as public"
+mv "dist" "../$MY_FILE_SERVER_DIR/public"
 
 cd ".."  # back to root
 
-# 4) Backend: generate requirements.txt
-echo "Step 4: Navigating to $BACKEND_DIR and freezing Python dependencies..."
+# 4) Navigate to backend and copy files
+echo "Step 4: Navigating to $BACKEND_DIR and copying required files..."
 cd "$BACKEND_DIR"
-uv pip freeze > "$REQUIREMENTS_FILE"
-
-# 5) Move requirements.txt and tone.mp3 to MyFileServer
-echo "Step 5: Moving $REQUIREMENTS_FILE..."
-mv "$REQUIREMENTS_FILE" "../$MY_FILE_SERVER_DIR/"
-cp ".tone.mp3" "../$MY_FILE_SERVER_DIR/"
-
-# 6) Copy backend code
-echo "Step 6: Copying backend files..."
 cp "server.py" "../$MY_FILE_SERVER_DIR/"
-mkdir -p "../$MY_FILE_SERVER_DIR/services"
+cp ".tone.mp3" "../$MY_FILE_SERVER_DIR/"
 cp services/*.py "../$MY_FILE_SERVER_DIR/services/"
 
 cd ".."  # back to root
 
-# 7) Create libs folder
-echo "Step 7: Creating $LIBS_DIR..."
+# 5) Verify structure
+echo "Step 5: Verifying final directory structure..."
 cd "$MY_FILE_SERVER_DIR"
-mkdir -p "$LIBS_DIR"
-
-# 8) Install dependencies into libs
-echo "Step 8: Installing dependencies..."
-pip install --target="$LIBS_DIR" -r "$REQUIREMENTS_FILE"
-
-# 9) Remove requirements.txt
-echo "Step 9: Removing $REQUIREMENTS_FILE..."
-rm "$REQUIREMENTS_FILE"
-
-# 10) Verify structure
-echo "Step 10: Verifying final directory structure..."
-if [ -d "libs" ] && [ -d "public" ] && [ -d "services" ] && [ -f "server.py" ] && [ -f ".nomedia" ] && [ -f ".tone.mp3" ]; then
+if [ -d "public" ] && [ -d "services" ] && [ -f "server.py" ] && [ -f ".nomedia" ] && [ -f ".tone.mp3" ]; then
     echo ""
     echo "✅ Successfully packaged MyFileServer..!"
 else
