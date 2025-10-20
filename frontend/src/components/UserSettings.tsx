@@ -3,7 +3,7 @@ import { SelectButton } from 'primereact/selectbutton';
 import { useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import type { Settings } from '../services/models';
-import { defaultSettings, getSettings, setSettings } from '../services/settings';
+import { defaultSettings, getSettings, isChanged, setSettings } from '../services/settings';
 
 type Options = { label: string, value: string | boolean };
 
@@ -61,8 +61,10 @@ function UserSettings() {
                 </div>
                 <div className='selectbutton'>
                     <span className='block mr-0.5 mb-1 text-sm text-right'>Save or Restore Defaults</span>
-                    <Button label='Reset' icon='pi pi-refresh' size='small' style={{ marginRight: '0.6rem' }} onClick={reset} />
-                    <Button label='Save' icon='pi pi-save' size='small' onClick={save} />
+                    <Button label='Reset' icon='pi pi-refresh' size='small' style={{ marginRight: '0.6rem' }}
+                        disabled={!isChanged(userSettings, defaultSettings)} onClick={reset} />
+                    <Button label='Save' icon='pi pi-save' size='small'
+                        disabled={!isChanged(userSettings)} onClick={save} />
                 </div>
             </div>
         </div>

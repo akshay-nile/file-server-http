@@ -1,6 +1,6 @@
 import type { Settings } from './models';
 
-const SETTINGS_KEY = 'file-server-settings';
+const SETTINGS_KEY = 'settings';
 
 export const defaultSettings: Settings = {
     sort_by: 'name',
