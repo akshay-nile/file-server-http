@@ -3,13 +3,12 @@ import { useEffect } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import SelectedItemsProvider from '../contexts/SelectedItems/SelectedItemsProvider';
 import Breadcrumb from './Breadcrumb';
-import EmptyFolder from './EmptyFolder';
 import Home from './Home';
 import Items from './Items';
 import TopPanel from './TopPanel';
 
 function AppLayout() {
-    const { loading, path, items, explore } = useExplorerItems();
+    const { loading, path, explore } = useExplorerItems();
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -44,11 +43,7 @@ function AppLayout() {
                             ? <div className='h-[66%] flex justify-center items-center'>
                                 <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
                             </div>
-                            : path === '/'
-                                ? <Home />
-                                : (items.folders.length > 0 || items.files.length > 0)
-                                    ? <Items />
-                                    : <EmptyFolder />
+                            : path === '/' ? <Home /> : <Items />
                     }
                 </SelectedItemsProvider>
             </div>

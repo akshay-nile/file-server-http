@@ -7,6 +7,7 @@ from services.explorer import formatPath, get_device_info, get_drives_info, get_
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
+from playsound import playsound
 from waitress import serve
 
 
@@ -85,6 +86,7 @@ def authenticate():
         return jsonify({'status': 'failed'})
     token = generate_unique_token()
     print(f'\nToken Generated:  {token}\n')
+    playsound('./.tone.mp3')
     return jsonify({'status': 'generated'})
 
 

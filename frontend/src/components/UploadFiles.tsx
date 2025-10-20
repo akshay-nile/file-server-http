@@ -7,6 +7,7 @@ type UploadProgress = { count: number, size: number, total: number }
 type FileUploadInfo = { file: File; status: 'pending' | 'uploading' | 'uploaded' | 'failed'; }
 
 function UploadFiles() {
+    const cancelledRef = useRef<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const [files, setFiles] = useState<FileUploadInfo[]>([]);
@@ -17,6 +18,7 @@ function UploadFiles() {
     function onFilesChoosen(e: React.ChangeEvent<HTMLInputElement>) {
         if (!e.target.files) return;
         const files = Array.from(e.target.files).map((file: File) => ({ file, status: 'pending' }));
+        files.sort((fileA, fileB) => fileA.file.size - fileB.file.size);
         setFiles(files as FileUploadInfo[]);
         setUploadLabel('Upload');
         setUploadedInfo(prev => ({ ...prev, total: files.map(f => f.file.size).reduce((a, b) => a + b, 0) }));
@@ -25,11 +27,13 @@ function UploadFiles() {
     async function uploadChoosenFiles() {
         setUploading(true);
         setUploadLabel('Uploading');
-        for (let i = 0; i < files.length; i++) {
+        cancelledRef.current = false;
+        for (let i = 0; i < files.length && !cancelledRef.current; i++) {
             if (!['pending', 'failed'].includes(files[i].status)) continue;
             files[i].status = 'uploading';
             setFiles([...files]);
             const response = await uploadFile(files[i].file);
+            if (cancelledRef.current) break;
             files[i].status = response.status;
             setFiles([...files]);
             if (files[i].status === 'uploaded') setUploadedInfo(prev => ({
@@ -48,6 +52,7 @@ function UploadFiles() {
     };
 
     function onUploadingCancelled() {
+        cancelledRef.current = true;
         setFiles([]);
         setUploading(false);
         setUploadLabel('Upload');
@@ -62,22 +67,19 @@ function UploadFiles() {
         <div className="flex flex-col gap-2 mb-1">
             <input ref={fileInputRef} type="file" multiple className="hidden" onChange={onFilesChoosen} />
 
-            <div className="flex items-center gap-3 mt-4 mb-1">
+            <div className="flex items-center gap-3 mt-4 mb-1 selectbutton">
                 <Button label='Choose' icon='pi pi-plus' size='small'
                     onClick={() => fileInputRef.current?.click()}
                     disabled={files.length > 0 || uploading}
-                    style={{ padding: '0.5rem 0.8rem' }}
                 />
                 <Button label={uploadLabel} size='small'
                     icon={uploadLabel === 'Uploading' ? 'pi pi-spin pi-spinner' : uploadLabel === 'Uploaded' ? 'pi pi-check' : 'pi pi-upload'}
                     onClick={uploadChoosenFiles}
                     disabled={files.length === 0 || uploading}
-                    style={{ padding: '0.5rem 0.8rem' }}
                 />
                 <Button label='Cancel' icon='pi pi-times' size='small'
                     onClick={onUploadingCancelled}
                     disabled={files.length === 0}
-                    style={{ padding: '0.5rem 0.8rem' }}
                 />
             </div>
 
@@ -85,7 +87,7 @@ function UploadFiles() {
                 {
                     files.length === 0
                         ? uploading
-                            ? <></>
+                            ? <div>Uploading cancelled</div>
                             : <div>No file selected for upload</div>
                         : uploading
                             ? <div className='flex flex-col gap-1.25'>

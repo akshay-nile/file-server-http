@@ -48,7 +48,7 @@ function UserSettings() {
                         onChange={e => e.value !== null && setUserSettings({ ...userSettings, sort_by: e.value })} />
                 </div>
                 <div>
-                    <span className='block mr-0.5 mb-1 text-sm text-right'>Sort Order</span>
+                    <span className='block ml-0.75 mb-1 text-sm'>Sort Order</span>
                     <SelectButton value={userSettings.reverse} options={reverseOptions} optionLabel='label' className='selectbutton'
                         onChange={e => e.value !== null && setUserSettings({ ...userSettings, reverse: e.value })} />
                 </div>
@@ -60,7 +60,7 @@ function UserSettings() {
                         onChange={e => e.value !== null && setUserSettings({ ...userSettings, show_hidden: e.value })} />
                 </div>
                 <div className='selectbutton'>
-                    <span className='block mr-0.5 mb-1 text-sm text-right'>Save or Restore Defaults</span>
+                    <span className='block ml-0.25 mb-1 text-sm'>Save or Restore Defaults</span>
                     <Button label='Reset' icon='pi pi-refresh' size='small' style={{ marginRight: '0.6rem' }}
                         disabled={!isChanged(userSettings, defaultSettings)} onClick={reset} />
                     <Button label='Save' icon='pi pi-save' size='small'

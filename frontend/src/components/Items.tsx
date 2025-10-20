@@ -5,6 +5,7 @@ import type { FileInfo } from '../services/models';
 import { canGenerateThumbnail } from '../services/utilities';
 import FileItem from './FileItem';
 import FolderItem from './FolderItem';
+import EmptyFolder from './EmptyFolder';
 
 function Items() {
     const { items } = useExplorerItems();
@@ -35,22 +36,28 @@ function Items() {
 
     return <>
         {
-            items.folders.map((folder, i) =>
-                <div key={folder.path} className='mx-2'>
-                    {i === 0 && <hr className='text-gray-300 m-1' />}
-                    <FolderItem folder={folder} />
-                    <hr className='text-gray-300 m-1' />
-                </div>
-            )
-        }
-        {
-            files.map((file, i) =>
-                <div key={file.path} className='mx-2'>
-                    {(i === 0 && items.folders.length === 0) && <hr className='text-gray-300 m-1' />}
-                    <FileItem file={file} />
-                    <hr className='text-gray-300 m-1' />
-                </div>
-            )
+            (items.folders.length === 0 && items.files.length === 0)
+                ? <EmptyFolder />
+                : <>
+                    {
+                        items.folders.map((folder, i) =>
+                            <div key={folder.path} className='mx-2'>
+                                {i === 0 && <hr className='text-gray-300 m-1' />}
+                                <FolderItem folder={folder} />
+                                <hr className='text-gray-300 m-1' />
+                            </div>
+                        )
+                    }
+                    {
+                        files.map((file, i) =>
+                            <div key={file.path} className='mx-2'>
+                                {(i === 0 && items.folders.length === 0) && <hr className='text-gray-300 m-1' />}
+                                <FileItem file={file} />
+                                <hr className='text-gray-300 m-1' />
+                            </div>
+                        )
+                    }
+                </>
         }
     </>;
 }

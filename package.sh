@@ -43,9 +43,10 @@ echo "Step 4: Navigating to $BACKEND_DIR and freezing Python dependencies..."
 cd "$BACKEND_DIR"
 uv pip freeze > "$REQUIREMENTS_FILE"
 
-# 5) Move requirements.txt to MyFileServer
+# 5) Move requirements.txt and tone.mp3 to MyFileServer
 echo "Step 5: Moving $REQUIREMENTS_FILE..."
 mv "$REQUIREMENTS_FILE" "../$MY_FILE_SERVER_DIR/"
+mv ".tone.mp3" "../$MY_FILE_SERVER_DIR/"
 
 # 6) Copy backend code
 echo "Step 6: Copying backend files..."
