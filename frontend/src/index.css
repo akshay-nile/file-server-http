@@ -13,3 +13,13 @@
     font-size: 13px;
     font-weight: 500;
 }
+
+.p-inputgroup {
+    height: 2.25rem;
+}
+
+input:focus {
+    outline: none;
+    border: 1px solid dodgerblue;
+    box-shadow: none;
+}

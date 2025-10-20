@@ -40,9 +40,9 @@ export async function getHome(): Promise<HomeInfo> {
     return await tryToFetch('/explore?path=/');
 }
 
-export async function getItems(path: string, search = ''): Promise<ItemsInfo> {
+export async function getItems(path: string, search: string | null): Promise<ItemsInfo> {
     let params = 'path=' + encodeURIComponent(path);
-    if (search.trim().length > 0) params += '&search=' + encodeURIComponent(search);
+    if (search !== null) params += '&search=' + encodeURIComponent(search);
     const settings = getSettings();
     params += `&sort_by=${settings.sort_by}&show_hidden=${settings.show_hidden}&reverse=${settings.reverse}`;
     return await tryToFetch('/explore?' + params);

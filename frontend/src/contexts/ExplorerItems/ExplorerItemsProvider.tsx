@@ -12,7 +12,7 @@ function ExplorerItemsProvider({ children }: Props) {
     const [home, setHome] = useState<HomeInfo>({ device: { hostname: 'Loading...', platform: undefined }, drives: [] });
     const [items, setItems] = useState<ItemsInfo>({ folders: [], files: [] });
 
-    const explore = useCallback(async (newPath: string, pushHistory: boolean = true) => {
+    const explore = useCallback(async (newPath: string, pushHistory: boolean = true, search: string | null = null) => {
         try {
             setLoading(true);
 
@@ -20,7 +20,7 @@ function ExplorerItemsProvider({ children }: Props) {
                 const data: HomeInfo = await getHome(); // Fetch home info (device, drives, shortcuts, clipboard)
                 setHome(data);
             } else {
-                const data: ItemsInfo = await getItems(newPath); // Fetch items info (folder and files) at given path
+                const data: ItemsInfo = await getItems(newPath, search); // Fetch items info (folder and files) at given path
                 setItems(data);
             }
 
