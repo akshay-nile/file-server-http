@@ -4,8 +4,8 @@ import sys
 # Identify (or guess) if the current environment is dev or prod
 IS_DEV_ENV = all(map(os.path.exists, ('.venv', 'pyproject.toml', 'uv.lock')))
 
-if IS_DEV_ENV:
-    # Add libs abs path to the beginning of sys.path to refer to the local libraries
+if not IS_DEV_ENV:
+    # Prepend libs abs-path to sys.path to refer to the local libs in prod
     libs_path = os.path.abspath('libs')
     if libs_path not in sys.path:
         sys.path.insert(0, libs_path)
