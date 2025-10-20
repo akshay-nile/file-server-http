@@ -32,8 +32,7 @@ function ExplorerItemsProvider({ children }: Props) {
     }, []);
 
     const value: ExplorerItemsState = {
-        loading, setLoading,
-        path, setPath,
+        loading, path,
         home, setHome,
         items, setItems,
         explore

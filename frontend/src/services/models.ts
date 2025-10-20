@@ -51,20 +51,20 @@ export interface Thumbnail {
 
 export interface SelectedItemsState {
     selectedFiles: FileInfo[];
-    selectedFolders: FolderInfo[];
     toggleFileSelection: (file: FileInfo) => void;
+
+    selectedFolders: FolderInfo[];
     toggleFolderSelection: (folder: FolderInfo) => void;
+
     isItemSelected: (item: ItemInfo) => boolean;
     isAnyItemSelected: () => boolean;
+
     clearSelection: () => void;
 }
 
 export interface ExplorerItemsState {
     loading: boolean;
-    setLoading: (loading: boolean) => void;
-
     path: string;
-    setPath: (path: string) => void;
 
     home: HomeInfo;
     setHome: (home: HomeInfo) => void;
