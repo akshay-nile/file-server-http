@@ -2,14 +2,14 @@ import { Button } from 'primereact/button';
 import { useEffect, useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import { getTooltip } from '../services/utilities';
-import SearchPanel from './SearchPanel';
-import SettingsPanel from './SettingsPanel';
+import SearchItems from './SearchItems';
+import UserSettings from './UserSettings';
 import UploadFiles from './UploadFiles';
 
 function TopPanel() {
     const { path, home, explore } = useExplorerItems();
 
-    const style = { width: '2.5rem', height: '2.5rem', padding: '0rem' };
+    const style = { width: '2.55rem', height: '2.5rem', padding: '0rem' };
     const icon = home.device.platform === undefined
         ? 'pi pi-spin pi-spinner'
         : home.device.platform === 'Android'
@@ -73,8 +73,8 @@ function TopPanel() {
 
             <div className={`${panelOpened ? 'max-h-[50vh] opacity-100' : 'max-h-0 opacity-50'} overflow-hidden transition-all duration-300 ease-in-out`}>
                 <div className={panelContent === 'upload' ? 'block' : 'hidden'}><UploadFiles /></div>
-                <div className={panelContent === 'search' ? 'block' : 'hidden'}><SearchPanel /></div>
-                <div className={panelContent === 'settings' ? 'block' : 'hidden'}><SettingsPanel /></div>
+                <div className={panelContent === 'search' ? 'block' : 'hidden'}><SearchItems /></div>
+                <div className={panelContent === 'settings' ? 'block' : 'hidden'}><UserSettings /></div>
             </div>
         </div >
     );

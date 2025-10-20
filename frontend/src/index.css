@@ -7,3 +7,9 @@
 .p-checkbox-box {
     border-radius: 50% !important;
 }
+
+.selectbutton .p-button {
+    padding: 0.4rem 0.7rem;
+    font-size: 13px;
+    font-weight: 500;
+}
