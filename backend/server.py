@@ -5,22 +5,31 @@ from services.network import get_stream_or_download_response
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
 from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath
 
-from flask import Flask, jsonify, redirect, send_from_directory, request
+from flask import Flask, jsonify, make_response, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
 from waitress import serve
 
 
 # Create flask app and configure it for either dev or prod mode
-app = Flask(__name__, static_url_path='/public/')
+app = Flask(__name__)
 configure_flask_app(app)
 
 
-# To serve the static frontend build from public folder in production
+# To serve the index.html from public folder in production mode
 @app.route('/', methods=['GET'])
 def home():
     if app.config['DEBUG']:
         return redirect('http://localhost:3000')
     return send_from_directory('./public', 'index.html')
+
+
+# To serve the static files from public folder with cache response
+@app.route('/public/<path:resource>', methods=['GET'])
+def serve_static(resource: str):
+    print(resource)
+    response = make_response(send_from_directory('./public', resource))
+    response.headers["Cache-Control"] = "public, max-age=315360000, immutable"
+    return response
 
 
 # To get info about device, drives and items at the given valid path

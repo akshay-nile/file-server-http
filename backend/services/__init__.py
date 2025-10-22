@@ -24,8 +24,6 @@ from flask import Flask
 
 
 def configure_flask_app(app: Flask):
-    app.static_folder = os.path.abspath('public')
-
     if IS_DEV_ENV:
         # Bind to all IPs, set custom port and enable debug mode
         app.config['HOST'] = '0.0.0.0'
