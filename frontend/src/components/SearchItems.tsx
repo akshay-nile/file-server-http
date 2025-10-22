@@ -4,6 +4,7 @@ import { SelectButton } from 'primereact/selectbutton';
 import { useState } from 'react';
 
 function SearchItems() {
+    const [search, setSearch] = useState<string>('');
     const [deepSearch, setDeepSearch] = useState<boolean>(false);
 
     return (
@@ -20,8 +21,8 @@ function SearchItems() {
                 </span>
                 <div className="p-inputgroup">
                     <InputText placeholder="Search Items" style={{ fontSize: '14px' }}
-                        value={''}
-                        onChange={undefined}
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
                         onKeyDown={undefined} />
                     <Button icon={'pi pi-search'} style={{ width: '2.5rem' }}
                         disabled={false}
