@@ -6,12 +6,14 @@ import FolderItem from './FolderItem';
 
 function Home() {
     const { home } = useExplorerItems();
-    const { folders, files } = (home.clipboard.type === 'items' ? home.clipboard.content : [[], []]) as ItemsInfo;
 
-    return <>
+    const { folders, files } = (home.clipboard.type === 'items' ? home.clipboard.content : [[], []]) as ItemsInfo;
+    const shortcuts: ItemsInfo | null = JSON.parse(localStorage.getItem('shortcuts') ?? 'null');
+
+    return <div className='mb-4 mx-3'>
         {
             home.drives.length > 0 &&
-            <div className='mt-4 mx-3 border border-gray-300 rounded shadow'>
+            <div className='mt-4 border border-gray-300 rounded shadow'>
                 <div className='m-0 p-2 bg-gray-200 font-bold'>
                     <span className='mx-1'>Drives</span>
                 </div>
@@ -27,8 +29,38 @@ function Home() {
             </div>
         }
         {
+            shortcuts !== null &&
+            <div className='mt-4 border border-gray-300 rounded shadow'>
+                <div className='m-0 p-2 bg-gray-200 font-bold'>
+                    <span className='mx-1'>Shortcuts</span>
+                </div>
+                {
+                    <>
+                        {
+                            shortcuts.folders.map((folder: FolderInfo, i: number) =>
+                                <div key={folder.path} className='mx-1'>
+                                    {i === 0 && <hr className='text-gray-300 m-1' />}
+                                    <FolderItem folder={folder} selectable={true} />
+                                    <hr className='text-gray-300 m-1' />
+                                </div>
+                            )
+                        }
+                        {
+                            shortcuts.files.map((file: FileInfo, i: number) =>
+                                <div key={file.path} className='mx-1'>
+                                    {(i === 0 && shortcuts.folders.length === 0) && <hr className='text-gray-300 m-1' />}
+                                    <FileItem file={file} selectable={true} />
+                                    <hr className='text-gray-300 m-1' />
+                                </div>
+                            )
+                        }
+                    </>
+                }
+            </div>
+        }
+        {
             home.clipboard.type !== 'error' &&
-            <div className='mt-4 mx-3 border border-gray-300 rounded shadow'>
+            <div className='mt-4 border border-gray-300 rounded shadow'>
                 <div className='m-0 p-2 bg-gray-200 font-bold flex justify-between'>
                     <span className='mx-1'>Clipboard</span>
                 </div>
@@ -39,7 +71,7 @@ function Home() {
                             folders.map((folder: FolderInfo, i: number) =>
                                 <div key={folder.path} className='mx-1'>
                                     {i === 0 && <hr className='text-gray-300 m-1' />}
-                                    <FolderItem folder={folder} />
+                                    <FolderItem folder={folder} selectable={false} />
                                     <hr className='text-gray-300 m-1' />
                                 </div>
                             )
@@ -48,7 +80,7 @@ function Home() {
                             files.map((file: FileInfo, i: number) =>
                                 <div key={file.path} className='mx-1'>
                                     {(i === 0 && folders.length === 0) && <hr className='text-gray-300 m-1' />}
-                                    <FileItem file={file} />
+                                    <FileItem file={file} selectable={false} />
                                     <hr className='text-gray-300 m-1' />
                                 </div>
                             )
@@ -64,7 +96,7 @@ function Home() {
                 }
             </div>
         }
-    </>;
+    </div>;
 }
 
 export default Home;

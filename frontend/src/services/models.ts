@@ -16,7 +16,6 @@ export interface DriveInfo {
 export interface HomeInfo {
     device: DeviceInfo;
     drives: Array<DriveInfo>;
-    shortcuts: Array<ItemInfo>;
     clipboard: ClipboardInfo;
 }
 

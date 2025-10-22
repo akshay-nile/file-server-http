@@ -43,7 +43,7 @@ function Items() {
                         items.folders.filter(item => item.filtered !== false).map((folder, i) =>
                             <div key={folder.path} className='mx-2'>
                                 {i === 0 && <hr className='text-gray-300 m-1' />}
-                                <FolderItem folder={folder} />
+                                <FolderItem folder={folder} selectable={true} />
                                 <hr className='text-gray-300 m-1' />
                             </div>
                         )
@@ -52,7 +52,7 @@ function Items() {
                         files.filter(item => item.filtered !== false).map((file, i) =>
                             <div key={file.path} className='mx-2'>
                                 {(i === 0 && items.folders.length === 0) && <hr className='text-gray-300 m-1' />}
-                                <FileItem file={file} />
+                                <FileItem file={file} selectable={true} />
                                 <hr className='text-gray-300 m-1' />
                             </div>
                         )

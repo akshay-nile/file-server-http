@@ -42,7 +42,6 @@ def get_items(path):
         return jsonify({
             'device': get_device_info(),
             'drives': get_drives_info(),
-            'shortcuts': [],  # get_shortcuts_info(),
             'clipboard': get_clipboard_info()
         })
     folders, files = get_items_info(path)

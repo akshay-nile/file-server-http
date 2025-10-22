@@ -6,6 +6,7 @@ import Breadcrumb from './Breadcrumb';
 import Home from './Home';
 import Items from './Items';
 import TopPanel from './TopPanel';
+import BottomPanel from './BottomPanel';
 
 function AppLayout() {
     const { loading, path, explore } = useExplorerItems();
@@ -45,6 +46,7 @@ function AppLayout() {
                             </div>
                             : path === '/' ? <Home /> : <Items />
                     }
+                    <BottomPanel />
                 </SelectedItemsProvider>
             </div>
         </div>
