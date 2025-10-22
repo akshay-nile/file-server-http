@@ -5,8 +5,10 @@ import platform
 from shutil import disk_usage
 from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
-
 from services.thumbnails import get_cached_thumbnail
+
+from flask import request
+from pyperclip import paste, PyperclipException
 
 
 root = '/storage/emulated/0'  # Android's Internal Storage
@@ -40,6 +42,41 @@ def getSavePath() -> str:
     return savepath
 
 
+# To get the items info copied in clipboard
+def get_clipboard_info() -> dict:
+    show_hidden = request.args.get('show_hidden', 'false').lower() == 'true'
+    content: str | dict | None = None
+
+    try:
+        content = paste()
+        if content is None or content.strip() == '':
+            raise PyperclipException
+
+        if os.path.exists(content) or content.count('"') > 0:
+            folders, files = [], []
+            for item in content.strip().split('"'):
+                item_path = item.strip().replace('\\', '/')
+                if item_path == '' or not os.path.exists(item_path):
+                    continue
+
+                if os.path.isdir(item_path):
+                    folder_info = get_folder_info(item_path, show_hidden)
+                    if folder_info and (show_hidden or not folder_info.get('hidden')):
+                        folders.append(folder_info)
+                elif os.path.isfile(item_path):
+                    file_info = get_file_info(item_path)
+                    if file_info and (show_hidden or not file_info.get('hidden')):
+                        files.append(file_info)
+
+            if folders or files:
+                content = {'folders': folders, 'files': files}
+                return {'type': 'items', 'content': content}
+    except PyperclipException:
+        return {'type': 'error', 'content': content}
+
+    return {'type': 'text', 'content': content}
+
+
 # Works on Windows platform only
 def get_drive_label(drive_letter: str) -> str:
     drive_label_buffer = ctypes.create_unicode_buffer(1024)
@@ -57,7 +94,7 @@ def get_drive_label(drive_letter: str) -> str:
 
 def is_item_hidden(item_path: str, item_name: str) -> bool:
     try:
-        marked_hidden = item_name[0] in '.$'
+        marked_hidden = item_name != '' and item_name[0] in '.$'
         actual_hidden = IS_WIN_OS and bool(os.stat(item_path).st_file_attributes & FILE_ATTRIBUTE_HIDDEN)
         return marked_hidden or actual_hidden
     except AttributeError:
@@ -150,7 +187,11 @@ def get_file_info(file_path: str) -> dict | None:
 
 
 # To get info about sub-items inside the given folder-path
-def get_items_info(path: str, sort_by='name', reverse=False, show_hidden=False, search=None):
+def get_items_info(path: str):
+    search = request.args.get('search', None)
+    sort_by = request.args.get('sort_by', 'name')
+    reverse = request.args.get('reverse', 'false').lower() == 'true'
+    show_hidden = request.args.get('show_hidden', 'false').lower() == 'true'
     files, folders = [], []
 
     # Not allowed to explore the items inside the project folder

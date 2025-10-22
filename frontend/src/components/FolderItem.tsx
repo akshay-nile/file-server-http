@@ -7,12 +7,12 @@ import { getTooltip } from '../services/utilities';
 type Props = { folder: FolderInfo };
 
 function FolderItem({ folder }: Props) {
-    const { explore } = useExplorerItems();
+    const { path, explore } = useExplorerItems();
     const { toggleFolderSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
     return (
         <div className='flex items-center gap-1'>
-            <img src='/public/icons/folder.jpg' className={`w-[50px] h-[50px] m-1 p-0 rounded-[5px] ${folder.hidden && 'opacity-70'}`} onClick={() => toggleFolderSelection(folder)} />
+            <img src='/public/icons/folder.jpg' className={`w-[50px] h-[50px] m-1 p-0 rounded-[5px] ${folder.hidden && 'opacity-70'}`} onClick={() => path !== '/' && toggleFolderSelection(folder)} />
             <div className="w-full flex justify-between items-center">
                 <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer' onClick={() => explore(folder.path, true)}>
                     <span className='font-medium group-hover:text-blue-700 text-sm leading-3.75'>
@@ -24,7 +24,7 @@ function FolderItem({ folder }: Props) {
                     </div>
                 </div>
                 {
-                    isAnyItemSelected() &&
+                    (path !== '/' && isAnyItemSelected()) &&
                     <div className='ml-2 mr-1 z-0'>
                         <Checkbox checked={isItemSelected(folder)} onChange={() => toggleFolderSelection(folder)} style={{ zoom: 1.2 }}
                             tooltip={getTooltip(isItemSelected(folder) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />

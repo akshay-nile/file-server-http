@@ -4,6 +4,8 @@ export type DeviceInfo = { hostname: string, platform: Platform };
 
 export type SizeInfo = { total: number, used: number, free: number };
 
+export type ClipboardInfo = { type: string, content: string | ItemsInfo | null };
+
 export interface DriveInfo {
     letter: string | null;
     label: string;
@@ -14,6 +16,8 @@ export interface DriveInfo {
 export interface HomeInfo {
     device: DeviceInfo;
     drives: Array<DriveInfo>;
+    shortcuts: Array<ItemInfo>;
+    clipboard: ClipboardInfo;
 }
 
 export interface ItemInfo {

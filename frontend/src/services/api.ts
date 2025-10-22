@@ -37,7 +37,9 @@ export async function authenticate(token: string | null = null): Promise<{ statu
 }
 
 export async function getHome(): Promise<HomeInfo> {
-    return await tryToFetch('/explore?path=/');
+    const settings = getSettings();
+    const params = `path=/&show_hidden=${settings.show_hidden}`;
+    return await tryToFetch('/explore?' + params);
 }
 
 export async function getItems(path: string, search: string | null): Promise<ItemsInfo> {

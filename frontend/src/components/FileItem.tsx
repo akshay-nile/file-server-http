@@ -5,10 +5,12 @@ import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
 import { formatSize, getTooltip } from '../services/utilities';
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 
 type Props = { file: FileInfo };
 
 function FileItem({ file }: Props) {
+    const { path } = useExplorerItems();
     const [downloading, setDownloading] = useState<boolean>(false);
     const { toggleFileSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
@@ -42,7 +44,7 @@ function FileItem({ file }: Props) {
 
     return (
         <div className='flex items-center gap-1'>
-            <div className={`w-[58px] h-[50px] overflow-hidden m-1 p-0 cursor-pointer ${file.hidden && 'opacity-70'}`} onClick={() => toggleFileSelection(file)}>
+            <div className={`w-[58px] h-[50px] overflow-hidden m-1 p-0 cursor-pointer ${file.hidden && 'opacity-70'}`} onClick={() => path !== '/' && toggleFileSelection(file)}>
                 {
                     shouldShowCSSThumbnail(file.name)
                         ? <div className={`w-full h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide ${getFontSize(file.name)}`}>
@@ -63,7 +65,7 @@ function FileItem({ file }: Props) {
                 </div>
                 <div className='ml-2 mr-1 z-0'>
                     {
-                        isAnyItemSelected()
+                        (path !== '/' && isAnyItemSelected())
                             ? <Checkbox checked={isItemSelected(file)} onChange={() => toggleFileSelection(file)} style={{ zoom: 1.2 }}
                                 tooltip={getTooltip(isItemSelected(file) ? 'Unselect' : 'Select')} tooltipOptions={{ position: 'left' }} />
                             : <Button icon={`pi ${downloading ? 'pi-spin pi-spinner' : 'pi-download'}`} style={{ width: '2rem', height: '2rem', padding: '0rem' }}

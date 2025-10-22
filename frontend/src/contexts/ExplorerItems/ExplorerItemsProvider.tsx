@@ -9,7 +9,11 @@ function ExplorerItemsProvider({ children }: Props) {
     const [loading, setLoading] = useState<boolean>(false);
     const [path, setPath] = useState<string>('/');
 
-    const [home, setHome] = useState<HomeInfo>({ device: { hostname: 'Loading...', platform: undefined }, drives: [] });
+    const [home, setHome] = useState<HomeInfo>({
+        device: { hostname: 'Loading...', platform: undefined },
+        clipboard: { type: 'error', content: null },
+        drives: [], shortcuts: []
+    });
     const [items, setItems] = useState<ItemsInfo>({ folders: [], files: [] });
 
     const explore = useCallback(async (newPath: string, pushHistory: boolean = true, search: string | null = null) => {

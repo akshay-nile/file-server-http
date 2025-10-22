@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
-from services.explorer import formatPath, get_device_info, get_drives_info, get_items_info, getSavePath
+from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -30,15 +30,13 @@ def home():
 def get_items(path):
     print('Explore -', formatPath(path))
     if path == '/':
-        device = get_device_info()
-        drives = get_drives_info()
-        return jsonify({'device': device, 'drives': drives})
-    options = dict()
-    options['search'] = request.args.get('search', None)
-    options['sort_by'] = request.args.get('sort_by', 'name')
-    options['reverse'] = request.args.get('reverse', 'false').lower() == 'true'
-    options['show_hidden'] = request.args.get('show_hidden', 'false').lower() == 'true'
-    folders, files = get_items_info(path, **options)
+        return jsonify({
+            'device': get_device_info(),
+            'drives': get_drives_info(),
+            'shortcuts': [],  # get_shortcuts_info(),
+            'clipboard': get_clipboard_info()
+        })
+    folders, files = get_items_info(path)
     return jsonify({'folders': folders, 'files': files})
 
 
@@ -73,6 +71,12 @@ def save_files():
     file.save(f'{getSavePath()}/{file.filename}')
     print('Upload -', file.filename)
     return jsonify({'status': 'uploaded'})
+
+
+# To save an uploaded file in Downlaods folder
+@app.route('/test', methods=['GET'])
+def test():
+    return get_clipboard_info()
 
 
 # To generate and verify the unique token for authentication
