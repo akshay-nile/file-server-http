@@ -1,14 +1,22 @@
+import { useEffect, useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import type { FileInfo, FolderInfo, ItemsInfo } from '../services/models';
 import DriveItem from './DriveItem';
 import FileItem from './FileItem';
 import FolderItem from './FolderItem';
+import { getShortcuts } from '../services/settings';
 
 function Home() {
     const { home } = useExplorerItems();
-
     const { folders, files } = (home.clipboard.type === 'items' ? home.clipboard.content : [[], []]) as ItemsInfo;
-    const shortcuts: ItemsInfo | null = JSON.parse(localStorage.getItem('shortcuts') ?? 'null');
+
+    const [shortcuts, setShortcuts] = useState<ItemsInfo | null>(getShortcuts());
+
+    useEffect(() => {
+        const onShortcutsChange = () => setShortcuts(getShortcuts());
+        window.addEventListener('onshortcutschange', onShortcutsChange);
+        return () => window.removeEventListener('onshortcutschange', onShortcutsChange);
+    }, []);
 
     return <div className='mb-4 mx-3'>
         {

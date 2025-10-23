@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
-from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath
+from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath, filter_existing_shortcuts
 
 from flask import Flask, jsonify, make_response, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -33,15 +33,16 @@ def serve_static(resource: str):
 
 
 # To get info about device, drives and items at the given valid path
-@app.route('/explore', methods=['GET'])
+@app.route('/explore', methods=['GET', 'POST'])
 @validate_path('folder')
 @require_authentication
 def get_items(path):
     print('Explore -', formatPath(path))
-    if path == '/':
+    if request.method == 'POST':
         return jsonify({
             'device': get_device_info(),
             'drives': get_drives_info(),
+            'shortcuts': filter_existing_shortcuts(),
             'clipboard': get_clipboard_info()
         })
     folders, files = get_items_info(path)

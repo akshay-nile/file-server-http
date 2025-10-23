@@ -42,6 +42,16 @@ def getSavePath() -> str:
     return savepath
 
 
+# Keeps only the existing items from the recieved set of shortcuts
+def filter_existing_shortcuts() -> dict | None:
+    shortcuts: dict | None = request.get_json()
+    if shortcuts is None:
+        return None
+    folders = list(filter(lambda folder: os.path.isdir(folder.get('path', '')), shortcuts.get('folders', [])))
+    files = list(filter(lambda file: os.path.isfile(file.get('path', '')), shortcuts.get('files', [])))
+    return {'folders': folders, 'files': files}
+
+
 # To get the items info copied in clipboard
 def get_clipboard_info() -> dict:
     show_hidden = request.args.get('show_hidden', 'false').lower() == 'true'

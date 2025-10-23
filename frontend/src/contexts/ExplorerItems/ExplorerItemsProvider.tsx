@@ -2,6 +2,7 @@ import { useCallback, useState, type ReactNode } from 'react';
 import type { ExplorerItemsState, HomeInfo, ItemsInfo } from '../../services/models';
 import ExplorerItemsContext from './ExplorerItemsContext';
 import { getHome, getItems } from '../../services/api';
+import { setShortcuts } from '../../services/settings';
 
 type Props = { children: ReactNode };
 
@@ -12,7 +13,7 @@ function ExplorerItemsProvider({ children }: Props) {
     const [home, setHome] = useState<HomeInfo>({
         device: { hostname: 'Loading...', platform: undefined },
         clipboard: { type: 'error', content: null },
-        drives: [], shortcuts: []
+        drives: [], shortcuts: null
     });
     const [items, setItems] = useState<ItemsInfo>({ folders: [], files: [] });
 
@@ -22,6 +23,7 @@ function ExplorerItemsProvider({ children }: Props) {
 
             if (newPath === '/') {
                 const data: HomeInfo = await getHome(); // Fetch home info (device, drives, shortcuts, clipboard)
+                if (data.shortcuts) setShortcuts(data.shortcuts);
                 setHome(data);
             } else {
                 const data: ItemsInfo = await getItems(newPath, search); // Fetch items info (folder and files) at given path

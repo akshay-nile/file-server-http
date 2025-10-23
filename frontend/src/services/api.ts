@@ -1,5 +1,5 @@
 import type { HomeInfo, ItemsInfo, Thumbnail } from './models';
-import { getSettings } from './settings';
+import { getSettings, getShortcuts } from './settings';
 
 // An interceptor that inserts X-Verification-Code header from local-storage in each request
 async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {
@@ -17,9 +17,9 @@ async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = 
 let baseURL = import.meta.env.VITE_BASE_URL || window.location.origin;
 let retryCount = 2;
 
-async function tryToFetch<T>(path: string): Promise<T> {
+async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET' }): Promise<T> {
     try {
-        const response = await fetchWithBrowserId(baseURL + path);
+        const response = await fetchWithBrowserId(baseURL + path, options);
         return await (response as Response).json();
     } catch (error) {
         console.error(error);
@@ -39,7 +39,11 @@ export async function authenticate(token: string | null = null): Promise<{ statu
 export async function getHome(): Promise<HomeInfo> {
     const settings = getSettings();
     const params = `path=/&show_hidden=${settings.show_hidden}`;
-    return await tryToFetch('/explore?' + params);
+    return await tryToFetch('/explore?' + params, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(getShortcuts())
+    });
 }
 
 export async function getItems(path: string, search: string | null | undefined): Promise<ItemsInfo> {
