@@ -11,8 +11,7 @@ from waitress import serve
 
 
 # Create flask app and configure it for either dev or prod mode
-app = Flask(__name__)
-configure_flask_app(app)
+app = configure_flask_app(Flask(__name__))
 
 
 # To serve the index.html from public folder in production mode
@@ -32,7 +31,7 @@ def serve_static(resource: str):
     return response
 
 
-# To get info about device, drives and items at the given valid path
+# To get info about home or items at the given valid folder path
 @app.route('/explore', methods=['GET', 'POST'])
 @validate_path('folder')
 @require_authentication
@@ -49,7 +48,7 @@ def get_items(path):
     return jsonify({'folders': folders, 'files': files})
 
 
-# To generate the the thumbnail of any supported file and get its url
+# To generate the thumbnail of a supported file and get its thumbnail url
 @app.route('/thumbnail', methods=['GET'])
 @validate_path('file')
 @require_authentication
@@ -58,7 +57,7 @@ def generate_thumbnail(path):
     return jsonify({'filepath': path, 'thumbnail': thumbnail})
 
 
-# To download or stream file contents in 1MB chunks with Range header
+# To download or stream file contents in 1 MB chunks with Range header
 @app.route('/open', methods=['GET'])
 @validate_path('file')
 @require_authentication
@@ -70,7 +69,7 @@ def open_file(path):
     return get_stream_or_download_response(path, stream)
 
 
-# To save an uploaded file in Downlaods folder
+# To save an uploaded file in user's Downlaods folder
 @app.route('/upload', methods=['POST'])
 @require_authentication
 def save_files():
@@ -80,12 +79,6 @@ def save_files():
     file.save(f'{getSavePath()}/{file.filename}')
     print('Upload -', file.filename)
     return jsonify({'status': 'uploaded'})
-
-
-# To save an uploaded file in Downlaods folder
-@app.route('/test', methods=['GET'])
-def test():
-    return get_clipboard_info()
 
 
 # To generate and verify the unique token for authentication

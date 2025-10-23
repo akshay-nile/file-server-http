@@ -23,7 +23,7 @@ if not IS_DEV_ENV:
 from flask import Flask
 
 
-def configure_flask_app(app: Flask):
+def configure_flask_app(app: Flask) -> Flask:
     if IS_DEV_ENV:
         # Bind to all IPs, set custom port and enable debug mode
         app.config['HOST'] = '0.0.0.0'
@@ -45,3 +45,4 @@ def configure_flask_app(app: Flask):
         server_address = f"http://{app.config['HOST']}:{app.config['PORT']}"
         publish_server_address(server_address)
         print(' * Serving at', server_address)
+    return app
