@@ -15,19 +15,18 @@ async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = 
 }
 
 let baseURL = import.meta.env.VITE_BASE_URL || window.location.origin;
-let retryCount = 2;
+try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+    await fetch(baseURL, { method: 'HEAD', mode: 'no-cors', signal: controller.signal });
+    clearTimeout(timeout);
+} catch { baseURL = import.meta.env.VITE_WIFI_URL || window.location.origin; }
 
 async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET' }): Promise<T> {
     try {
         const response = await fetchWithBrowserId(baseURL + path, options);
         return await (response as Response).json();
-    } catch (error) {
-        console.error(error);
-        if (import.meta.env.VITE_WIFI_URL && retryCount-- > 0) {
-            baseURL = import.meta.env.VITE_WIFI_URL as string;
-            return await tryToFetch(path);
-        }
-    }
+    } catch (error) { console.error(error); }
     return [] as T;
 }
 
