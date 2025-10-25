@@ -88,7 +88,7 @@ function BottomPanel() {
                     tooltip={getTooltip('Download All')} tooltipOptions={{ position: 'top' }}
                     onClick={downloadAllFiles} />
             }
-            <Button size='large' style={style} raised className={showAddShortcuts ? 'rotate-0' : 'rotate-180'}
+            <Button size='large' style={style} raised pt={{ icon: { className: showAddShortcuts ? 'rotate-0' : 'rotate-180' } }}
                 icon='pi pi-thumbtack' severity={showAddShortcuts ? undefined : 'danger'}
                 tooltip={getTooltip(showAddShortcuts ? 'Add Shortcuts' : 'Remove Shortcuts')} tooltipOptions={{ position: 'top' }}
                 onClick={() => showAddShortcuts ? addToShortcuts() : removeFromShortcuts()} />
