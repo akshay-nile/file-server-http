@@ -49,6 +49,8 @@ def filter_existing_shortcuts() -> dict | None:
         return None
     folders = list(filter(lambda folder: os.path.isdir(folder.get('path', '')), shortcuts.get('folders', [])))
     files = list(filter(lambda file: os.path.isfile(file.get('path', '')), shortcuts.get('files', [])))
+    for file in files:
+        file['thumbnail'] = get_cached_thumbnail(file['path'])
     return {'folders': folders, 'files': files}
 
 
