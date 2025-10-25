@@ -25,7 +25,6 @@ def home():
 # To serve the static files from public folder with cache response
 @app.route('/public/<path:resource>', methods=['GET'])
 def serve_static(resource: str):
-    print(resource)
     response = make_response(send_from_directory('./public', resource))
     response.headers["Cache-Control"] = "public, max-age=315360000, immutable"
     return response
