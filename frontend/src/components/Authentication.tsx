@@ -2,6 +2,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { useEffect, useState } from 'react';
 import { authenticate } from '../services/api';
+import { toast } from '../services/utilities';
 
 function Authentication() {
     const [token, setToken] = useState('');
@@ -19,7 +20,14 @@ function Authentication() {
         if (response.status === 'verified') {
             localStorage.setItem('token', token);
             window.dispatchEvent(new Event('authentication'));
-        } else setToken('');
+        } else {
+            setToken('');
+            toast.show({
+                severity: 'warn',
+                summary: 'Invalid Token',
+                detail: 'The token you entered is invalid. Please enter the valid server-generated token.'
+            });
+        }
     }
 
     function onEnterOrEscapeKey(e: React.KeyboardEvent<HTMLInputElement>) {

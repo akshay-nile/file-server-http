@@ -1,3 +1,4 @@
+import type { Toast } from 'primereact/toast';
 
 // Detects Phone/Tablet devices with touch input to avoid tooltip
 const isTouchDevice = window && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -41,3 +42,5 @@ export function canGenerateThumbnail(filename: string): boolean {
     return supportedExtentions.has(extention.toLowerCase());
 }
 
+export let toast: Toast;
+export const setToast = (toastRef: Toast) => toast = toastRef; 

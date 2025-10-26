@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import { useRef, useState } from 'react';
 import { uploadFile } from '../services/api';
-import { formatSize } from '../services/utilities';
+import { formatSize, toast } from '../services/utilities';
 
 type UploadProgress = { count: number, size: number, total: number }
 type FileUploadInfo = { file: File; status: 'pending' | 'uploading' | 'uploaded' | 'failed'; }
@@ -49,6 +49,11 @@ function UploadFiles() {
             setUploadLabel('Upload');
             setUploadedInfo({ count: 0, size: 0, total: 0 });
         }, 3000);
+        toast.show({
+            severity: 'success',
+            summary: 'Uploaded Successfully',
+            detail: fileOrFiles(files.length) + ' uploaded and saved to the Download folder of the server device.'
+        });
     };
 
     function onUploadingCancelled() {
@@ -57,6 +62,11 @@ function UploadFiles() {
         setUploading(false);
         setUploadLabel('Upload');
         setUploadedInfo({ count: 0, size: 0, total: 0 });
+        toast.show({
+            severity: 'warn',
+            summary: 'Uploading Cancelled',
+            detail: 'Pending files will not be uploaded. Selection is cleared'
+        });
     }
 
     function fileOrFiles(count: number): string {

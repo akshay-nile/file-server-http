@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL } from '../services/api';
 import { getShortcuts, setShortcuts } from '../services/settings';
-import { getTooltip } from '../services/utilities';
+import { getTooltip, toast } from '../services/utilities';
 
 function BottomPanel() {
     const { selectedFiles, selectedFolders, isAnyItemSelected, clearSelection } = useSelectedItems();
@@ -31,39 +31,54 @@ function BottomPanel() {
 
     function addToShortcuts() {
         const shortcuts = getShortcuts();
+        let count = 0;
         if (shortcuts === null) {
             setShortcuts({ folders: selectedFolders, files: selectedFiles });
+            count += selectedFolders.length + selectedFiles.length;
         } else {
             selectedFolders.forEach(selectedFolder => {
                 if (!shortcuts.folders.find(shotcutFolder => shotcutFolder.path === selectedFolder.path)) {
                     shortcuts.folders.push(selectedFolder);
+                    count += 1;
                 }
             });
             selectedFiles.forEach(selectedFile => {
                 if (!shortcuts.files.find(shotcutFile => shotcutFile.path === selectedFile.path)) {
                     shortcuts.files.push(selectedFile);
+                    count += 1;
                 }
             });
             setShortcuts(shortcuts);
         }
         clearSelection();
         window.dispatchEvent(new Event('onshortcutschange'));
+        toast.show({
+            severity: 'success',
+            summary: 'Shortcuts Added',
+            detail: count + ' new item(s) added to shortcuts.'
+        });
     }
 
     function removeFromShortcuts() {
         const shortcuts = getShortcuts();
+        let count = 0;
         if (shortcuts === null) return;
         selectedFolders.forEach(selectedFolder => {
             const i = shortcuts.folders.findIndex(shotcutFolder => shotcutFolder.path === selectedFolder.path);
-            if (i !== -1) shortcuts.folders.splice(i, 1);
+            if (i !== -1) { shortcuts.folders.splice(i, 1); count += 1; }
         });
         selectedFiles.forEach(selectedFile => {
             const i = shortcuts.files.findIndex(shotcutFile => shotcutFile.path === selectedFile.path);
-            if (i !== -1) shortcuts.files.splice(i, 1);
+            if (i !== -1) { shortcuts.files.splice(i, 1); count += 1; }
         });
         setShortcuts(shortcuts);
         clearSelection();
         window.dispatchEvent(new Event('onshortcutschange'));
+        toast.show({
+            severity: 'warn',
+            summary: 'Shortcuts Removed',
+            detail: count + ' item(s) removed from shortcuts.'
+        });
     }
 
     async function downloadAllFiles() {
