@@ -16,9 +16,3 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 );
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
-    .then(() => console.log('Service Worker registered successfuly!'))
-    .catch(() => console.error('Failed to register Service Worker!'));
-}
-

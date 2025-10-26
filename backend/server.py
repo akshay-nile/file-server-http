@@ -5,7 +5,7 @@ from services.network import get_stream_or_download_response
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
 from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath, filter_existing_shortcuts
 
-from flask import Flask, jsonify, make_response, redirect, send_from_directory, request
+from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
 from waitress import serve
 
@@ -14,7 +14,7 @@ from waitress import serve
 app = configure_flask_app(Flask(__name__))
 
 
-# To serve the index.html from public folder in production mode
+# To serve the index.html from public folder
 @app.route('/', methods=['GET'])
 def home():
     if app.config['DEBUG']:
@@ -22,12 +22,10 @@ def home():
     return send_from_directory('./public', 'index.html')
 
 
-# To serve the static files from public folder with cache response
+# To serve static resources from public folder
 @app.route('/public/<path:resource>', methods=['GET'])
 def serve_static(resource: str):
-    response = make_response(send_from_directory('./public', resource))
-    response.headers["Cache-Control"] = "public, max-age=315360000, immutable"
-    return response
+    return send_from_directory('./public', resource)
 
 
 # To get info about home or items at the given valid folder path
