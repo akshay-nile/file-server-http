@@ -3,12 +3,12 @@ import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import { getThumbanil } from '../services/api';
 import type { FileInfo } from '../services/models';
 import { canGenerateThumbnail } from '../services/utilities';
+import EmptyFolder from './EmptyFolder';
 import FileItem from './FileItem';
 import FolderItem from './FolderItem';
-import EmptyFolder from './EmptyFolder';
 
 function Items() {
-    const { items } = useExplorerItems();
+    const { home, items } = useExplorerItems();
     const [files, setFiles] = useState<FileInfo[]>([...items.files]);
 
     useEffect(() => {
@@ -16,7 +16,7 @@ function Items() {
 
         (async () => {
             for (const file of items.files) {
-                if (file.thumbnail || !canGenerateThumbnail(file.name)) continue;
+                if (file.thumbnail || !canGenerateThumbnail(file.name, home.device.platform)) continue;
 
                 const thumbnail = await getThumbanil(file.path);
                 if (!thumbnail.thumbnail) continue;
@@ -32,7 +32,7 @@ function Items() {
         })();
 
         return () => { isMounted = false; };
-    }, [items.files]);
+    }, [items.files, home.device.platform]);
 
     return <>
         {

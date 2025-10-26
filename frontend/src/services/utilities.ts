@@ -1,13 +1,13 @@
 import type { Toast } from 'primereact/toast';
+import type { Platform } from './models';
 
 // Detects Phone/Tablet devices with touch input to avoid tooltip
 const isTouchDevice = window && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
-// Supported file extentions for thumbnail generation
-const supportedExtentions = new Set([
-    'jpg', 'jpeg', 'png', 'ico', 'bmp', 'gif', 'webp',  // Supported image exentions
-    'mp3', 'flac', 'wav'    // Supported audio extentions
-]);
+// Supported image, audio and video file extentions for thumbnail generation
+const supportedImageExtentions = new Set(['jpg', 'jpeg', 'png', 'ico', 'bmp', 'gif', 'webp']);
+const supportedAudioExtentions = new Set(['mp3', 'flac', 'wav']);
+const supportedVideoExtentions = new Set(['mp4', 'mkv', 'avi', 'mov', 'webm', '3gp']);
 
 export function formatDate(timestamp: number): string {
     const date = new Date(timestamp);
@@ -36,11 +36,14 @@ export function getTooltip(label: string): string | undefined {
     return !isTouchDevice ? label : undefined;
 }
 
-export function canGenerateThumbnail(filename: string): boolean {
+export function canGenerateThumbnail(filename: string, platform: Platform): boolean {
     if (!filename.includes('.')) return false;
     const extention = filename.split('.').at(-1) as string;
-    return supportedExtentions.has(extention.toLowerCase());
+    if (supportedImageExtentions.has(extention.toLowerCase())) return true;
+    if (supportedAudioExtentions.has(extention.toLowerCase())) return true;
+    if (supportedVideoExtentions.has(extention.toLowerCase()) && platform === 'Windows') return true;
+    return false;
 }
 
 export let toast: Toast;
-export const setToast = (toastRef: Toast) => toast = toastRef; 
+export const setToast = (toastRef: Toast) => toast = toastRef;

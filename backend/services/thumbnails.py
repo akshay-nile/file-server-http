@@ -1,6 +1,9 @@
 import os
+import platform
+
 from io import BytesIO
 from urllib.parse import quote
+from warnings import filterwarnings
 
 from flask import request
 from PIL import Image
@@ -12,6 +15,9 @@ from mutagen.id3._frames import APIC
 
 # Make sure that the thumbnails folder exists
 os.makedirs('./public/thumbnails', exist_ok=True)
+
+# Remove moviepy/ffmpeg verbose output from server console
+filterwarnings('ignore', category=UserWarning, module='moviepy')
 
 
 def get_cached_thumbnail(filepath: str) -> str | None:
@@ -47,7 +53,12 @@ def get_generated_thumbnail(filepath: str) -> str | None:
         if generate_audio_thumbnail(filepath, thumbpath, extention):
             return thumbnail
 
-    # Thumbnail not generated either due to error or unsupported format
+    # Supported video extensions (only on Windows platform)
+    if extention in ('mp4', 'mkv', 'avi', 'mov', 'webm', '3gp') and platform.system() == 'Windows':
+        if generate_video_thumbnail(filepath, thumbpath):
+            return thumbnail
+
+    # Thumbnail not generated either due to error or unsupported format/platform
     return None
 
 
@@ -83,5 +94,31 @@ def generate_audio_thumbnail(filepath: str, thumbpath: str, extention: str) -> b
 
         # Convert album-art to image bytes and generate thumbnail using PIL
         return generate_image_thumbnail(BytesIO(alburm_art), thumbpath)
+    except Exception:
+        return False
+
+
+def generate_video_thumbnail(filepath: str, thumbpath: str) -> bool:
+    try:
+        # Conditional import for Windows only, will throw ImportError on Android
+        from moviepy import VideoFileClip
+
+        # Load the video file and extract the middle frame
+        video = VideoFileClip(filepath)
+        frame = video.get_frame(video.duration / 2)
+
+        # If frame data did not extract then abort the thumbnail generation
+        if frame is None:
+            video.close()
+            return False
+
+        # Convert to PIL Image for saving
+        img = Image.fromarray(frame).convert('RGB')
+        img.thumbnail((64, 64))
+        img.save(thumbpath, format='PNG')
+        img.close()
+
+        video.close()
+        return True
     except Exception:
         return False

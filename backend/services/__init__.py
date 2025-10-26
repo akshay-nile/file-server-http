@@ -1,10 +1,15 @@
 import os
+import platform
 
-# Declare all required 3rd party modules here
+# Declare common 3rd party requirements here
 modules = [
     'flask', 'requests', 'mutagen', 'waitress', 'pyperclip',
     {'import': 'PIL', 'install': 'pillow'},
 ]
+
+# Append platform specific requirements here
+if platform.system() == 'Windows':
+    modules.append('moviepy')
 
 # Identify (or guess) if the current environment is dev or prod
 IS_DEV_ENV = all(map(os.path.exists, ('.venv', 'pyproject.toml', 'uv.lock')))
