@@ -6,12 +6,16 @@ async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = 
     const token = localStorage.getItem('token');
     const headers = new Headers(init.headers || {});
     if (token) headers.set('X-Token', token);
-    const response = await fetch(input, { ...init, headers });
-    if (token && response.status === 401) {
-        localStorage.removeItem('token');
-        window.dispatchEvent(new Event('authentication'));
+    try {
+        const response = await fetch(input, { ...init, headers });
+        if (token && response.status === 401) {
+            localStorage.removeItem('token');
+            window.dispatchEvent(new Event('authentication'));
+        }
+        return response;
+    } catch (error) {
+        if (error instanceof TypeError) window.dispatchEvent(new Event('serveroffline'));
     }
-    return response;
 }
 
 let baseURL = import.meta.env.VITE_BASE_URL || window.location.origin;
