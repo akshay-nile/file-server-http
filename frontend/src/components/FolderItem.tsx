@@ -19,8 +19,8 @@ function FolderItem({ folder, selectable = true }: Props) {
                         {folder.name}
                     </span>
                     <div className='flex gap-4 text-[10px] tracking-wider ml-0.25'>
-                        <span>Folders {folder.size[0]}</span>
-                        <span>Files {folder.size[1]}</span>
+                        <span>Folders {folder.count[0]}</span>
+                        <span>Files {folder.count[1]}</span>
                     </div>
                 </div>
                 {

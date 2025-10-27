@@ -24,18 +24,18 @@ export interface ItemInfo {
     name: string;
     path: string;
     hidden: boolean;
+    size: number;
     date: number;
     filtered?: boolean;
 }
 
 export interface FileInfo extends ItemInfo {
-    size: number;
     thumbnail: string | null;
     mimetype: string;
 }
 
 export interface FolderInfo extends ItemInfo {
-    size: [number, number];
+    count: [number, number];
 }
 
 export interface ItemsInfo {

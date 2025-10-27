@@ -23,3 +23,7 @@ input:focus {
     border: 1px solid dodgerblue;
     box-shadow: none;
 }
+
+.p-overlaypanel-content {
+    padding: 0.7rem;
+}

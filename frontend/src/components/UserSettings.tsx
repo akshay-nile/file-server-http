@@ -4,7 +4,6 @@ import { useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import type { Settings } from '../services/models';
 import { defaultSettings, getSettings, isChanged, setSettings } from '../services/settings';
-import { toast } from '../services/utilities';
 
 type Options = { label: string, value: string | boolean };
 
@@ -32,22 +31,12 @@ function UserSettings() {
     function save() {
         setSettings(userSettings);
         explore(path, false);
-        toast.show({
-            severity: 'success',
-            summary: 'Settings Saved',
-            detail: 'The current settings are stored locally in this browser.'
-        });
     }
 
     function reset() {
         setUserSettings(defaultSettings);
         setSettings(defaultSettings);
         explore(path, false);
-        toast.show({
-            severity: 'success',
-            summary: 'Settings Restored',
-            detail: 'The default settings are restored.'
-        });
     }
 
     return (
