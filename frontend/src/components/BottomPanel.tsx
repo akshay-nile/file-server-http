@@ -37,6 +37,18 @@ function BottomPanel() {
         // Show multi-download button
         // If at least 2 or more files are selected and no folder is selected
         setShowMultiDownload(selectedFolders.length === 0 && selectedFiles.length >= 2);
+
+        // Set item-details on selection of either single folder or single file or multiple items 
+        if (selectedFolders.length === 1 && selectedFiles.length === 0) {
+            setItemDetails({ type: 'folder', item: selectedFolders[0] });
+        } else if (selectedFolders.length === 0 && selectedFiles.length === 1) {
+            setItemDetails({ type: 'file', item: selectedFiles[0] });
+        } else if ((selectedFolders.length + selectedFiles.length) > 1) {
+            setItemDetails({ type: 'items', item: [...selectedFolders, ...selectedFiles] });
+        } else {
+            itemDetailsRef.current?.hide();
+            setItemDetails(null);
+        }
     }, [selectedFiles, selectedFolders]);
 
     function addToShortcuts() {
@@ -61,7 +73,6 @@ function BottomPanel() {
             setShortcuts(shortcuts);
         }
         clearSelection();
-        closeItemDetailsPanel();
         window.dispatchEvent(new Event('onshortcutschange'));
         toast.show({
             severity: 'success',
@@ -84,7 +95,6 @@ function BottomPanel() {
         });
         setShortcuts(shortcuts);
         clearSelection();
-        closeItemDetailsPanel();
         window.dispatchEvent(new Event('onshortcutschange'));
         toast.show({
             severity: 'warn',
@@ -98,7 +108,6 @@ function BottomPanel() {
         downloadFiles.sort((a, b) => a.size - b.size);
         let delayMs = 5000;
         clearSelection();
-        closeItemDetailsPanel();
         for (const file of downloadFiles) {
             window.location.href = getFileURL(file.path, false);
             await new Promise(resolve => setTimeout(resolve, delayMs));
@@ -106,37 +115,12 @@ function BottomPanel() {
         }
     }
 
-    function openItemDetailsPanel(e: React.MouseEvent) {
-        if (!itemDetailsRef.current) return;
-
-        if (selectedFolders.length === 1 && selectedFiles.length === 0) {
-            setItemDetails({ type: 'folder', item: selectedFolders[0] });
-            itemDetailsRef.current.toggle(e);
-            return;
-        }
-        if (selectedFolders.length === 0 && selectedFiles.length === 1) {
-            setItemDetails({ type: 'file', item: selectedFiles[0] });
-            itemDetailsRef.current.toggle(e);
-            return;
-        }
-        if ((selectedFolders.length + selectedFiles.length) > 1) {
-            setItemDetails({ type: 'items', item: [...selectedFolders, ...selectedFiles] });
-            itemDetailsRef.current.toggle(e);
-            return;
-        }
-    }
-
-    function closeItemDetailsPanel() {
-        itemDetailsRef.current?.hide();
-        setItemDetails(null);
-    }
-
     return (
         <div className={`flex items-center gap-3 fixed left-1/2 -translate-x-1/2 bg-white rounded-md shadow-lg border border-gray-300 p-3 z-10 transition-all duration-500 ease-in-out 
         ${isAnyItemSelected() ? 'bottom-[30px] translate-y-0 opacity-100' : '-bottom-full translate-y-full opacity-0'}`}>
             <Button size='large' style={style} raised icon='pi pi-info-circle'
                 tooltip={getTooltip('Show Details')} tooltipOptions={{ position: 'top' }}
-                onClick={e => openItemDetailsPanel(e)} />
+                onClick={e => itemDetailsRef.current?.toggle(e)} />
 
             {
                 showMultiDownload &&
@@ -155,7 +139,7 @@ function BottomPanel() {
                 tooltip={getTooltip('Clear')} tooltipOptions={{ position: 'top' }}
                 onClick={clearSelection} />
 
-            <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape className='max-w-[90%]' onHide={() => setItemDetails(null)}>
+            <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape dismissable={false} className='max-w-[90%]'>
                 {
                     itemsDetails?.type === 'folder'
                         ? <ItemDetails type='folder' folder={itemsDetails.item as FolderInfo} file={undefined} items={undefined} />
