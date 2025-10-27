@@ -3,14 +3,14 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import { useEffect, useRef, useState } from 'react';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL } from '../services/api';
-import type { FileInfo, FolderInfo, ItemInfo } from '../services/models';
+import type { FileInfo, FolderInfo, ItemsInfo } from '../services/models';
 import { getShortcuts, setShortcuts } from '../services/settings';
 import { getTooltip, toast } from '../services/utilities';
 import ItemDetails from './ItemDetails';
 
 type ItemDetailsType = {
     type: 'folder' | 'file' | 'items',
-    item: FolderInfo | FileInfo | ItemInfo[]
+    selection: FolderInfo | FileInfo | ItemsInfo
 };
 
 function BottomPanel() {
@@ -40,11 +40,11 @@ function BottomPanel() {
 
         // Set item-details on selection of either single folder or single file or multiple items 
         if (selectedFolders.length === 1 && selectedFiles.length === 0) {
-            setItemDetails({ type: 'folder', item: selectedFolders[0] });
+            setItemDetails({ type: 'folder', selection: selectedFolders[0] });
         } else if (selectedFolders.length === 0 && selectedFiles.length === 1) {
-            setItemDetails({ type: 'file', item: selectedFiles[0] });
+            setItemDetails({ type: 'file', selection: selectedFiles[0] });
         } else if ((selectedFolders.length + selectedFiles.length) > 1) {
-            setItemDetails({ type: 'items', item: [...selectedFolders, ...selectedFiles] });
+            setItemDetails({ type: 'items', selection: { folders: selectedFolders, files: selectedFiles } });
         } else {
             itemDetailsRef.current?.hide();
             setItemDetails(null);
@@ -139,13 +139,13 @@ function BottomPanel() {
                 tooltip={getTooltip('Clear')} tooltipOptions={{ position: 'top' }}
                 onClick={clearSelection} />
 
-            <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape dismissable={false} className='max-w-[90%]'>
+            <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape dismissable={false} className='max-w-[80%]'>
                 {
                     itemsDetails?.type === 'folder'
-                        ? <ItemDetails type='folder' folder={itemsDetails.item as FolderInfo} file={undefined} items={undefined} />
+                        ? <ItemDetails type='folder' folder={itemsDetails.selection as FolderInfo} />
                         : itemsDetails?.type === 'file'
-                            ? <ItemDetails type='file' folder={undefined} file={itemsDetails.item as FileInfo} items={undefined} />
-                            : <ItemDetails type='items' folder={undefined} file={undefined} items={itemsDetails?.item as Array<ItemInfo>} />
+                            ? <ItemDetails type='file' file={itemsDetails.selection as FileInfo} />
+                            : <ItemDetails type='items' items={itemsDetails?.selection as ItemsInfo} />
                 }
             </OverlayPanel>
         </div>

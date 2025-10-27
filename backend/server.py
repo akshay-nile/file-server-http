@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
-from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath, filter_existing_shortcuts
+from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath, filter_existing_shortcuts, get_total_size
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -76,6 +76,14 @@ def save_files():
     file.save(f'{getSavePath()}/{file.filename}')
     print('Upload -', file.filename)
     return jsonify({'status': 'uploaded'})
+
+
+# To get the total size in bytes of all the given folders
+@app.route('/total-size', methods=['POST'])
+@require_authentication
+def get_folders_size():
+    folders = request.get_json()
+    return jsonify({'totalSize': get_total_size(folders)})
 
 
 # To generate and verify the unique token for authentication

@@ -23,6 +23,8 @@ if IS_WIN_OS:
     else:
         root = root.replace('\\', '/')
 
+total_size_cache: dict[str, int] = dict()
+
 
 # To ensure that '//' do not appear in any path
 def joiner(path: str, item_name: str) -> str:
@@ -130,16 +132,27 @@ def get_items_count(item_path: str, show_hidden: bool):
     return folder_count, file_count
 
 
-# To get the total size of the folder in bytes
-def get_folder_size(path) -> int:
-    folder_size = 0
-    for root, _, files in os.walk(path):
-        for file in files:
-            try:
-                folder_size += os.path.getsize(joiner(root, file))
-            except PermissionError:
+# To get the total size in bytes of the given list of folders
+def get_total_size(folders: list[str]) -> int:
+    total_size = 0
+    for folder in folders:
+        folder_size = 0
+        if folder in total_size_cache:
+            total_size += total_size_cache[folder]
+            continue
+        for root, _, files in os.walk(folder):
+            root_path = root.replace('\\', '/')
+            if root_path in total_size_cache:
+                folder_size += total_size_cache[root_path]
                 continue
-    return folder_size
+            for file in files:
+                try:
+                    folder_size += os.path.getsize(joiner(root, file))
+                except PermissionError:
+                    continue
+        total_size_cache[folder] = folder_size
+        total_size += folder_size
+    return total_size
 
 
 # Performs recursive search in all the sub-folders at given root-path
@@ -188,7 +201,6 @@ def get_folder_info(folder_path: str, show_hidden: bool) -> dict | None:
         folder_info['name'] = folder_path.split('/')[-1]
         folder_info['hidden'] = is_item_hidden(folder_path, folder_info['name'])
         folder_info['count'] = get_items_count(folder_path, show_hidden)
-        folder_info['size'] = get_folder_size(folder_path)
         folder_info['date'] = int(os.path.getctime(folder_path) * 1000)
         return folder_info
     except PermissionError:
@@ -245,6 +257,9 @@ def get_items_info(path: str):
     if sort_by == 'type':
         folders.sort(key=lambda x: x['name'], reverse=reverse)
         files.sort(key=lambda x: x['name'].split('.')[-1], reverse=reverse)
+    elif sort_by == 'size':
+        folders.sort(key=lambda x: sum(x['count']), reverse=reverse)
+        files.sort(key=lambda x: x['size'], reverse=reverse)
     else:
         folders.sort(key=lambda x: x[sort_by], reverse=reverse)
         files.sort(key=lambda x: x[sort_by], reverse=reverse)

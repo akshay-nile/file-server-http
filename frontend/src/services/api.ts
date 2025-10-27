@@ -69,9 +69,15 @@ export function getFileURL(path: string, stream: boolean) {
 }
 
 export async function uploadFile(file: File): Promise<{ status: 'uploaded' | 'failed' }> {
-    const token = localStorage.getItem('token') as string;
     const body = new FormData();
     body.append('file', file);
-    const response = await fetch(baseURL + '/upload', { method: 'POST', headers: { 'X-Token': token }, body: body });
-    return await response.json();
+    return await tryToFetch('/upload', { method: 'POST', body: body });
+}
+
+export async function getTotalSize(folders: string[]): Promise<{ totalSize: number }> {
+    return await tryToFetch('/total-size', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(folders)
+    });
 }
