@@ -47,3 +47,9 @@ export function canGenerateThumbnail(filename: string, platform: Platform): bool
 
 export let toast: Toast;
 export const setToast = (toastRef: Toast) => toast = toastRef;
+
+// Catch the server-offline png image and store in memory
+export let serverOfflineImgUrl = '/public/icons/server-offline.png';
+fetch(serverOfflineImgUrl)
+    .then(response => response.blob()
+        .then(blob => serverOfflineImgUrl = URL.createObjectURL(blob)));
