@@ -33,7 +33,7 @@ function AppLayout() {
 
     return (
         <div className="w-full flex justify-center">
-            <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]">
+            <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%] rounded-md">
                 <div className='sticky top-0 bg-gray-50 z-10'>
                     <TopPanel />
                     {path !== '/' && <Breadcrumb />}
