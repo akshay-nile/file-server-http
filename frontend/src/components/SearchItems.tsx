@@ -2,10 +2,38 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { SelectButton } from 'primereact/selectbutton';
 import { useState } from 'react';
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 
 function SearchItems() {
+    const { path, items, setItems, explore } = useExplorerItems();
+
     const [search, setSearch] = useState<string>('');
     const [deepSearch, setDeepSearch] = useState<boolean>(false);
+    const [searching, setSearching] = useState<boolean>(false);
+
+    function doShallowSearch() {
+        if (searching) return;
+        setSearching(true);
+        const query = search.toLowerCase();
+        [...items.folders, ...items.files].forEach(item =>
+            item.filtered = item.name.toLowerCase().includes(query)
+        );
+        setItems({ ...items });
+        clearSearch();
+    }
+
+    function doDeepSearch() {
+        if (searching) return;
+        setSearching(true);
+        explore(path, false, search);
+        clearSearch();
+    }
+
+    function clearSearch() {
+        setSearch('');
+        setSearching(false);
+        setDeepSearch(false);
+    }
 
     return (
         <div className='flex mt-4 mb-2 mx-1'>
@@ -20,13 +48,13 @@ function SearchItems() {
                     {deepSearch ? 'Search all the items recursively' : 'Search items on this page only'}
                 </span>
                 <div className="p-inputgroup">
-                    <InputText placeholder="Search Items" style={{ fontSize: '14px' }}
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
+                    <InputText placeholder="Search Items" style={{ fontSize: '14px' }} spellCheck={false}
+                        value={search} onChange={e => setSearch(e.target.value)}
                         onKeyDown={undefined} />
-                    <Button icon={'pi pi-search'} style={{ width: '2.5rem' }}
-                        disabled={false}
-                        onClick={undefined} />
+                    <Button icon={`pi ${searching ? 'pi-spin pi-spinner' : 'pi-search'}`}
+                        style={{ width: '2.5rem' }}
+                        disabled={searching || search.trim().length === 0}
+                        onClick={() => deepSearch ? doDeepSearch() : doShallowSearch()} />
                 </div>
             </div>
         </div>
