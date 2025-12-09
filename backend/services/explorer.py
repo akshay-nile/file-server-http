@@ -44,15 +44,29 @@ def getSavePath() -> str:
     return savepath
 
 
-# Keeps only the existing items from the recieved set of shortcuts
-def filter_existing_shortcuts() -> dict | None:
+# Keeps only the existing shortcuts with updated items info
+def get_updated_shortcuts() -> dict | None:
     shortcuts: dict | None = request.get_json()
     if shortcuts is None:
         return None
-    folders = list(filter(lambda folder: os.path.isdir(folder.get('path', '')), shortcuts.get('folders', [])))
-    files = list(filter(lambda file: os.path.isfile(file.get('path', '')), shortcuts.get('files', [])))
-    for file in files:
-        file['thumbnail'] = get_cached_thumbnail(file['path'])
+
+    show_hidden = request.args.get('show_hidden', 'false').lower() == 'true'
+    folders, files = [], []
+
+    for folder in shortcuts.get('folders', []):
+        folder_path = folder.get('path', '')
+        if os.path.isdir(folder_path):
+            folder_info = get_folder_info(folder_path, show_hidden)
+            if folder_info is not None:
+                folders.append(folder_info)
+
+    for file in shortcuts.get('files', []):
+        file_path = file.get('path', '')
+        if os.path.isfile(file_path):
+            file_info = get_file_info(file_path)
+            if file_info is not None:
+                files.append(folder_info)
+
     return {'folders': folders, 'files': files}
 
 

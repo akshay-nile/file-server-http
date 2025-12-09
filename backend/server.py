@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
-from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath, filter_existing_shortcuts, get_total_size
+from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath, get_updated_shortcuts, get_total_size
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -38,7 +38,7 @@ def get_items(path):
         return jsonify({
             'device': get_device_info(),
             'drives': get_drives_info(),
-            'shortcuts': filter_existing_shortcuts(),
+            'shortcuts': get_updated_shortcuts(),
             'clipboard': get_clipboard_info()
         })
     folders, files = get_items_info(path)
