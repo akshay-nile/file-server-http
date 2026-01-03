@@ -54,7 +54,7 @@ function FileItem({ file, selectable = true }: Props) {
 
             <div className="w-full flex justify-between items-center">
                 <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer justify-between' onClick={() => streamFile(file)}>
-                    <span className='group-hover:text-blue-700 text-sm leading-3.75'>
+                    <span className='group-hover:text-blue-700 text-sm leading-3.75 min-w-0 break-words break-all'>
                         {file.name}
                     </span>
                     <div className='flex gap-4 text-[10px] tracking-wider ml-0.25'>

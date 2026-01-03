@@ -12,7 +12,7 @@ function DriveItem({ drive }: Props) {
             <img src='/public/icons/drive.jpg' className='w-[60px] h-[50px] m-1 p-0 rounded-[5px]' />
 
             <div className='w-full flex flex-col my-1 gap-1.75 group cursor-pointer' onClick={() => explore(drive.path, true)}>
-                <span className='font-medium group-hover:text-blue-700 leading-3.75'>
+                <span className='font-medium group-hover:text-blue-700 leading-3.75 min-w-0 break-words break-all'>
                     {drive.letter !== null && <span className='mr-1.5'>{drive.letter}:</span>}
                     {drive.label}
                 </span>
