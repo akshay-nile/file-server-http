@@ -30,6 +30,9 @@ touch "$MY_FILE_SERVER_DIR/.nomedia"
 echo ""
 echo "Step 2: Navigating to $FRONTEND_DIR and building..."
 cd "$FRONTEND_DIR"
+if [ ! -d "node_modules" ]; then
+    npm ci
+fi
 npm run build
 
 # 3) Move the dist folder to MyFileServer
