@@ -99,35 +99,25 @@ uv sync --no-dev
 Pop-Location
 
 
-# -------- Step 4: Generate run.cmd and send its shortcut to desktop --------
+# -------- Step 4: Create desktop shortcut for "uv run server.py" --------
 
 
 # Paths
-$RunCmdPath = Join-Path $TargetDir "run.cmd"
-
-# Create run.cmd content
-$RunCmdContent = @"
-@echo off
-cd /d "%~dp0"
-cls
-uv run server.py
-exit
-"@
-
-Set-Content -Path $RunCmdPath -Value $RunCmdContent -Encoding UTF8
-
-# Desktop path
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
 $ShortcutPath = Join-Path $DesktopPath "MyFileServer.lnk"
 
-# Icon path
+$UserHome  = [Environment]::GetFolderPath("UserProfile")
+$TargetDir = Join-Path $UserHome "MyFileServer"
+
 $IconPath = Join-Path $TargetDir "public\favicon.ico"
 
 # Create shortcut
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
 
-$Shortcut.TargetPath = $RunCmdPath
+$Shortcut.TargetPath = "uv"
+$Shortcut.Arguments  = "run server.py"
 $Shortcut.WorkingDirectory = $TargetDir
 $Shortcut.IconLocation = $IconPath
+
 $Shortcut.Save()
