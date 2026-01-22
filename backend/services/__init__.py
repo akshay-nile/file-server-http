@@ -12,7 +12,7 @@ if platform.system() == 'Windows':
     modules.append('moviepy')
 
 # Identify (or guess) if the current environment is dev or prod
-IS_DEV_ENV = all(map(os.path.exists, ('.venv', 'pyproject.toml', 'uv.lock')))
+IS_DEV_ENV = all(map(os.path.exists, ('../backend', '../frontend')))
 
 if not IS_DEV_ENV:
     # Global pip installation if any required module is missing
