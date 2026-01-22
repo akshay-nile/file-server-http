@@ -1,4 +1,4 @@
-# -------- Step 1: Check package folder exists or not --------
+# -------- Step 1: Check MyFileServer folder exists or not --------
 
 
 $AppName = "MyFileServer"
@@ -88,7 +88,7 @@ if (-not $UvCmd) {
         exit 1
     }
 
-    python -m pip install --user uv
+    pip install uv
 }
 
 # Run uv sync --no-dev inside MyFileServer
