@@ -1,24 +1,24 @@
 import os
 import platform
 
-# Declare common 3rd party requirements here
-modules = [
-    'flask', 'requests', 'mutagen', 'waitress', 'pyperclip',
-    {'import': 'PIL', 'install': 'pillow'},
-]
-
-# Append platform specific requirements here
-if platform.system() == 'Windows':
-    modules.append('moviepy')
 
 # Identify (or guess) if the current environment is dev or prod
 IS_DEV_ENV = all(map(os.path.exists, ('../backend', '../frontend')))
 
-if not IS_DEV_ENV:
-    # Global pip installation if any required module is missing
+# While running on Pydroid 3
+if platform.system() != 'Windows':
+    # Declare required modules for Pydroid 3 global installation
+    modules = [
+        'flask', 'requests', 'mutagen', 'waitress', 'pyperclip',
+        {'import': 'PIL', 'install': 'pillow'},
+    ]
+
+    # Global pip installation for missing requirements in Pydroid 3
     for module in modules:
-        import_name = module if isinstance(module, str) else module.get('import')
-        install_name = module if isinstance(module, str) else module.get('install')
+        if isinstance(module, str):
+            import_name, install_name = module, module
+        else:
+            import_name, install_name = module.get('import'), module.get('install')
         try:
             exec(f'import {import_name}')
         except ImportError:
