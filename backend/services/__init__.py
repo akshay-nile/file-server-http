@@ -3,7 +3,7 @@ import platform
 
 
 # Identify (or guess) if the current environment is dev or prod
-IS_DEV_ENV = all(map(os.path.exists, ('../backend', '../frontend')))
+IS_DEV_ENV = all(map(os.path.exists, ('../backend', '../frontend', '../scripts')))
 
 # While running on Pydroid 3
 if platform.system() != 'Windows':
