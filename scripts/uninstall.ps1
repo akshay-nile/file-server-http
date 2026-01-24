@@ -3,6 +3,15 @@
 # and all its components from the project root, user home/desktop
 
 
+# Step 0) Kill any running process of MyFileServer
+
+$PortPID = (Get-NetTCPConnection -LocalPort 8849 -ErrorAction SilentlyContinue).OwningProcess
+if ($PortPID) {
+    Write-Host "Killing process PID: $PortPID"
+    Stop-Process -Id $PortPID -Force
+}
+
+
 # Step 1) Remove MyFileServer from project root
 
 Set-Location ".."
@@ -14,8 +23,8 @@ if (Test-Path "MyFileServer") {
 
 # Step 2) Remove MyFileServer from User directory
 
-$UserHome   = [Environment]::GetFolderPath("UserProfile")
-$TargetDir  = Join-Path $UserHome "MyFileServer"
+$UserHome = [Environment]::GetFolderPath("UserProfile")
+$TargetDir = Join-Path $UserHome "MyFileServer"
 if (Test-Path $TargetDir) {
     Remove-Item $TargetDir -Recurse -Force
     Write-Host "`nRemoved from User Home"
@@ -24,8 +33,8 @@ if (Test-Path $TargetDir) {
 
 # Step 3) Remove desktop shortcut of MyFileServer
 
-$Desktop    = [Environment]::GetFolderPath("Desktop")
-$Shortcut   = Join-Path $Desktop "MyFileServer.lnk"
+$Desktop = [Environment]::GetFolderPath("Desktop")
+$Shortcut = Join-Path $Desktop "MyFileServer.lnk"
 if (Test-Path $Shortcut) {
     Remove-Item -Path $Shortcut -Force
     Write-Host "`nRemoved Desktop Shortcut"
