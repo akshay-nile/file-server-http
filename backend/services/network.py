@@ -63,6 +63,12 @@ def publish_server_address(server_address: str):
     threading.Thread(target=my_socket).start()
 
 
+def is_socket_available(host: str, port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(0.5)
+        return sock.connect_ex((host, port)) != 0
+
+
 def chunk_generator(filepath: str, start: int, end: int):
     chunk_size = 1024 * 1024
     with open(filepath, 'rb') as file:

@@ -26,6 +26,7 @@ if platform.system() != 'Windows':
 
 
 from flask import Flask
+from services.network import is_socket_available
 
 
 def configure_flask_app(app: Flask) -> Flask:
@@ -46,7 +47,12 @@ def configure_flask_app(app: Flask) -> Flask:
         app.config['PORT'] = 8849
         app.config['DEBUG'] = False
 
-        # Publish the appropriate socket address to my website
+        # Check for the socket availability before binding to the server
+        if not is_socket_available(app.config['HOST'], app.config['PORT']):
+            print('Socket is already in use')
+            exit(0)
+
+        # Publish the appropriate socket/server address to my website
         server_address = f"http://{app.config['HOST']}:{app.config['PORT']}"
         publish_server_address(server_address)
         print(' * Serving at', server_address)
