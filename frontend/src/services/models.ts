@@ -83,5 +83,6 @@ export interface SearchInfo {
     query: string;
     deepSearch: boolean;
     path: string;
-    items: ItemsInfo;
+    originalItems: ItemsInfo;
+    filteredItems: ItemsInfo | null;
 }

@@ -24,6 +24,12 @@ function TopPanel() {
             setPanelOpened(false);
             setTimeout(() => setPanelContent(null), 333);
         }
+        const onSearchPageCache = () => {
+            setPanelContent('search');
+            setPanelOpened(true);
+        };
+        addEventListener('onsearchpagecache', onSearchPageCache);
+        return () => { removeEventListener('onsearchpagecache', onSearchPageCache); };
     }, [path]);
 
     function togglePanel(newContent: typeof panelContent) {
@@ -32,7 +38,7 @@ function TopPanel() {
                 setPanelOpened(false);
                 setTimeout(() => {
                     setPanelContent(null);
-                    if (newContent === 'search') dispatchEvent(new Event('onsearchpanelclose'));
+                    dispatchEvent(new Event(`on${newContent}panelclose`));
                 }, 333);
             } else setPanelContent(newContent);  // Keep panel open and switch the content
         } else {

@@ -3,7 +3,7 @@ import type { ExplorerItemsState, HomeInfo, ItemsInfo } from '../../services/mod
 import ExplorerItemsContext from './ExplorerItemsContext';
 import { getHome, getItems } from '../../services/api';
 import { setShortcuts } from '../../services/settings';
-import { searchInfo } from '../../services/utilities';
+import { searchInfo, setSearchInfo } from '../../services/utilities';
 
 type Props = { children: ReactNode };
 
@@ -23,15 +23,14 @@ function ExplorerItemsProvider({ children }: Props) {
             setLoading(true);
 
             if (searchInfo !== null && newPath === searchInfo.path) {
-                const query = searchInfo.query.toLowerCase().trim();
-                if (!searchInfo.deepSearch) {
-                    setItems({
-                        folders: searchInfo.items.folders.filter(folder => folder.name.toLowerCase().includes(query)),
-                        files: searchInfo.items.files.filter(file => file.name.toLowerCase().includes(query))
-                    });
-                } else {
-                    const data: ItemsInfo = await getItems(newPath, query); // Fetch items info with deepSearch query
-                    setItems(data);
+                if (searchInfo.filteredItems) {
+                    setItems({ ...searchInfo.filteredItems });
+                    window.dispatchEvent(new Event('onsearchpagecache'));
+                } else if (searchInfo.deepSearch) {
+                    const query = searchInfo.query.toLowerCase().trim();
+                    const filteredItems: ItemsInfo = await getItems(newPath, query); // Fetch items info with deepSearch query
+                    setItems(filteredItems);
+                    setSearchInfo({ ...searchInfo, filteredItems });
                 }
             } else if (newPath === '/') {
                 const data: HomeInfo = await getHome(); // Fetch home info (device, drives, shortcuts, clipboard)
