@@ -3,6 +3,7 @@
 # collecting required backend files and organizing them into a new
 # directory named 'MyFileServer' created in the project root.
 
+Set-Location $PSScriptRoot
 
 # Step 1) -------- Goto project root and create MyFileServer directory --------
 

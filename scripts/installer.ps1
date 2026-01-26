@@ -2,6 +2,7 @@
 # This script automates the process of installing the MyFileServer
 # in User Home and send its shortcut to the Desktop.
 
+Set-Location $PSScriptRoot
 
 # -------- Step 1) Run uninstaller and packager to generate a fresh MyFileServer --------
 
@@ -16,7 +17,7 @@ Set-Location "scripts"
 Write-Host "`nStep 2) Moving MyFileServer to User Home"
 Copy-Item -Path "backend\pyproject.toml" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\uv.lock" -Destination "MyFileServer" -Force
-$UserHome  = [Environment]::GetFolderPath("UserProfile")
+$UserHome = [Environment]::GetFolderPath("UserProfile")
 Move-Item -Path "MyFileServer" -Destination $UserHome
 
 
@@ -25,7 +26,7 @@ Move-Item -Path "MyFileServer" -Destination $UserHome
 Write-Host "`nStep 3) Installing uv and syncing dependencies"
 $MyFileServer = Join-Path $UserHome "MyFileServer"
 Set-Location $MyFileServer
-if(-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
     pip install uv
 }
 uv sync --no-dev
@@ -41,7 +42,7 @@ $IconPath = Join-Path $MyFileServer "public\favicon.ico"
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
 $Shortcut.TargetPath = "uv"
-$Shortcut.Arguments  = "run server.py"
+$Shortcut.Arguments = "run server.py"
 $Shortcut.WorkingDirectory = $MyFileServer
 $Shortcut.IconLocation = $IconPath
 $Shortcut.Save()

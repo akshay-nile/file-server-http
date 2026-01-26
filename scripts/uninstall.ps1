@@ -2,6 +2,7 @@
 # This script automates the process of uninstalling MyFileServer
 # and all its components from the project root, user home/desktop
 
+Set-Location $PSScriptRoot
 
 # Step 0) Kill any running process of MyFileServer
 
