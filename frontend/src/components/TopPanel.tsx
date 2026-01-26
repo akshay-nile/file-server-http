@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import { getTooltip } from '../services/utilities';
 import SearchItems from './SearchItems';
-import UserSettings from './UserSettings';
 import UploadFiles from './UploadFiles';
+import UserSettings from './UserSettings';
 
 function TopPanel() {
     const { path, home, explore } = useExplorerItems();
@@ -30,7 +30,10 @@ function TopPanel() {
         if (panelOpened) {
             if (newContent === panelContent) {   // Close the panel and remove the content
                 setPanelOpened(false);
-                setTimeout(() => setPanelContent(null), 333);
+                setTimeout(() => {
+                    setPanelContent(null);
+                    if (newContent === 'search') dispatchEvent(new Event('onsearchpanelclose'));
+                }, 333);
             } else setPanelContent(newContent);  // Keep panel open and switch the content
         } else {
             setPanelContent(newContent);  // Set content first and then open the panel

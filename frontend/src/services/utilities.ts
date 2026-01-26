@@ -1,5 +1,5 @@
 import type { Toast } from 'primereact/toast';
-import type { Platform } from './models';
+import type { Platform, SearchInfo } from './models';
 
 // Detects Phone/Tablet devices with touch input to avoid tooltip
 const isTouchDevice = window && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -53,3 +53,8 @@ export let serverOfflineImgUrl = '/public/icons/server-offline.png';
 fetch(serverOfflineImgUrl)
     .then(response => response.blob()
         .then(blob => serverOfflineImgUrl = URL.createObjectURL(blob)));
+
+
+export let searchInfo: SearchInfo | null = null;
+export function setSearchInfo(info: SearchInfo) { searchInfo = info; }
+export function clearSearchInfo() { searchInfo = null; }

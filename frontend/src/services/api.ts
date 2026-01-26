@@ -49,7 +49,7 @@ export async function getHome(): Promise<HomeInfo> {
     });
 }
 
-export async function getItems(path: string, search: string | null | undefined): Promise<ItemsInfo> {
+export async function getItems(path: string, search: string | null = null): Promise<ItemsInfo> {
     let params = 'path=' + encodeURIComponent(path);
     if (search) params += '&search=' + encodeURIComponent(search);
     const settings = getSettings();

@@ -25,7 +25,6 @@ export interface ItemInfo {
     path: string;
     hidden: boolean;
     date: number;
-    filtered?: boolean;
 }
 
 export interface FileInfo extends ItemInfo {
@@ -78,4 +77,11 @@ export interface ExplorerItemsState {
     setItems: (items: ItemsInfo) => void;
 
     explore: (path: string, pushHistory?: boolean, search?: string) => Promise<void>;
+}
+
+export interface SearchInfo {
+    query: string;
+    deepSearch: boolean;
+    path: string;
+    items: ItemsInfo;
 }

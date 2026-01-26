@@ -3,6 +3,7 @@ import type { ExplorerItemsState, HomeInfo, ItemsInfo } from '../../services/mod
 import ExplorerItemsContext from './ExplorerItemsContext';
 import { getHome, getItems } from '../../services/api';
 import { setShortcuts } from '../../services/settings';
+import { searchInfo } from '../../services/utilities';
 
 type Props = { children: ReactNode };
 
@@ -17,16 +18,27 @@ function ExplorerItemsProvider({ children }: Props) {
     });
     const [items, setItems] = useState<ItemsInfo>({ folders: [], files: [] });
 
-    const explore = useCallback(async (newPath: string, pushHistory: boolean = true, search: string | null = null) => {
+    const explore = useCallback(async (newPath: string, pushHistory: boolean = true) => {
         try {
             setLoading(true);
 
-            if (newPath === '/') {
+            if (searchInfo !== null && newPath === searchInfo.path) {
+                const query = searchInfo.query.toLowerCase().trim();
+                if (!searchInfo.deepSearch) {
+                    setItems({
+                        folders: searchInfo.items.folders.filter(folder => folder.name.toLowerCase().includes(query)),
+                        files: searchInfo.items.files.filter(file => file.name.toLowerCase().includes(query))
+                    });
+                } else {
+                    const data: ItemsInfo = await getItems(newPath, query); // Fetch items info with deepSearch query
+                    setItems(data);
+                }
+            } else if (newPath === '/') {
                 const data: HomeInfo = await getHome(); // Fetch home info (device, drives, shortcuts, clipboard)
                 if (data.shortcuts) setShortcuts(data.shortcuts);
                 setHome(data);
             } else {
-                const data: ItemsInfo = await getItems(newPath, search); // Fetch items info (folder and files) at given path
+                const data: ItemsInfo = await getItems(newPath); // Fetch items info (folder and files) at given path
                 setItems(data);
             }
 

@@ -9,9 +9,10 @@ import FolderItem from './FolderItem';
 
 function Items() {
     const { home, items } = useExplorerItems();
-    const [files, setFiles] = useState<FileInfo[]>([...items.files]);
+    const [files, setFiles] = useState<FileInfo[]>([]);
 
     useEffect(() => {
+        setFiles([...items.files]);
         let isMounted = true;
 
         (async () => {
@@ -40,7 +41,7 @@ function Items() {
                 ? <EmptyFolder />
                 : <>
                     {
-                        items.folders.filter(item => item.filtered !== false).map((folder, i) =>
+                        items.folders.map((folder, i) =>
                             <div key={folder.path} className='mx-2'>
                                 {i === 0 && <hr className='text-gray-300 m-1' />}
                                 <FolderItem folder={folder} selectable={true} />
@@ -49,7 +50,7 @@ function Items() {
                         )
                     }
                     {
-                        files.filter(item => item.filtered !== false).map((file, i) =>
+                        files.map((file, i) =>
                             <div key={file.path} className='mx-2'>
                                 {(i === 0 && items.folders.length === 0) && <hr className='text-gray-300 m-1' />}
                                 <FileItem file={file} selectable={true} />
