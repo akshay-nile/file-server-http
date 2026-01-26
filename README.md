@@ -8,14 +8,14 @@ A lightweight file server application to transfer/stream files over network with
 ---
 
 ## 📂 Root Project Structure
-
-MyFileServer/
-├── backend/    ← Python-Flask backend
-├── frontend/   ← React-JS + Vite frontend
-├── scripts/    ← PowerShell scripts
-├── .gitignore
-└── README.md
-
+<br>
+MyFileServer/<br>
+├── backend/    ← Python-Flask backend<br>
+├── frontend/   ← React-JS + Vite frontend<br>
+├── scripts/    ← PowerShell scripts<br>
+├── .gitignore<br>
+└── README.md<br>
+<br>
 ## How to Install on Windows
 - Make sure Git, Node and Python are installed
 - Clone this repository in Windows PC
