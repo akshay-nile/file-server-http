@@ -21,15 +21,24 @@ $UserHome = [Environment]::GetFolderPath("UserProfile")
 Move-Item -Path "MyFileServer" -Destination $UserHome
 
 
-# -------- Step 3) Install uv and sync project dependencies --------
+# -------- Step 3) Download tools and sync project dependencies --------
 
-Write-Host "`nStep 3) Installing uv and syncing dependencies"
+Write-Host "`nStep 3) Downloading tools and syncing dependencies"
 $MyFileServer = Join-Path $UserHome "MyFileServer"
-Set-Location $MyFileServer
-if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
-    pip install uv
+$env:UV_INSTALL_DIR = Join-Path $MyFileServer "tools";
+$env:UV_NO_MODIFY_PATH = "1"; 
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+$UvExe = Join-Path $MyFileServer "tools\uv.exe"
+if (-not (Test-Path $UvExe)) {
+    Write-Host "`nDownloading tools failed" -ForegroundColor Red
+    exit 1
 }
-uv sync --no-dev
+Set-Location $MyFileServer
+& $UvExe sync --no-dev
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Dependency syncing failed" -ForegroundColor Red
+    exit 1
+}
 
 
 # -------- Step 4) Creating desktop shortcut of MyFileServer --------
@@ -41,7 +50,7 @@ $IconPath = Join-Path $MyFileServer "public\favicon.ico"
 
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
-$Shortcut.TargetPath = "uv"
+$Shortcut.TargetPath = $UvExe
 $Shortcut.Arguments = "run server.py"
 $Shortcut.WorkingDirectory = $MyFileServer
 $Shortcut.IconLocation = $IconPath
