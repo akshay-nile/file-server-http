@@ -1,7 +1,6 @@
 # ===============================
 # Frontend (React-JS with vite)
 /frontend/node_modules/
-/frontend/dist/
 /frontend/npm-debug.log*
 
 # IDE and OS clutter
