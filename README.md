@@ -18,7 +18,6 @@ MyFileServer/<br>
 <br>
 
 ## How to Install on Windows
-- Make sure Git and Node are installed on Windows PC
 - Clone this repository in Windows PC
 - Open PowerShell terminal inside scripts folder
 - Run .\installer.ps1 script
@@ -27,7 +26,6 @@ MyFileServer/<br>
 
 ## How to Use on Android 
 - Make sure Pydroid-3 app is installed in Android device
-- Make sure Git and Node is installed on Windows PC 
 - Clone this repository in Windows PC
 - Open PowerShell terminal inside scripts folder
 - Run .\package.ps1 script
