@@ -7,7 +7,6 @@
 /frontend/.env
 /frontend/.DS_Store
 /frontend/.vscode/
-/frontend/dist/favicon.ico
 
 # ===============================
 # Backend (Python-Flask with uv)
