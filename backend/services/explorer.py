@@ -11,17 +11,14 @@ from flask import request
 from pyperclip import paste, PyperclipException
 
 
-root = '/storage/emulated/0'  # Android's Internal Storage
+home = '/storage/emulated/0'  # Android's Internal Storage
 IS_WIN_OS = platform.system() == 'Windows'
 
 if IS_WIN_OS:
-    username = os.getenv('USERNAME') or os.getenv('USER')
-    root = os.getenv('USERPROFILE') or f'C:/{username}'
-    if not os.path.exists(root):
-        print('Warning: root path not found')
-        root = '.'
-    else:
-        root = root.replace('\\', '/')
+    home = os.path.expanduser('~').replace('\\', '/')
+    if not os.path.exists(home):
+        print('Warning: UserHome path not found')
+        home = '.'
 
 total_size_cache: dict[str, int] = dict()
 
@@ -33,13 +30,13 @@ def joiner(path: str, item_name: str) -> str:
     return f'{path}/{item_name}'
 
 
-def formatPath(path: str) -> str:
-    return path if IS_WIN_OS else path.replace(root, 'IS:')
+def format_path(path: str) -> str:
+    return path if IS_WIN_OS else path.replace(home, 'IS:')
 
 
 # Returns the path of Downloads folder to save the uploaded files
-def getSavePath() -> str:
-    savepath = root + ('/Downloads' if IS_WIN_OS else '/Download')
+def get_save_path() -> str:
+    savepath = home + ('/Downloads' if IS_WIN_OS else '/Download')
     os.makedirs(savepath, exist_ok=True)
     return savepath
 
@@ -188,9 +185,9 @@ def get_drives_info() -> list:
     drives_info = []
 
     if not IS_WIN_OS:
-        total, used, free = disk_usage(root)
+        total, used, free = disk_usage(home)
         drives_info.append({
-            'letter': None, 'label': 'Internal Storage', 'path': root,
+            'letter': None, 'label': 'Internal Storage', 'path': home,
             'size': {'total': total, 'used': used, 'free': free}
         })
         return drives_info

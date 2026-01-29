@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
-from services.explorer import formatPath, get_clipboard_info, get_device_info, get_drives_info, get_items_info, getSavePath, get_updated_shortcuts, get_total_size
+from services.explorer import format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_save_path, get_updated_shortcuts, get_total_size
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -33,7 +33,7 @@ def serve_static(resource: str):
 @validate_path('folder')
 @require_authentication
 def get_items(path):
-    print('Explore -', formatPath(path))
+    print('Explore -', format_path(path))
     if request.method == 'POST':
         return jsonify({
             'device': get_device_info(),
@@ -62,7 +62,7 @@ def open_file(path):
     token = request.args.get('token')
     stream = request.args.get('stream') == 'true'
     range_header = request.headers.get('Range')
-    print('Stream -' if stream else 'Download -', formatPath(path), range_header, token)
+    print('Stream -' if stream else 'Download -', format_path(path), range_header, token)
     return get_stream_or_download_response(path, stream)
 
 
@@ -73,7 +73,7 @@ def save_files():
     file = request.files.get('file', None)
     if file is None:
         return jsonify({'status': 'failed'})
-    file.save(f'{getSavePath()}/{file.filename}')
+    file.save(f'{get_save_path()}/{file.filename}')
     print('Upload -', file.filename)
     return jsonify({'status': 'uploaded'})
 
