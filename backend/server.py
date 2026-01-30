@@ -2,8 +2,9 @@ from services import configure_flask_app
 from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
+from services.environment import THUMBNAILS_DIR, USER_DOWNLOADS
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication
-from services.explorer import format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_save_path, get_updated_shortcuts, get_total_size
+from services.explorer import format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -22,10 +23,16 @@ def home():
     return send_from_directory('./public', 'index.html')
 
 
-# To serve static resources from public folder
+# To serve static frontend resources from public folder
 @app.route('/public/<path:resource>', methods=['GET'])
-def serve_static(resource: str):
+def serve_public(resource: str):
     return send_from_directory('./public', resource)
+
+
+# To serve thumbanils from the thumbanails cache folder
+@app.route('/thumbnails/<path:thumbnail>', methods=['GET'])
+def serve_thumbnail(thumbnail: str):
+    return send_from_directory(THUMBNAILS_DIR, thumbnail)
 
 
 # To get info about home or items at the given valid folder path
@@ -73,7 +80,7 @@ def save_files():
     file = request.files.get('file', None)
     if file is None:
         return jsonify({'status': 'failed'})
-    file.save(f'{get_save_path()}/{file.filename}')
+    file.save(f'{USER_DOWNLOADS}/{file.filename}')
     print('Upload -', file.filename)
     return jsonify({'status': 'uploaded'})
 

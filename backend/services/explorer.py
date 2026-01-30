@@ -1,24 +1,16 @@
 import os
 import ctypes
-import platform
 
 from shutil import disk_usage
 from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
+
 from services.thumbnails import get_cached_thumbnail
+from services.environment import IS_WIN_OS, PROJECT_ROOT, USER_HOME, HOST_NAME
 
 from flask import request
 from pyperclip import paste, PyperclipException
 
-
-home = '/storage/emulated/0'  # Android's Internal Storage
-IS_WIN_OS = platform.system() == 'Windows'
-
-if IS_WIN_OS:
-    home = os.path.expanduser('~').replace('\\', '/')
-    if not os.path.exists(home):
-        print('Warning: UserHome path not found')
-        home = '.'
 
 total_size_cache: dict[str, int] = dict()
 
@@ -31,14 +23,7 @@ def joiner(path: str, item_name: str) -> str:
 
 
 def format_path(path: str) -> str:
-    return path if IS_WIN_OS else path.replace(home, 'IS:')
-
-
-# Returns the path of Downloads folder to save the uploaded files
-def get_save_path() -> str:
-    savepath = home + ('/Downloads' if IS_WIN_OS else '/Download')
-    os.makedirs(savepath, exist_ok=True)
-    return savepath
+    return path if IS_WIN_OS else path.replace(USER_HOME, 'IS:')
 
 
 # Keeps only the existing shortcuts with updated items info
@@ -175,9 +160,10 @@ def deep_search(query: str, root: str):
 
 
 def get_device_info() -> dict:
-    if IS_WIN_OS:
-        return {'hostname': platform.node(), 'platform': 'Windows'}
-    return {'hostname': 'Pydroid-3', 'platform': 'Android'}
+    return {
+        'hostname': HOST_NAME,
+        'platform': 'Windows' if IS_WIN_OS else 'Android'
+    }
 
 
 # To get info about storage/disk drives/partitions depending on platform
@@ -185,9 +171,9 @@ def get_drives_info() -> list:
     drives_info = []
 
     if not IS_WIN_OS:
-        total, used, free = disk_usage(home)
+        total, used, free = disk_usage(USER_HOME)
         drives_info.append({
-            'letter': None, 'label': 'Internal Storage', 'path': home,
+            'letter': None, 'label': 'Internal Storage', 'path': USER_HOME,
             'size': {'total': total, 'used': used, 'free': free}
         })
         return drives_info
@@ -244,7 +230,7 @@ def get_items_info(path: str):
     files, folders = [], []
 
     # Not allowed to explore the items inside the project folder
-    if path.startswith(os.getcwd().replace('\\', '/')):
+    if path.startswith(PROJECT_ROOT):
         return folders, files
 
     # Only filtered items will be considered if the search query is provided

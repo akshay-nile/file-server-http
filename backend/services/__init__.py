@@ -1,12 +1,9 @@
 import os
-import platform
+from services.environment import IS_WIN_OS, IS_DEV_ENV
 
-
-# Identify (or guess) if the current environment is dev or prod
-IS_DEV_ENV = all(map(os.path.exists, ('../backend', '../frontend', '../scripts')))
 
 # While running on Pydroid 3
-if platform.system() != 'Windows':
+if not IS_WIN_OS:
     # Declare required modules for Pydroid 3 global installation
     modules = [
         'flask', 'requests', 'mutagen', 'waitress', 'pyperclip',
@@ -26,7 +23,6 @@ if platform.system() != 'Windows':
 
 
 from flask import Flask
-from services.network import is_socket_available
 
 
 def configure_flask_app(app: Flask) -> Flask:
@@ -40,6 +36,7 @@ def configure_flask_app(app: Flask) -> Flask:
         from flask_cors import CORS
         CORS(app)
     else:
+        from services.network import is_socket_available
         from services.network import get_user_selection, publish_server_address
 
         # Bind to actual network ip, set custom port and disable debug mode

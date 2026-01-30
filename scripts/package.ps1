@@ -1,7 +1,7 @@
 # -------- DESCRIPTION --------
 # This script automates the process of building the frontend,
 # collecting required backend files and organizing them into a new
-# directory named 'MyFileServer' created in the project root.
+# core directory named 'MyFileServer' created in the project root.
 
 Set-Location $PSScriptRoot
 
@@ -21,7 +21,9 @@ New-Item -ItemType File -Path "MyFileServer\.nomedia"
 Write-Host "`nStep 2) Building the frontend"
 Set-Location "frontend"
 if (Get-Command npm -ErrorAction SilentlyContinue) {
-    npm ci
+    if (-not (Test-Path "node_modules")) {
+        npm ci
+    }
     npm run build
 } 
 if (-not (Test-Path "dist")) {

@@ -1,6 +1,8 @@
 import os
+
 from functools import wraps
 from urllib.parse import unquote
+
 from flask import request, abort
 
 

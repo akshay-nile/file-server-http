@@ -1,4 +1,4 @@
-# 📁 MyFileServer v1.0.1
+# 📁 MyFileServer v1.1.2
 
 A lightweight file server application to transfer/stream files over network with:
 
@@ -19,10 +19,10 @@ MyFileServer/<br>
 
 ## How to Install on Windows
 - Clone this repository in Windows PC
-- Open PowerShell terminal inside scripts folder
-- Run .\installer.ps1 script
+- Open PowerShell admin terminal inside scripts folder
+- Run .\installer.ps1 script as Administrator
 - Launch the MyFileServer from Desktop Shortcut
-- To Uninstall, Run .\uninstall.ps1 script in PowerShell
+- Can be safely Uninstalled from Windows settings 
 
 ## How to Use on Android 
 - Make sure Pydroid-3 app is installed in Android device

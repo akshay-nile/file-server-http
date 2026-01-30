@@ -3,10 +3,12 @@ import random
 import string
 
 from functools import wraps
+from services.environment import TOKENS_DIR
+
 from flask import abort, request
 
 
-filename = '.tokens'
+filename = TOKENS_DIR + '/.tokens'
 tokens: set[str] = set()
 token: str | None = None
 

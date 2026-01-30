@@ -5,6 +5,8 @@ from io import BytesIO
 from urllib.parse import quote
 from warnings import filterwarnings
 
+from services.environment import THUMBNAILS_DIR
+
 from flask import request
 from PIL import Image
 
@@ -13,9 +15,6 @@ from mutagen.flac import FLAC
 from mutagen.id3._frames import APIC
 
 
-# Make sure that the thumbnails folder exists
-os.makedirs('./public/thumbnails', exist_ok=True)
-
 # Remove moviepy/ffmpeg verbose output from server console
 filterwarnings('ignore', category=UserWarning, module='moviepy')
 
@@ -23,8 +22,8 @@ filterwarnings('ignore', category=UserWarning, module='moviepy')
 def get_cached_thumbnail(filepath: str) -> str | None:
     # Make thumbnail path from file-name to find-in-cache
     filename = filepath.split('/')[-1]
-    thumbpath = './public/thumbnails/' + filename + '.png'
-    thumbnail = f'{request.host_url}public/thumbnails/{quote(filename, safe='')}.png'
+    thumbpath = f'{THUMBNAILS_DIR}/{filename}.png'
+    thumbnail = f'{request.host_url}thumbnails/{quote(filename, safe='')}.png'
 
     # If thumbnail exists then return the url-encoded thumbnail path
     if os.path.isfile(thumbpath):
@@ -37,8 +36,8 @@ def get_cached_thumbnail(filepath: str) -> str | None:
 def get_generated_thumbnail(filepath: str) -> str | None:
     # Make thumbnail path to generate and store the thumbnail in cache
     filename = filepath.split('/')[-1]
-    thumbpath = './public/thumbnails/' + filename + '.png'
-    thumbnail = f'{request.host_url}public/thumbnails/{quote(filename, safe='')}.png'
+    thumbpath = f'{THUMBNAILS_DIR}/{filename}.png'
+    thumbnail = f'{request.host_url}thumbnails/{quote(filename, safe='')}.png'
 
     # Extract the file extention
     extention = filename.split('.')[-1].lower()
