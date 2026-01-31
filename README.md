@@ -17,14 +17,21 @@ MyFileServer/<br>
 └── README.md<br>
 <br>
 
-## How to Install on Windows
+## How to Install on Windows (Remotely)
+- Open the PowerShell terminal as Administrator
+- Copy and run the command given below in PowerShell
+```
+powershell.exe -ExecutionPolicy Bypass -c "irm 'https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1' | iex"
+```
+
+## How to Install on Windows (Manually)
 - Clone this repository in Windows PC
 - Open PowerShell admin terminal inside scripts folder
 - Run .\installer.ps1 script as Administrator
 - Launch the MyFileServer from Desktop Shortcut
 - Can be safely Uninstalled from Windows settings 
 
-## How to Use on Android 
+## How to Use on Android
 - Make sure Pydroid-3 app is installed in Android device
 - Clone this repository in Windows PC
 - Open PowerShell terminal inside scripts folder
