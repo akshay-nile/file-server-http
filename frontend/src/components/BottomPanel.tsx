@@ -7,6 +7,7 @@ import type { FileInfo, FolderInfo, ItemsInfo } from '../services/models';
 import { getShortcuts, setShortcuts } from '../services/settings';
 import { getTooltip, toast } from '../services/utilities';
 import ItemDetails from './ItemDetails';
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 
 type ItemDetailsType = {
     type: 'folder' | 'file' | 'items',
@@ -14,13 +15,17 @@ type ItemDetailsType = {
 };
 
 function BottomPanel() {
-    const { selectedFiles, selectedFolders, isAnyItemSelected, clearSelection } = useSelectedItems();
+    const { path } = useExplorerItems();
+    const { selectedFiles, selectedFolders, isAnyItemSelected, areAllItemsSelected, selectAllItems, clearSelection } = useSelectedItems();
+
     const style = { width: '2.55rem', height: '2.5rem', padding: '0rem' };
 
     const itemDetailsRef = useRef<OverlayPanel>(null);
     const [itemsDetails, setItemDetails] = useState<ItemDetailsType | null>(null);
+
     const [showAddShortcuts, setShowAddShortcuts] = useState<boolean>(true);
     const [showMultiDownload, setShowMultiDownload] = useState<boolean>(false);
+    const [showSelectAll, setShowSelectAll] = useState<boolean>(false);
 
     useEffect(() => {
         // Show remove-from-shortcuts button 
@@ -49,7 +54,11 @@ function BottomPanel() {
             itemDetailsRef.current?.hide();
             setItemDetails(null);
         }
-    }, [selectedFiles, selectedFolders]);
+
+        // Show select-all button
+        // If at least one and not all the items are selected
+        setShowSelectAll(isAnyItemSelected() && !areAllItemsSelected());
+    }, [selectedFiles, selectedFolders, isAnyItemSelected, areAllItemsSelected]);
 
     function addToShortcuts() {
         const shortcuts = getShortcuts();
@@ -133,6 +142,13 @@ function BottomPanel() {
                 icon='pi pi-thumbtack' severity={showAddShortcuts ? undefined : 'danger'}
                 tooltip={getTooltip(showAddShortcuts ? 'Add Shortcuts' : 'Remove Shortcuts')} tooltipOptions={{ position: 'top' }}
                 onClick={() => showAddShortcuts ? addToShortcuts() : removeFromShortcuts()} />
+
+            {
+                (showSelectAll && path !== '/') &&
+                <Button size='large' style={style} raised icon='pi pi-list-check'
+                    tooltip={getTooltip('Select All')} tooltipOptions={{ position: 'top' }}
+                    onClick={selectAllItems} />
+            }
 
             <Button size='large' style={style} raised
                 icon='pi pi-times' severity='danger'

@@ -62,7 +62,9 @@ export interface SelectedItemsState {
 
     isItemSelected: (item: ItemInfo) => boolean;
     isAnyItemSelected: () => boolean;
+    areAllItemsSelected: () => boolean;
 
+    selectAllItems: () => void;
     clearSelection: () => void;
 }
 

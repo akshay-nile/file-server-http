@@ -1,10 +1,13 @@
 import { useState, type ReactNode } from 'react';
 import type { FileInfo, FolderInfo, ItemInfo, SelectedItemsState } from '../../services/models';
+import useExplorerItems from '../ExplorerItems/useExplorerItems';
 import SelectedItemsContext from './SelectedItemsContext';
 
 type Props = { children: ReactNode };
 
 function SelectedItemsProvider({ children }: Props) {
+    const { items } = useExplorerItems();
+
     const [selectedFolders, setSelectedFolders] = useState<FolderInfo[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<FileInfo[]>([]);
 
@@ -32,6 +35,16 @@ function SelectedItemsProvider({ children }: Props) {
         return selectedFolders.length > 0 || selectedFiles.length > 0;
     }
 
+    function areAllItemsSelected(): boolean {
+        const totalSelected = selectedFolders.length + selectedFiles.length;
+        return totalSelected === (items.folders.length + items.files.length);
+    }
+
+    function selectAllItems() {
+        setSelectedFolders(items.folders);
+        setSelectedFiles(items.files);
+    }
+
     function clearSelection() {
         setSelectedFolders([]);
         setSelectedFiles([]);
@@ -44,6 +57,8 @@ function SelectedItemsProvider({ children }: Props) {
         toggleFileSelection,
         isItemSelected,
         isAnyItemSelected,
+        areAllItemsSelected,
+        selectAllItems,
         clearSelection
     };
 
