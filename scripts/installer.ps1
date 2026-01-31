@@ -1,6 +1,6 @@
 # -------- DESCRIPTION --------
 # This script automates the process of installing the MyFileServer
-# in User Home and send its shortcut to the Desktop.
+# in Windows PC and send its launch shortcut to the Desktop.
 
 Set-Location $PSScriptRoot
 
