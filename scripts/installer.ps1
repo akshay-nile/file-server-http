@@ -28,7 +28,8 @@ Set-Location "scripts"
 
 # -------- Step 2) Copy required files and move MyFileServer to Program Files --------
 
-Write-Host "`nStep 2) Copying uv files and moving MyFileServer to Program Files"
+Write-Host "`nStep 2) Copying required files and moving MyFileServer to Program Files"
+Copy-Item -Path "backend\tone.mp3" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\pyproject.toml" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\uv.lock" -Destination "MyFileServer" -Force
 Copy-Item -Path "scripts\uninstall.ps1" -Destination "MyFileServer" -Force

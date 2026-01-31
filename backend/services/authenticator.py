@@ -3,12 +3,12 @@ import random
 import string
 
 from functools import wraps
-from services.environment import TOKENS_DIR
+from services.environment import TOKENS_DIR, IS_WIN_OS
 
 from flask import abort, request
 
 
-filename = TOKENS_DIR + '/.tokens'
+filename = TOKENS_DIR + '/tokens.txt'
 tokens: set[str] = set()
 token: str | None = None
 
@@ -28,6 +28,13 @@ def generate_unique_token() -> str:
         chars = string.ascii_uppercase + string.digits
         token = ''.join(random.choices(chars, k=4))
     return token
+
+
+def play_notification_tone():
+    if IS_WIN_OS:
+        from playsound3 import playsound
+        if os.path.exists('tone.mp3'):
+            playsound('tone.mp3', False)
 
 
 def verify_user_token(user_token: str) -> bool:

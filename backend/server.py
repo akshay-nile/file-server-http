@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.environment import THUMBNAILS_DIR, USER_DOWNLOADS
-from services.authenticator import generate_unique_token, verify_user_token, require_authentication
+from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
 from services.explorer import format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
@@ -103,6 +103,7 @@ def authenticate():
         return jsonify({'status': 'failed'})
     token = generate_unique_token()
     print(f'\nToken Generated:  {token}\n')
+    play_notification_tone()
     return jsonify({'status': 'generated'})
 
 
