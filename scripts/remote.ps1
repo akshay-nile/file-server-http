@@ -20,7 +20,7 @@ if (-not $IsAdmin) {
 # -------- Download the project.zip --------
 
 Write-Host "Downloading project.zip"
-Set-Location [Environment]::GetFolderPath("Downloads")
+Set-Location $HOME/Downloads
 Invoke-WebRequest `
     -Uri "https://github.com/akshay-nile/file-server-http/archive/refs/heads/master.zip" `
     -OutFile "project.zip" `
