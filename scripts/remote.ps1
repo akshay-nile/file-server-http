@@ -2,8 +2,11 @@
 # This script automates the process of installing the MyFileServer
 # in Windows PC remotly by downloading this project from GitHub repo.
 
+# The command to execute this script remotely in PowerShell as Administrator
+# powershell.exe -ExecutionPolicy Bypass -c "irm 'https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1' | iex";
 
-# -------- Check admin privilege is available or not --------
+
+# -------- Check admin privilege --------
 
 $IsAdmin = ([Security.Principal.WindowsPrincipal] `
         [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -16,16 +19,44 @@ if (-not $IsAdmin) {
 }
 
 
-
 # -------- Download the project.zip --------
 
-Write-Host "Downloading project.zip"
 Set-Location $HOME/Downloads
+Write-Host "Downloading project.zip"
 Invoke-WebRequest `
     -Uri "https://github.com/akshay-nile/file-server-http/archive/refs/heads/master.zip" `
     -OutFile "project.zip" `
     -UseBasicParsing;
 
+if (-not (Test-Path "project.zip")) {
+    Write-Host "Downloading failed" -ForegroundColor Red
+    exit 1
+}
+
 
 # -------- Extract the project.zip --------
 
+Write-Host "Extracting project.zip"
+Expand-Archive -Path "project.zip" -DestinationPath "."
+
+if (-not (Test-Path "file-server-http-master")) {
+    Write-Host "Extraction failed" -ForegroundColor Red
+    exit 1
+}
+
+
+# -------- Invoke installer.ps1 script --------
+
+Write-Host "Running installer.ps1 script"
+Set-Location "file-server-http-master\scripts"
+powershell.exe -ExecutionPolicy Bypass -File .\installer.ps1
+
+
+# -------- Clean up downloaded junk --------
+
+Set-Location $HOME/Downloads
+Write-Host "Clearning up downloaded junk"
+Remove-Item .\project.zip -Recurse -Force
+Remove-Item .\file-server-http-master -Recurse -Force
+Write-Host "Done!" -ForegroundColor Green
+exit 0
