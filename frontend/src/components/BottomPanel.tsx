@@ -1,21 +1,29 @@
 import { Button } from 'primereact/button';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Dialog } from 'primereact/dialog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { useEffect, useRef, useState } from 'react';
+import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
-import { getFileURL } from '../services/api';
-import type { FileInfo, FolderInfo, ItemsInfo } from '../services/models';
+import { getFileURL, modifyItems } from '../services/api';
+import type { FileInfo, FolderInfo, ItemInfo, ItemsInfo } from '../services/models';
 import { getShortcuts, setShortcuts } from '../services/settings';
 import { getTooltip, toast } from '../services/utilities';
 import ItemDetails from './ItemDetails';
-import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
+import RenameItem from './RenameItem';
 
 type ItemDetailsType = {
     type: 'folder' | 'file' | 'items',
     selection: FolderInfo | FileInfo | ItemsInfo
 };
 
+type DialogInfo = {
+    itemToRename: ItemInfo,
+    onRename: (name: string) => void
+};
+
 function BottomPanel() {
-    const { path } = useExplorerItems();
+    const { path, explore } = useExplorerItems();
     const { selectedFiles, selectedFolders, isAnyItemSelected, areAllItemsSelected, selectAllItems, clearSelection } = useSelectedItems();
 
     const style = { width: '2.55rem', height: '2.5rem', padding: '0rem' };
@@ -23,9 +31,14 @@ function BottomPanel() {
     const itemDetailsRef = useRef<OverlayPanel>(null);
     const [itemsDetails, setItemDetails] = useState<ItemDetailsType | null>(null);
 
+    const [dialogInfo, setDialogInfo] = useState<DialogInfo | null>(null);
+    const [status, setStatus] = useState<'none' | 'donwloading' | 'deleting' | 'renaming'>('none');
+
     const [showAddShortcuts, setShowAddShortcuts] = useState<boolean>(true);
     const [showMultiDownload, setShowMultiDownload] = useState<boolean>(false);
     const [showSelectAll, setShowSelectAll] = useState<boolean>(false);
+    const [showDelete, setShowDelete] = useState<boolean>(false);
+    const [showRename, setShowRename] = useState<boolean>(false);
 
     useEffect(() => {
         // Show remove-from-shortcuts button 
@@ -58,6 +71,14 @@ function BottomPanel() {
         // Show select-all button
         // If at least one and not all the items are selected
         setShowSelectAll(isAnyItemSelected() && !areAllItemsSelected());
+
+        // Show Delete button
+        // If one or more item are selected
+        setShowDelete(isAnyItemSelected());
+
+        // Show Rename button
+        // If only one item is selected
+        setShowRename((selectedFolders.length + selectedFiles.length) === 1);
     }, [selectedFiles, selectedFolders, isAnyItemSelected, areAllItemsSelected]);
 
     function addToShortcuts() {
@@ -113,15 +134,69 @@ function BottomPanel() {
     }
 
     async function downloadAllFiles() {
+        setStatus('donwloading');
         const downloadFiles = [...selectedFiles];
         downloadFiles.sort((a, b) => a.size - b.size);
         let delayMs = 5000;
-        clearSelection();
         for (const file of downloadFiles) {
             window.location.href = getFileURL(file.path, false);
             await new Promise(resolve => setTimeout(resolve, delayMs));
             if (delayMs > 1000) delayMs -= 1000;
         }
+        setStatus('none');
+        clearSelection();
+    }
+
+    async function deleteItems() {
+        const itemsToDelete = [...selectedFolders, ...selectedFiles].map(item => item.path);
+        const accept = async () => {
+            setStatus('deleting');
+            const response = await modifyItems('delete', itemsToDelete);
+            if (response && response.count === itemsToDelete.length) toast.show({
+                severity: 'success',
+                summary: 'Items Deleted',
+                detail: response.count + ' item(s) has been deleted.'
+            });
+            else toast.show({
+                severity: 'error',
+                summary: 'Deletion Failed',
+                detail: response.count + ' item(s) were deleted.'
+            });
+            setStatus('none');
+            clearSelection();
+            explore(path, false);
+        };
+        confirmDialog({
+            message: `Delete ${itemsToDelete.length} item(s) Permanently?`,
+            header: 'Delete Confirmation',
+            closable: false,
+            icon: 'pi pi-exclamation-triangle',
+            position: 'center',
+            accept, reject: undefined
+        });
+    }
+
+    async function renameItem() {
+        const itemToRename: ItemInfo = [...selectedFolders, ...selectedFiles][0];
+        const onRename = async (name: string) => {
+            setDialogInfo(null);
+            setStatus('renaming');
+            const response = await modifyItems('rename', [itemToRename.path, path + '/' + name]);
+            if (response && response.count === 1) toast.show({
+                severity: 'success',
+                summary: 'Item Renamed',
+                detail: itemToRename.name + ' is renamed to ' + ''
+            });
+            else toast.show({
+                severity: 'error',
+                summary: 'Renaming Failed',
+                detail: itemToRename.name + ' could not be renamed.'
+            });
+            setStatus('none');
+            clearSelection();
+            explore(path, false);
+        };
+        setDialogInfo({ itemToRename, onRename });
     }
 
     return (
@@ -132,10 +207,27 @@ function BottomPanel() {
                 onClick={e => itemDetailsRef.current?.toggle(e)} />
 
             {
+                (showDelete && path !== '/') &&
+                <Button size='large' style={style} raised
+                    icon={`pi ${status === 'deleting' ? 'pi-spin pi-spinner' : 'pi-trash'}`}
+                    tooltip={getTooltip('Delete')} tooltipOptions={{ position: 'top' }}
+                    onClick={() => status === 'none' && deleteItems()} />
+            }
+
+            {
+                (showRename && path !== '/') &&
+                <Button size='large' style={style} raised
+                    icon={`pi ${status === 'renaming' ? 'pi-spin pi-spinner' : 'pi-pen-to-square'}`}
+                    tooltip={getTooltip('Rename')} tooltipOptions={{ position: 'top' }}
+                    onClick={() => status === 'none' && renameItem()} />
+            }
+
+            {
                 showMultiDownload &&
-                <Button size='large' style={style} raised icon='pi pi-download'
+                <Button size='large' style={style} raised
+                    icon={`pi ${status === 'donwloading' ? 'pi-spin pi-spinner' : 'pi-download'}`}
                     tooltip={getTooltip('Download All')} tooltipOptions={{ position: 'top' }}
-                    onClick={downloadAllFiles} />
+                    onClick={() => status === 'none' && downloadAllFiles()} />
             }
 
             <Button size='large' style={style} raised pt={{ icon: { className: showAddShortcuts ? 'rotate-0' : 'rotate-180' } }}
@@ -164,6 +256,16 @@ function BottomPanel() {
                             : <ItemDetails type='items' items={itemsDetails?.selection as ItemsInfo} />
                 }
             </OverlayPanel>
+
+            <ConfirmDialog />
+
+            {
+                dialogInfo !== null &&
+                <Dialog header='Rename Item' visible={dialogInfo !== null} style={{ width: '90%' }} onHide={() => setDialogInfo(null)}>
+                    <RenameItem itemToRename={dialogInfo.itemToRename} isFileItem={selectedFiles.length === 1}
+                        onRename={dialogInfo.onRename} onCancel={() => setDialogInfo(null)} />
+                </Dialog>
+            }
         </div>
     );
 }

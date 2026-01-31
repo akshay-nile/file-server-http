@@ -4,7 +4,7 @@ from services.thumbnails import get_generated_thumbnail
 from services.network import get_stream_or_download_response
 from services.environment import THUMBNAILS_DIR, USER_DOWNLOADS
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
-from services.explorer import format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
+from services.explorer import delete_items, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 
 from flask import Flask, jsonify, redirect, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -83,6 +83,22 @@ def save_files():
     file.save(f'{USER_DOWNLOADS}/{file.filename}')
     print('Upload -', file.filename)
     return jsonify({'status': 'uploaded'})
+
+
+# To delete multiple items or rename any single item
+@app.route('/modify/<string:action>', methods=['POST'])
+@require_authentication
+def modify_items(action: str):
+    items = request.get_json()
+    if action == 'delete':
+        print('Delete - ', end='')
+        print(*items, sep='\nDelete - ')
+        return jsonify({'count': delete_items(items)})
+    if action == 'rename':
+        print('Rename (old) -', items[0])
+        print('Rename (new) -', items[1])
+        return jsonify({'count': rename_item(*items)})
+    return jsonify({'count': 0})
 
 
 # To get the total size in bytes of all the given folders

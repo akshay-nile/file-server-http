@@ -80,7 +80,7 @@ function SearchItems() {
                     {deepSearch ? 'Search all the items recursively' : 'Search items on this page only'}
                 </span>
                 <div className="p-inputgroup">
-                    <InputText placeholder="Search Items" style={{ fontSize: '14px' }} spellCheck={false}
+                    <InputText placeholder="Search Items" style={{ fontSize: '14px' }} spellCheck={false} autoComplete='off'
                         value={search} onChange={e => { setSearch(e.target.value); setStatus('none'); }}
                         onKeyDown={onEnterOrEscapeKey} />
                     <Button icon={`pi ${status === 'searching' ? 'pi-spin pi-spinner' : status === 'none' ? 'pi-search' : 'pi-times'}`}

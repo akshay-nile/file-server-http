@@ -35,7 +35,7 @@ function App() {
           ? <ExplorerItemsProvider><AppLayout /></ExplorerItemsProvider>
           : <Authentication />
     }
-    <Toast ref={toastRef} position='top-center' />
+    <Toast ref={toastRef} position='center' />
   </>;
 }
 

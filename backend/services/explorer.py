@@ -1,4 +1,5 @@
 import os
+import shutil
 import ctypes
 
 from shutil import disk_usage
@@ -263,6 +264,34 @@ def get_items_info(path: str):
         files.sort(key=lambda x: x[sort_by], reverse=reverse)
 
     return folders, files
+
+
+def delete_items(items: list[str]) -> int:
+    delete_count = 0
+    for item in items:
+        try:
+            if os.path.isdir(item):
+                shutil.rmtree(item)
+            elif os.path.isfile(item):
+                os.remove(item)
+            else:
+                print('Invalid Delete:', item)
+                continue
+            delete_count += 1
+        except PermissionError:
+            continue
+    return delete_count
+
+
+def rename_item(old_item: str, new_item: str) -> int:
+    try:
+        if os.path.exists(new_item):
+            return 0
+        if os.path.exists(old_item):
+            os.rename(old_item, new_item)
+    except PermissionError:
+        return 0
+    return 1
 
 
 def get_mime_type(file_path: str) -> str:

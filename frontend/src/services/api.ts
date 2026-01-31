@@ -74,6 +74,14 @@ export async function uploadFile(file: File): Promise<{ status: 'uploaded' | 'fa
     return await tryToFetch('/upload', { method: 'POST', body: body });
 }
 
+export async function modifyItems(action: 'delete' | 'rename', items: Array<string>): Promise<{ count: number }> {
+    return await tryToFetch('/modify/' + action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(items)
+    });
+}
+
 export async function getTotalSize(folders: string[]): Promise<{ totalSize: number }> {
     return await tryToFetch('/total-size', {
         method: 'POST',

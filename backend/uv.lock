@@ -234,7 +234,7 @@ requires-dist = [
     { name = "moviepy", specifier = "~=2.2.1" },
     { name = "mutagen", specifier = "~=1.47.0" },
     { name = "pillow", specifier = "~=11.3.0" },
-    { name = "playsound3", specifier = ">=3.3.1" },
+    { name = "playsound3", specifier = "~=3.3.1" },
     { name = "pyperclip", specifier = "~=1.11.0" },
     { name = "requests", specifier = "~=2.32.4" },
     { name = "waitress", specifier = "~=3.0.2" },
