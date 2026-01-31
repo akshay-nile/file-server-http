@@ -38,18 +38,25 @@ Copy-Item -Path "scripts\uninstall.ps1" -Destination "MyFileServer" -Force
 Write-Host "`nStep 3) Moving/Replacing MyFileServer core to Program Files"
 $ProgramFiles = [Environment]::GetFolderPath("ProgramFiles")
 $MyFileServer = Join-Path $ProgramFiles "MyFileServer"
+$UpdatingOldInstallation = $false
 if (Test-Path $MyFileServer) {
+    Write-Host "`nUpdating the existing installation" -ForegroundColor Yellow
+    Copy-Item -Path "$MyFileServer\.venv" -Destination "MyFileServer\.venv" -Recurse -Force
+    Copy-Item -Path "$MyFileServer\tools" -Destination "MyFileServer\tools" -Recurse -Force
     Remove-Item $MyFileServer -Recurse -Force
+    $UpdatingOldInstallation = $true
 }
 Move-Item -Path "MyFileServer" -Destination $ProgramFiles -Force
 
 
 # -------- Step 4) Download tools and sync project dependencies --------
 
-Write-Host "`nStep 4) Downloading tools and syncing uv dependencies"
-$env:UV_INSTALL_DIR = Join-Path $MyFileServer "tools";
-$env:UV_NO_MODIFY_PATH = "1"; 
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+if (-not $UpdatingOldInstallation) {
+    Write-Host "`nStep 4) Downloading tools and syncing uv dependencies"
+    $env:UV_INSTALL_DIR = Join-Path $MyFileServer "tools";
+    $env:UV_NO_MODIFY_PATH = "1"; 
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+}
 
 $UvExe = Join-Path $MyFileServer "tools\uv.exe"
 if (-not (Test-Path $UvExe)) {
