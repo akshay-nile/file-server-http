@@ -46,8 +46,9 @@ def get_updated_shortcuts() -> dict | None:
         file_path = file.get('path', '')
         if os.path.isfile(file_path):
             file_info = get_file_info(file_path)
+            print(file_info)
             if file_info is not None:
-                files.append(folder_info)
+                files.append(file_info)
 
     return {'folders': folders, 'files': files}
 
