@@ -270,7 +270,7 @@ function BottomPanel() {
 
                 {
                     dialogInfo !== null &&
-                    <Dialog header='Rename Item' visible={dialogInfo !== null} style={{ width: '90%' }} onHide={() => setDialogInfo(null)}>
+                    <Dialog header='Rename Item' visible={dialogInfo !== null} style={{ width: '90%', maxWidth: '400px' }} onHide={() => setDialogInfo(null)}>
                         <RenameItem itemToRename={dialogInfo.itemToRename} isFileItem={selectedFiles.length === 1 && selectedFolders.length === 0}
                             onRename={dialogInfo.onRename} onCancel={() => setDialogInfo(null)} />
                     </Dialog>
