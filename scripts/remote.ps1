@@ -55,8 +55,8 @@ powershell.exe -ExecutionPolicy Bypass -File .\installer.ps1
 # -------- Clean up downloaded junk --------
 
 Set-Location $HOME/Downloads
-Write-Host "Clearning up downloaded junk"
+Write-Host "Clearning downloaded junk"
 Remove-Item .\project.zip -Recurse -Force
 Remove-Item .\file-server-http-master -Recurse -Force
-Write-Host "Done!" -ForegroundColor Green
+Write-Host "Done!`n" -ForegroundColor Green
 exit 0
