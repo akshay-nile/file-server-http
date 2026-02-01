@@ -106,17 +106,25 @@ def get_stream_or_download_response(filepath: str, stream=True) -> Response:
             end = int(range_values[1])
         status = 206
 
+    # Create a direct_passthrough response object
+    response = Response(
+        chunk_generator(filepath, start, end),
+        status=status,
+        mimetype=file_info['mimetype'] if stream else 'application/octet-stream',
+        direct_passthrough=True
+    )
+
     # Set common headers for both status-codes 200 and 206
-    headers = {
-        'Content-Type': file_info['mimetype'] if stream else 'application/octet-stream',
-        'Content-Length': str(end - start + 1),
-        'Content-Disposition': f"{'inline' if stream else 'attachment'}; filename={file_info['name']}",
-        'Accept-Ranges': 'bytes'
-    }
+    response.headers.set('Content-Length', end - start + 1)
+    response.headers.set('Accept-Ranges', 'bytes')
 
     # Set Content-Range if Range header from client is respected
     if status == 206:
-        headers['Content-Range'] = f"bytes {start}-{end}/{file_info['size']}"
+        response.headers.set('Content-Range', f"bytes {start}-{end}/{file_info['size']}")
+        response.headers.set('Cache-Control', 'no-cache')
 
-    # Send the final chunked response with chunk-generator
-    return Response(chunk_generator(filepath, start, end), headers=headers, status=status)
+    # Set Content-Disposition with quoted filename
+    disposition = 'inline' if stream else 'attachment'
+    response.headers.set('Content-Disposition', f'{disposition}; filename="{file_info["name"]}"')
+
+    return response
