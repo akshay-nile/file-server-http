@@ -23,16 +23,17 @@ type DialogInfo = {
 };
 
 function BottomPanel() {
-    const { path, explore } = useExplorerItems();
-    const { selectedFiles, selectedFolders, isAnyItemSelected, areAllItemsSelected, selectAllItems, clearSelection } = useSelectedItems();
+    const { path, items, explore } = useExplorerItems();
+    const { selectedFiles, selectedFolders, isAnyItemSelected, selectAllItems, clearSelection } = useSelectedItems();
 
     const style = { width: '2.55rem', height: '2.5rem', padding: '0rem' };
 
+    const itemsRef = useRef<ItemsInfo>(null);
     const itemDetailsRef = useRef<OverlayPanel>(null);
-    const [itemsDetails, setItemDetails] = useState<ItemDetailsType | null>(null);
 
-    const [dialogInfo, setDialogInfo] = useState<DialogInfo | null>(null);
     const [status, setStatus] = useState<'none' | 'donwloading' | 'deleting' | 'renaming'>('none');
+    const [itemsDetails, setItemDetails] = useState<ItemDetailsType | null>(null);
+    const [dialogInfo, setDialogInfo] = useState<DialogInfo | null>(null);
 
     const [showAddShortcuts, setShowAddShortcuts] = useState<boolean>(true);
     const [showMultiDownload, setShowMultiDownload] = useState<boolean>(false);
@@ -40,9 +41,13 @@ function BottomPanel() {
     const [showDelete, setShowDelete] = useState<boolean>(false);
     const [showRename, setShowRename] = useState<boolean>(false);
 
+    useEffect(() => { itemsRef.current = items; }, [items]);
+
     useEffect(() => {
-        // Show remove-from-shortcuts button 
-        // If all the selected items are already included in marked shortcuts
+        const totalSelected = selectedFolders.length + selectedFiles.length;
+        const totalAvailable = itemsRef.current ? itemsRef.current.folders.length + itemsRef.current.files.length : 0;
+
+        // If all the selected items are already included in marked shortcuts, then show remove-from-shortcuts button
         // Otherwise show the add-to-shortcuts button
         const shortcuts = getShortcuts();
         if (!shortcuts) { setShowAddShortcuts(true); }
@@ -52,34 +57,34 @@ function BottomPanel() {
             setShowAddShortcuts(!selectedItemPaths.every(selectedItemPath => shortcutItemPaths.includes(selectedItemPath)));
         }
 
-        // Show multi-download button
-        // If at least 2 or more files are selected and no folder is selected
-        setShowMultiDownload(selectedFolders.length === 0 && selectedFiles.length >= 2);
-
-        // Set item-details on selection of either single folder or single file or multiple items 
+        // Set item-details on depending on the current selection 
         if (selectedFolders.length === 1 && selectedFiles.length === 0) {
             setItemDetails({ type: 'folder', selection: selectedFolders[0] });
         } else if (selectedFolders.length === 0 && selectedFiles.length === 1) {
             setItemDetails({ type: 'file', selection: selectedFiles[0] });
-        } else if ((selectedFolders.length + selectedFiles.length) > 1) {
+        } else if (totalSelected > 1) {
             setItemDetails({ type: 'items', selection: { folders: selectedFolders, files: selectedFiles } });
         } else {
             itemDetailsRef.current?.hide();
             setItemDetails(null);
         }
 
+        // Show multi-download button
+        // If at least 2 or more files are selected and no folder is selected
+        setShowMultiDownload(selectedFolders.length === 0 && selectedFiles.length >= 2);
+
         // Show select-all button
         // If at least one and not all the items are selected
-        setShowSelectAll(isAnyItemSelected() && !areAllItemsSelected());
+        setShowSelectAll(totalSelected > 0 && totalSelected < totalAvailable);
 
-        // Show Delete button
+        // Show delete button
         // If one or more item are selected
-        setShowDelete(isAnyItemSelected());
+        setShowDelete(totalSelected > 0);
 
-        // Show Rename button
+        // Show rename button
         // If only one item is selected
-        setShowRename((selectedFolders.length + selectedFiles.length) === 1);
-    }, [selectedFiles, selectedFolders, isAnyItemSelected, areAllItemsSelected]);
+        setShowRename(totalSelected === 1);
+    }, [selectedFiles, selectedFolders]);
 
     function addToShortcuts() {
         const shortcuts = getShortcuts();
@@ -200,72 +205,77 @@ function BottomPanel() {
     }
 
     return (
-        <div className={`flex items-center gap-3 fixed left-1/2 -translate-x-1/2 bg-white rounded-md shadow-lg border border-gray-300 p-3 z-10 transition-all duration-500 ease-in-out 
-        ${isAnyItemSelected() ? 'bottom-[30px] translate-y-0 opacity-100' : '-bottom-full translate-y-full opacity-0'}`}>
-            <Button size='large' style={style} raised icon='pi pi-info-circle'
-                tooltip={getTooltip('Show Details')} tooltipOptions={{ position: 'top' }}
-                onClick={e => itemDetailsRef.current?.toggle(e)} />
+        <div className="fixed inset-x-0 bottom-0 flex justify-center pointer-events-none z-10">
+            <div className={`
+                flex items-center gap-3 transition-all duration-300 ease-in-out 
+                bg-white rounded-md shadow-lg border border-gray-300 p-3 pointer-events-auto
+                ${isAnyItemSelected() ? 'mb-[30px] opacity-100' : 'translate-y-20 opacity-0'}
+            `}>
+                <Button size='large' style={style} raised icon='pi pi-info-circle'
+                    tooltip={getTooltip('Show Details')} tooltipOptions={{ position: 'top' }}
+                    onClick={e => itemDetailsRef.current?.toggle(e)} />
 
-            {
-                (showDelete && path !== '/') &&
-                <Button size='large' style={style} raised
-                    icon={`pi ${status === 'deleting' ? 'pi-spin pi-spinner' : 'pi-trash'}`}
-                    tooltip={getTooltip('Delete')} tooltipOptions={{ position: 'top' }}
-                    onClick={() => status === 'none' && deleteItems()} />
-            }
-
-            {
-                (showRename && path !== '/') &&
-                <Button size='large' style={style} raised
-                    icon={`pi ${status === 'renaming' ? 'pi-spin pi-spinner' : 'pi-pen-to-square'}`}
-                    tooltip={getTooltip('Rename')} tooltipOptions={{ position: 'top' }}
-                    onClick={() => status === 'none' && renameItem()} />
-            }
-
-            {
-                showMultiDownload &&
-                <Button size='large' style={style} raised
-                    icon={`pi ${status === 'donwloading' ? 'pi-spin pi-spinner' : 'pi-download'}`}
-                    tooltip={getTooltip('Download All')} tooltipOptions={{ position: 'top' }}
-                    onClick={() => status === 'none' && downloadAllFiles()} />
-            }
-
-            <Button size='large' style={style} raised pt={{ icon: { className: showAddShortcuts ? 'rotate-0' : 'rotate-180' } }}
-                icon='pi pi-thumbtack' severity={showAddShortcuts ? undefined : 'danger'}
-                tooltip={getTooltip(showAddShortcuts ? 'Add Shortcuts' : 'Remove Shortcuts')} tooltipOptions={{ position: 'top' }}
-                onClick={() => showAddShortcuts ? addToShortcuts() : removeFromShortcuts()} />
-
-            {
-                (showSelectAll && path !== '/') &&
-                <Button size='large' style={style} raised icon='pi pi-list-check'
-                    tooltip={getTooltip('Select All')} tooltipOptions={{ position: 'top' }}
-                    onClick={selectAllItems} />
-            }
-
-            <Button size='large' style={style} raised
-                icon='pi pi-times' severity='danger'
-                tooltip={getTooltip('Clear')} tooltipOptions={{ position: 'top' }}
-                onClick={clearSelection} />
-
-            <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape dismissable={false} className='max-w-[80%]'>
                 {
-                    itemsDetails?.type === 'folder'
-                        ? <ItemDetails type='folder' folder={itemsDetails.selection as FolderInfo} />
-                        : itemsDetails?.type === 'file'
-                            ? <ItemDetails type='file' file={itemsDetails.selection as FileInfo} />
-                            : <ItemDetails type='items' items={itemsDetails?.selection as ItemsInfo} />
+                    (showDelete && path !== '/') &&
+                    <Button size='large' style={style} raised
+                        icon={`pi ${status === 'deleting' ? 'pi-spin pi-spinner' : 'pi-trash'}`}
+                        tooltip={getTooltip('Delete')} tooltipOptions={{ position: 'top' }}
+                        onClick={() => status === 'none' && deleteItems()} />
                 }
-            </OverlayPanel>
 
-            <ConfirmDialog />
+                {
+                    (showRename && path !== '/') &&
+                    <Button size='large' style={style} raised
+                        icon={`pi ${status === 'renaming' ? 'pi-spin pi-spinner' : 'pi-pen-to-square'}`}
+                        tooltip={getTooltip('Rename')} tooltipOptions={{ position: 'top' }}
+                        onClick={() => status === 'none' && renameItem()} />
+                }
 
-            {
-                dialogInfo !== null &&
-                <Dialog header='Rename Item' visible={dialogInfo !== null} style={{ width: '90%' }} onHide={() => setDialogInfo(null)}>
-                    <RenameItem itemToRename={dialogInfo.itemToRename} isFileItem={selectedFiles.length === 1}
-                        onRename={dialogInfo.onRename} onCancel={() => setDialogInfo(null)} />
-                </Dialog>
-            }
+                {
+                    showMultiDownload &&
+                    <Button size='large' style={style} raised
+                        icon={`pi ${status === 'donwloading' ? 'pi-spin pi-spinner' : 'pi-download'}`}
+                        tooltip={getTooltip('Download All')} tooltipOptions={{ position: 'top' }}
+                        onClick={() => status === 'none' && downloadAllFiles()} />
+                }
+
+                <Button size='large' style={style} raised pt={{ icon: { className: showAddShortcuts ? 'rotate-0' : 'rotate-180' } }}
+                    icon='pi pi-thumbtack' severity={showAddShortcuts ? undefined : 'danger'}
+                    tooltip={getTooltip(showAddShortcuts ? 'Add Shortcuts' : 'Remove Shortcuts')} tooltipOptions={{ position: 'top' }}
+                    onClick={() => showAddShortcuts ? addToShortcuts() : removeFromShortcuts()} />
+
+                {
+                    (showSelectAll && path !== '/') &&
+                    <Button size='large' style={style} raised icon='pi pi-list-check'
+                        tooltip={getTooltip('Select All')} tooltipOptions={{ position: 'top' }}
+                        onClick={selectAllItems} />
+                }
+
+                <Button size='large' style={style} raised
+                    icon='pi pi-times' severity='danger'
+                    tooltip={getTooltip('Clear')} tooltipOptions={{ position: 'top' }}
+                    onClick={clearSelection} />
+
+                <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape dismissable={false} className='max-w-[80%]'>
+                    {
+                        itemsDetails?.type === 'folder'
+                            ? <ItemDetails type='folder' folder={itemsDetails.selection as FolderInfo} />
+                            : itemsDetails?.type === 'file'
+                                ? <ItemDetails type='file' file={itemsDetails.selection as FileInfo} />
+                                : <ItemDetails type='items' items={itemsDetails?.selection as ItemsInfo} />
+                    }
+                </OverlayPanel>
+
+                <ConfirmDialog />
+
+                {
+                    dialogInfo !== null &&
+                    <Dialog header='Rename Item' visible={dialogInfo !== null} style={{ width: '90%' }} onHide={() => setDialogInfo(null)}>
+                        <RenameItem itemToRename={dialogInfo.itemToRename} isFileItem={selectedFiles.length === 1 && selectedFolders.length === 0}
+                            onRename={dialogInfo.onRename} onCancel={() => setDialogInfo(null)} />
+                    </Dialog>
+                }
+            </div>
         </div>
     );
 }

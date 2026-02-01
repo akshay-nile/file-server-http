@@ -28,8 +28,10 @@ function RenameItem({ itemToRename, isFileItem, onRename, onCancel }: Props) {
             <InputText type='text' placeholder='Item Name' spellCheck={false} autoComplete='off' className='w-full m-0'
                 value={name} onChange={e => setName(e.target.value)} />
             <div className='flex gap-5 items-center mt-5'>
-                <Button label='Rename' raised size='small' onClick={() => onRename(name)} disabled={!isValidName()} />
-                <Button label='Cancel' raised size='small' severity='danger' onClick={onCancel} />
+                <Button label='Rename' raised size='small' style={{ padding: '0.66rem' }}
+                    onClick={() => onRename(name)} disabled={!isValidName()} />
+                <Button label='Cancel' raised size='small' severity='danger' style={{ padding: '0.66rem' }}
+                    onClick={onCancel} />
             </div>
         </div>
     );

@@ -35,11 +35,6 @@ function SelectedItemsProvider({ children }: Props) {
         return selectedFolders.length > 0 || selectedFiles.length > 0;
     }
 
-    function areAllItemsSelected(): boolean {
-        const totalSelected = selectedFolders.length + selectedFiles.length;
-        return totalSelected === (items.folders.length + items.files.length);
-    }
-
     function selectAllItems() {
         setSelectedFolders(items.folders);
         setSelectedFiles(items.files);
@@ -57,7 +52,6 @@ function SelectedItemsProvider({ children }: Props) {
         toggleFileSelection,
         isItemSelected,
         isAnyItemSelected,
-        areAllItemsSelected,
         selectAllItems,
         clearSelection
     };

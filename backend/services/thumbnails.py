@@ -1,15 +1,13 @@
 import os
-import platform
 
 from io import BytesIO
 from urllib.parse import quote
 from warnings import filterwarnings
 
-from services.environment import THUMBNAILS_DIR
+from services.environment import THUMBNAILS_DIR, IS_WIN_OS
 
 from flask import request
 from PIL import Image
-
 from mutagen.id3 import ID3
 from mutagen.flac import FLAC
 from mutagen.id3._frames import APIC
@@ -53,7 +51,7 @@ def get_generated_thumbnail(filepath: str) -> str | None:
             return thumbnail
 
     # Supported video extensions (only on Windows platform)
-    if extention in ('mp4', 'mkv', 'avi', 'mov', 'webm', '3gp') and platform.system() == 'Windows':
+    if extention in ('mp4', 'mkv', 'avi', 'mov', 'webm', '3gp') and IS_WIN_OS:
         if generate_video_thumbnail(filepath, thumbpath):
             return thumbnail
 

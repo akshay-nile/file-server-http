@@ -32,12 +32,11 @@ def generate_unique_token() -> str:
 
 def play_notification_tone():
     if IS_WIN_OS:
-        from playsound3 import playsound, PlaysoundException
-        if os.path.exists('tone.mp3'):
-            try:
-                playsound('tone.mp3', False)
-            except PlaysoundException | RuntimeError:
-                pass
+        from playsound3 import playsound
+        try:
+            playsound('tone.mp3', False)
+        except Exception:
+            pass
 
 
 def verify_user_token(user_token: str) -> bool:
