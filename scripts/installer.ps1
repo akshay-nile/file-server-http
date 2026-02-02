@@ -27,18 +27,17 @@ Write-Host "`nStep 1) Running packager to generate MyFileServer core"
 # -------- Step 2) Copy required backend files to MyFileServer core --------
 
 Write-Host "`nStep 2) Copying required backend files to MyFileServer core"
-New-Item -ItemType Directory -Path "MyFileServer\scripts" -Force 
 Copy-Item -Path "README.md" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\tone.mp3" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\pyproject.toml" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\uv.lock" -Destination "MyFileServer" -Force
-Copy-Item -Path "scripts\uninstall.ps1" -Destination "MyFileServer\scripts" -Force
-Copy-Item -Path "scripts\remote.ps1" -Destination "MyFileServer\scripts\update.ps1" -Force
+Copy-Item -Path "scripts\uninstall.ps1" -Destination "MyFileServer" -Force
 
 
 # -------- Step 3) Move/Replace the MyFileServer to Program Files --------
 
 Write-Host "`nStep 3) Moving/Replacing MyFileServer core to Program Files"
+$ProjectRoot = (GetLocation).Path
 $ProgramFiles = [Environment]::GetFolderPath("ProgramFiles")
 $MyFileServer = Join-Path $ProgramFiles "MyFileServer"
 $UpdatingOldInstallation = $false
@@ -95,8 +94,8 @@ $Shortcut.Save()
 # -------- Step 6) Registering MyFileServer to Windows OS --------
 
 Write-Host "`nStep 6) Registering MyFileServer to Windows OS"
-$Version = (Get-Content "$PSScriptRoot\..\frontend\package.json" | ConvertFrom-Json).version
-$UninstallScript = Join-Path $MyFileServer "\scripts\uninstall.ps1"
+$Version = (Get-Content "$ProjectRoot\frontend\package.json" | ConvertFrom-Json).version
+$UninstallScript = Join-Path $MyFileServer "uninstall.ps1"
 $UninstallCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$UninstallScript`""
 
 $RegPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\MyFileServer"

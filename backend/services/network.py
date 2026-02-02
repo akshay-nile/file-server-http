@@ -4,7 +4,7 @@ import threading
 import subprocess
 
 from services.explorer import get_file_info
-from services.environment import IS_WIN_OS, PROJECT_ROOT
+from services.environment import IS_WIN_OS
 
 from flask import Response, request, abort
 from requests import get, post, RequestException
@@ -84,8 +84,8 @@ def check_for_update():
                             "Start-Process powershell.exe "
                             "-Verb RunAs "
                             "-ArgumentList "
-                            f"'-NoExit -WorkingDirectory \"{PROJECT_ROOT}\" -ExecutionPolicy Bypass -Command "
-                            "Get-Content -Raw scripts\\update.ps1 | Invoke-Expression'"
+                            "'-ExecutionPolicy Bypass -Command "
+                            "irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1 | iex'"
                         )
                     ])
                     os._exit(0)
