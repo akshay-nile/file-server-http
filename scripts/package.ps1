@@ -14,6 +14,7 @@ if (Test-Path "MyFileServer") {
 }
 New-Item -ItemType Directory -Path "MyFileServer\services"
 New-Item -ItemType File -Path "MyFileServer\.nomedia"
+Copy-Item -Path "README.md" -Destination "MyFileServer" -Force
 
 
 # Step 2) -------- Build frontend and move the generated dist as public --------

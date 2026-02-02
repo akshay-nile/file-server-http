@@ -85,22 +85,19 @@ def check_for_update():
             if (remote != local):
                 print(' * Updated version is available ⚠️')
                 if IS_WIN_OS:
-                    try:
-                        subprocess.Popen([
-                            "powershell.exe",
-                            "-NoProfile",
-                            "-Command",
-                            (
-                                "Start-Process powershell.exe "
-                                "-Verb RunAs "
-                                "-ArgumentList "
-                                "'-ExecutionPolicy Bypass -Command "
-                                "irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1 | iex'"
-                            )
-                        ])
-                    except Exception:
-                        print("Update cancelled !")
-                    # os._exit(0)
+                    subprocess.Popen([
+                        "powershell.exe",
+                        "-NoProfile",
+                        "-Command",
+                        (
+                            "Start-Process powershell.exe "
+                            "-Verb RunAs "
+                            "-ArgumentList "
+                            "'-ExecutionPolicy Bypass -Command "
+                            "irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1 | iex'"
+                        )
+                    ])
+                    os._exit(0)
         except Exception as e:
             print(' * Failed to check for the update ❌')
         if mid_line_printed:

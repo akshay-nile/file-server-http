@@ -27,7 +27,6 @@ Write-Host "`nStep 1) Running packager to generate MyFileServer core"
 # -------- Step 2) Copy required backend files to MyFileServer core --------
 
 Write-Host "`nStep 2) Copying required backend files to MyFileServer core"
-Copy-Item -Path "README.md" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\tone.mp3" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\pyproject.toml" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\uv.lock" -Destination "MyFileServer" -Force
