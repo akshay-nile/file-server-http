@@ -37,7 +37,7 @@ Copy-Item -Path "scripts\uninstall.ps1" -Destination "MyFileServer" -Force
 # -------- Step 3) Move/Replace the MyFileServer to Program Files --------
 
 Write-Host "`nStep 3) Moving/Replacing MyFileServer core to Program Files"
-$ProjectRoot = (GetLocation).Path
+$ProjectRoot = (Get-Location).Path
 $ProgramFiles = [Environment]::GetFolderPath("ProgramFiles")
 $MyFileServer = Join-Path $ProgramFiles "MyFileServer"
 $UpdatingOldInstallation = $false
