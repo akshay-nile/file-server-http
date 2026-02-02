@@ -51,7 +51,7 @@ def configure_flask_app(app: Flask) -> Flask:
         # Publish the appropriate socket/server address to my website
         server_address = f"http://{app.config['HOST']}:{app.config['PORT']}"
         publish_server_address(server_address)
-        print(' * Serving at', server_address)
+        print(' * Serving at', server_address, '🌐' if app.config['HOST'].startswith('[') else '🛜')
 
         # Launch a new thread to check if updated version is available or not
         check_for_update()
