@@ -53,6 +53,6 @@ def configure_flask_app(app: Flask) -> Flask:
         publish_server_address(server_address)
         print(' * Serving at', server_address)
 
-        # Launch new thread to check if updated version is available or not
+        # Launch a new thread to check if updated version is available or not
         check_for_update()
     return app

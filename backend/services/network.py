@@ -4,7 +4,7 @@ import threading
 import subprocess
 
 from services.explorer import get_file_info
-from services.environment import IS_WIN_OS
+from services.environment import IS_WIN_OS, PROJECT_ROOT
 
 from flask import Response, request, abort
 from requests import get, post, RequestException
@@ -60,9 +60,9 @@ def publish_server_address(server_address: str):
             pythonanywhere = 'https://akshaynile.pythonanywhere.com/publish?socket='
             status = post(pythonanywhere + server_address, timeout=5).text
             if status == 'success':
-                print(' * Socket publication was successful ✅ \n')
+                print(' * Socket publication was successful ✅')
         except RequestException:
-            print(' * Socket publication attempt failed ❌ \n')
+            print(' * Socket publication attempt failed ❌')
     threading.Thread(target=publisher).start()
 
 
@@ -74,7 +74,7 @@ def check_for_update():
             with open('README.md', encoding='utf-8') as file:
                 local = file.read().splitlines()[0].strip()
             if (remote != local):
-                print('* Updated version is available ⚠️ \n')
+                print(' * Updated version is available ⚠️')
                 if IS_WIN_OS:
                     subprocess.Popen([
                         "powershell.exe",
@@ -84,8 +84,8 @@ def check_for_update():
                             "Start-Process powershell.exe "
                             "-Verb RunAs "
                             "-ArgumentList "
-                            "'-ExecutionPolicy Bypass -Command "
-                            "Get-Content -Raw .\\scripts\\update.ps1 | Invoke-Expression'"
+                            f"'-NoExit -WorkingDirectory \"{PROJECT_ROOT}\" -ExecutionPolicy Bypass -Command "
+                            "Get-Content -Raw scripts\\update.ps1 | Invoke-Expression'"
                         )
                     ])
                     os._exit(0)
