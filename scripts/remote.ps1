@@ -21,7 +21,15 @@ if (-not $IsAdmin) {
 
 # -------- Download the project.zip --------
 
-Set-Location $HOME/Downloads
+Set-Location $HOME\Downloads
+
+if (Test-Path "project.zip") {
+    Remove-Item .\project.zip -Recurse -Force
+}
+if (Test-Path "file-server-http-master") {
+    Remove-Item .\file-server-http-master -Recurse -Force
+}
+
 Write-Host "Downloading project.zip"
 Invoke-WebRequest `
     -Uri "https://github.com/akshay-nile/file-server-http/archive/refs/heads/master.zip" `
@@ -54,7 +62,7 @@ powershell.exe -ExecutionPolicy Bypass -File .\installer.ps1
 
 # -------- Clean up downloaded junk --------
 
-Set-Location $HOME/Downloads
+Set-Location $HOME\Downloads
 Write-Host "Clearning downloaded junk"
 Remove-Item .\project.zip -Recurse -Force
 Remove-Item .\file-server-http-master -Recurse -Force
