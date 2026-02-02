@@ -10,6 +10,9 @@ from flask import Response, request, abort
 from requests import get, post, RequestException
 
 
+mid_line_printed = False
+
+
 def get_local_ip():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -56,6 +59,7 @@ def get_user_selection():
 
 def publish_server_address(server_address: str):
     def publisher():
+        global mid_line_printed
         try:
             pythonanywhere = 'https://akshaynile.pythonanywhere.com/publish?socket='
             status = post(pythonanywhere + server_address, timeout=5).text
@@ -63,14 +67,19 @@ def publish_server_address(server_address: str):
                 print(' * Socket publication was successful ✅')
         except RequestException:
             print(' * Socket publication attempt failed ❌')
+        if mid_line_printed:
+            print()
+        else:
+            mid_line_printed = True
     threading.Thread(target=publisher).start()
 
 
 def check_for_update():
     def updator():
+        global mid_line_printed
         try:
             github = 'https://github.com/akshay-nile/file-server-http/raw/master/README.md'
-            remote = get(github, timeout=15).text.splitlines()[0].strip()
+            remote = get(github, timeout=5).text.splitlines()[0].strip()
             with open('README.md', encoding='utf-8') as file:
                 local = file.read().splitlines()[0].strip()
             if (remote != local):
@@ -90,7 +99,11 @@ def check_for_update():
                     ])
                     os._exit(0)
         except Exception as e:
-            print(' * Failed to check for the update ❌ \n')
+            print(' * Failed to check for the update ❌')
+        if mid_line_printed:
+            print()
+        else:
+            mid_line_printed = True
     threading.Thread(target=updator).start()
 
 
