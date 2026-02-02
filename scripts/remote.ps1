@@ -3,7 +3,7 @@
 # in Windows PC remotly by downloading this project from GitHub repo.
 
 # The command to execute this script remotely in PowerShell as Administrator
-# powershell.exe -ExecutionPolicy Bypass -c "irm 'https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1' | iex";
+# Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -c irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1 | iex"
 
 
 # -------- Check admin privilege --------
