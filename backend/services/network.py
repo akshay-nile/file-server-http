@@ -111,6 +111,7 @@ def is_socket_available(host: str, port: int) -> bool:
     socket_family = socket.AF_INET
     if host.startswith('[') and host.endswith(']'):
         socket_family = socket.AF_INET6
+        host = host[1:-1]
     with socket.socket(socket_family, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.5)
         return sock.connect_ex((host, port)) != 0
