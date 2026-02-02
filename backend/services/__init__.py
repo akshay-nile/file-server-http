@@ -36,8 +36,10 @@ def configure_flask_app(app: Flask) -> Flask:
         from flask_cors import CORS
         CORS(app)
     else:
-        from services.network import is_socket_available
-        from services.network import get_user_selection, publish_server_address
+        from services.network import is_socket_available, check_for_update, get_user_selection, publish_server_address
+
+        # Launch a thread to check if updated version is available or not
+        check_for_update()
 
         # Bind to actual network ip, set custom port and disable debug mode
         app.config['HOST'] = get_user_selection()

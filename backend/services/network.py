@@ -1,7 +1,10 @@
+import os
 import socket
 import threading
+import subprocess
 
 from services.explorer import get_file_info
+from services.environment import IS_WIN_OS
 
 from flask import Response, request, abort
 from requests import get, post, RequestException
@@ -52,15 +55,43 @@ def get_user_selection():
 
 
 def publish_server_address(server_address: str):
-    def my_socket():
+    def publisher():
         try:
             pythonanywhere = 'https://akshaynile.pythonanywhere.com/publish?socket='
-            text = post(pythonanywhere + server_address, timeout=5).text
-            if text == 'success':
-                print(' * Socket publication was successful √ \n')
+            status = post(pythonanywhere + server_address, timeout=5).text
+            if status == 'success':
+                print(' * Socket publication was successful ✅ \n')
         except RequestException:
-            print(' * Socket publication attempt failed ╳ \n')
-    threading.Thread(target=my_socket).start()
+            print(' * Socket publication attempt failed ❌ \n')
+    threading.Thread(target=publisher).start()
+
+
+def check_for_update():
+    def updator():
+        try:
+            github = 'https://github.com/akshay-nile/file-server-http/raw/master/README.md'
+            remote = get(github, timeout=15).text.splitlines()[0].strip()
+            with open('README.md', encoding='utf-8') as file:
+                local = file.read().splitlines()[0].strip()
+            if (remote != local):
+                print('* Updated version is available ⚠️ \n')
+                if IS_WIN_OS:
+                    subprocess.Popen([
+                        "powershell.exe",
+                        "-NoProfile",
+                        "-Command",
+                        (
+                            "Start-Process powershell.exe "
+                            "-Verb RunAs "
+                            "-ArgumentList "
+                            "'-ExecutionPolicy Bypass -Command "
+                            "Get-Content -Raw .\\scripts\\update.ps1 | Invoke-Expression'"
+                        )
+                    ])
+                    os._exit(0)
+        except Exception as e:
+            print(' * Failed to check for the update ❌ \n')
+    threading.Thread(target=updator).start()
 
 
 def is_socket_available(host: str, port: int) -> bool:
