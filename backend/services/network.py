@@ -81,26 +81,24 @@ def publish_server_address(server_address: str):
 def check_for_update():
     def updator():
         try:
-            github = 'https://github.com/akshay-nile/file-server-http/raw/master/README.md'
-            remote = get(github, timeout=5).text.splitlines()[0].strip()
-            with open('README.md', encoding='utf-8') as file:
+            github = 'https://github.com/akshay-nile/file-server-http/raw/master'
+            remote = get(github + '/README.md', timeout=5).text.splitlines()[0].strip()
+            with open('./README.md', encoding='utf-8') as file:
                 local = file.read().splitlines()[0].strip()
             if (remote != local):
-                print(' * Updated version is available ⚠️')
+                print(f' * Updated version {remote.split()[-1][1:]} is available ⚠️')
                 if IS_WIN_OS:
-                    subprocess.Popen([
-                        "powershell.exe",
-                        "-NoProfile",
-                        "-Command",
+                    admin_command = f'irm {github}/scripts/remote.ps1 | iex'
+                    user_command = [
+                        'powershell.exe', '-NoProfile', '-Command',
                         (
-                            "Start-Process powershell.exe "
-                            "-Verb RunAs "
-                            "-ArgumentList "
-                            "'-ExecutionPolicy Bypass -Command "
-                            "irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1 | iex'"
+                            'Start-Process powershell.exe -Verb RunAs -ArgumentList '
+                            f"'-ExecutionPolicy Bypass -Command {admin_command}'"
                         )
-                    ])
-                    os._exit(0)
+                    ]
+                    result = subprocess.run(user_command, capture_output=True)
+                    if result.returncode == 0:
+                        os._exit(0)
         except Exception as e:
             print(' * Failed to check for the update ❌')
         print_mid_line()
