@@ -48,7 +48,7 @@ function UploadFiles() {
             setUploading(false);
             setUploadLabel('Upload');
             setUploadedInfo({ count: 0, size: 0, total: 0 });
-        }, 3000);
+        }, 1000);
         toast.show({
             severity: 'success',
             summary: 'Uploaded Successfully',
@@ -87,7 +87,7 @@ function UploadFiles() {
                     onClick={uploadChoosenFiles}
                     disabled={files.length === 0 || uploading}
                 />
-                <Button label='Cancel' icon='pi pi-times' size='small'
+                <Button label='Cancel' icon='pi pi-times' size='small' severity='danger'
                     onClick={onUploadingCancelled}
                     disabled={files.length === 0}
                 />

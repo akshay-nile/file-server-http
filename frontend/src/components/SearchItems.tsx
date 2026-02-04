@@ -1,16 +1,26 @@
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { SelectButton } from 'primereact/selectbutton';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import { clearSearchInfo, searchInfo, setSearchInfo } from '../services/utilities';
 
 function SearchItems() {
     const { path, items, setItems, explore } = useExplorerItems();
+    const pathRef = useRef<string>(null);
 
     const [search, setSearch] = useState<string>('');
     const [deepSearch, setDeepSearch] = useState<boolean>(false);
     const [status, setStatus] = useState<'none' | 'searching' | 'searched'>('none');
+
+    useEffect(() => {
+        pathRef.current = path;
+        if (searchInfo !== null && path !== searchInfo.path) {
+            setSearch('');
+            setDeepSearch(false);
+            setStatus('none');
+        }
+    }, [path]);
 
     async function performSearch() {
         if (status === 'searching') return;
@@ -31,13 +41,15 @@ function SearchItems() {
         setStatus('searched');
     }
 
-    const clearSearch = useCallback(() => {
+    const clearSearch = useCallback(async () => {
         setSearch('');
         setDeepSearch(false);
         setStatus('none');
         clearSearchInfo();
-        if (status !== 'none') explore(path);
-    }, [path, status, explore]);
+        if (status !== 'none' && pathRef.current) {
+            await explore(pathRef.current, false);
+        }
+    }, [status, explore]);
 
     function onEnterOrEscapeKey(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
@@ -48,11 +60,6 @@ function SearchItems() {
     };
 
     useEffect(() => {
-        if (searchInfo !== null && path !== searchInfo.path) {
-            setSearch('');
-            setDeepSearch(false);
-            setStatus('none');
-        }
         const onSearchPage = () => {
             if (searchInfo === null) return;
             setSearch(searchInfo.query);
@@ -65,7 +72,7 @@ function SearchItems() {
             removeEventListener('onsearchpagecache', onSearchPage);
             removeEventListener('onsearchpanelclose', clearSearch);
         };
-    }, [path, clearSearch]);
+    }, [clearSearch]);
 
     return (
         <div className='flex mt-4 mb-2 mx-1'>
