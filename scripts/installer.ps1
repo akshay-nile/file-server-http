@@ -69,7 +69,7 @@ Unblock-File $UvExe
 Set-Location $MyFileServer
 & $UvExe sync --no-dev
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Dependency syncing failed" -ForegroundColor Red
+    Write-Host "`nDependency syncing failed" -ForegroundColor Red
     exit 1
 }
 
@@ -84,7 +84,7 @@ $IconPath = Join-Path $MyFileServer "public\favicon.ico"
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
 $Shortcut.TargetPath = $UvExe
-$Shortcut.Arguments = "run server.py"
+$Shortcut.Arguments = "run --no-dev server.py"
 $Shortcut.WorkingDirectory = $MyFileServer
 $Shortcut.IconLocation = $IconPath
 $Shortcut.Save()
