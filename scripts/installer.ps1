@@ -53,7 +53,7 @@ if (Test-Path $MyFileServer) {
 }
 else {
     Write-Host "`nMoving the MyFileServer core to Program Files"
-    Move-Item -Path "MyFileServer" -Destination $ProgramFiles -Recurse -Force
+    Move-Item -Path "MyFileServer" -Destination $ProgramFiles -Force
     $UpdatedOldInstallation = $false
 }
 
