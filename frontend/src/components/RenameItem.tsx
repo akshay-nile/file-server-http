@@ -1,7 +1,7 @@
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
 import { useState } from 'react';
 import type { ItemInfo } from '../services/models';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
 
 type Props = {
     itemToRename: ItemInfo,
@@ -23,10 +23,19 @@ function RenameItem({ itemToRename, isFileItem, onRename, onCancel }: Props) {
         return true;
     }
 
+    function onEnterOrEscapeKey(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') {
+            if (isValidName()) onRename(name);
+            return;
+        }
+        if (e.key === 'Escape' || e.key === 'Esc') onCancel();
+    }
+
     return (
         <div className='flex flex-col gap-1 items-center'>
-            <InputText type='text' placeholder='Item Name' spellCheck={false} autoComplete='off' className='w-full m-0'
-                value={name} onChange={e => setName(e.target.value)} />
+            <InputText type='text' placeholder='Item Name' spellCheck={false} autoComplete='off' autoFocus={true}
+                className='w-full m-0' style={{ fontWeight: '500' }}
+                value={name} onChange={e => setName(e.target.value)} onKeyDown={onEnterOrEscapeKey} />
             <div className='flex gap-5 items-center mt-5'>
                 <Button label='Rename' raised size='small' style={{ padding: '0.66rem' }}
                     onClick={() => onRename(name)} disabled={!isValidName()} />

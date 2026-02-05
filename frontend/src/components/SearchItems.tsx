@@ -57,7 +57,7 @@ function SearchItems() {
             return;
         }
         if (e.key === 'Escape' || e.key === 'Esc') clearSearch();
-    };
+    }
 
     useEffect(() => {
         const onSearchPage = () => {

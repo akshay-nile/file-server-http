@@ -190,7 +190,7 @@ function BottomPanel() {
             if (response && response.count === 1) toast.show({
                 severity: 'success',
                 summary: 'Item Renamed',
-                detail: itemToRename.name + ' is renamed to ' + ''
+                detail: itemToRename.name + ' is renamed to ' + name
             });
             else toast.show({
                 severity: 'error',
