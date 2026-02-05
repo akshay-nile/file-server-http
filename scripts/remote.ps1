@@ -77,7 +77,7 @@ if ($WasServerRunning) {
     $Desktop = [Environment]::GetFolderPath("Desktop")
     $Shortcut = Join-Path $Desktop "MyFileServer.lnk"
     if (Test-Path $Shortcut) {
-        Write-Host "Starting the server again" 
+        Write-Host "Starting the server again" -ForegroundColor -Yellow 
         explorer.exe "$Shortcut" 
     }
 }

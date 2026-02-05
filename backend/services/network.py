@@ -1,9 +1,10 @@
+import os
 import socket
 import threading
 import subprocess
 
 from services.explorer import get_file_info
-from services.environment import IS_WIN_OS
+from services.environment import IS_WIN_OS, USER_HOME
 
 from flask import Response, request, abort
 from requests import get, post, RequestException
@@ -49,7 +50,20 @@ def get_public_ip():
 
 
 def get_user_selection():
-    text = input('Run server on Public IP (Yes/No): ').lower().strip()
+    text = None     # To store/restore the user response
+
+    # Check if it is a restart (after an update) or fresh start
+    if IS_WIN_OS:
+        restart = USER_HOME + '/restart.txt'
+        if os.path.isfile(restart):
+            with open(restart, 'rt') as file:
+                text = file.read().strip()
+            os.remove(restart)
+
+    if text is None:
+        text = input('Run server on Public IP (Yes/No): ').lower().strip()
+    else:
+        print('Run server on Public IP (Yes/No):', text)
 
     # Entering Yes, yes, or simply y will get public ip
     if text.startswith('y'):
@@ -98,7 +112,11 @@ def check_for_update():
                             f"'-ExecutionPolicy Bypass -Command {admin_command}'"
                         )
                     ]
-                    subprocess.run(user_command, capture_output=True)
+                    result = subprocess.run(user_command, capture_output=True)
+                    if result.returncode == 0:
+                        with open(USER_HOME + '/restart.txt', 'wt') as file:
+                            file.write('Yes' if is_public_ip else 'No')
+                        exit(0)
         except Exception:
             print(' * Failed to check for the update ❌')
         print_mid_line()
