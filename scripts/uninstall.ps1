@@ -18,16 +18,16 @@ if (-not $IsAdmin) {
 }
 
 
-# Step 0) Kill any running process of MyFileServer
+# -------- Kill any running process of MyFileServer -------- 
 
 $PortPID = (Get-NetTCPConnection -LocalPort 8849 -ErrorAction SilentlyContinue).OwningProcess
 if ($PortPID) {
-    Write-Host "Killing process PID: $PortPID" -ForegroundColor Yellow
     Stop-Process -Id $PortPID -Force
+    Write-Host "`nStopped the active server" -ForegroundColor Yellow
 }
 
 
-# Step 1) Remove MyFileServer from project root
+# -------- Remove MyFileServer from project root -------- 
 
 Set-Location ".."
 if (Test-Path "MyFileServer") {
@@ -36,7 +36,7 @@ if (Test-Path "MyFileServer") {
 }
 
 
-# Step 2) Remove MyFileServer from User directory
+# -------- Remove MyFileServer from User directory -------- 
 
 $UserHome = [Environment]::GetFolderPath("UserProfile")
 $TargetDir = Join-Path $UserHome "MyFileServer"
@@ -46,7 +46,7 @@ if (Test-Path $TargetDir) {
 }
 
 
-# Step 3) Remove MyFileServer from Program Files
+# -------- Remove MyFileServer from Program Files -------- 
 
 $ProgramFiles = [Environment]::GetFolderPath("ProgramFiles")
 $TargetDir = Join-Path $ProgramFiles "MyFileServer"
@@ -56,7 +56,7 @@ if (Test-Path $TargetDir) {
 }
 
 
-# Step 4) Remove MyFileServer thumbnails cache
+# -------- Remove MyFileServer thumbnails cache -------- 
 
 $ThumbnailsCache = [Environment]::GetFolderPath("LocalApplicationData")
 $TargetDir = Join-Path $ThumbnailsCache "MyFileServer"
@@ -66,7 +66,7 @@ if (Test-Path $TargetDir) {
 }
 
 
-# Step 5) Remove desktop shortcut of MyFileServer
+# -------- Remove desktop shortcut of MyFileServer -------- 
 
 $Desktop = [Environment]::GetFolderPath("Desktop")
 $Shortcut = Join-Path $Desktop "MyFileServer.lnk"
@@ -76,7 +76,7 @@ if (Test-Path $Shortcut) {
 } 
 
 
-# Step 6) Unregister MyFileServer from Windows OS
+# -------- Unregister MyFileServer from Windows OS -------- 
 
 $RegPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\MyFileServer"
 if (Test-Path $RegPath) {

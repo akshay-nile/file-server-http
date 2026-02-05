@@ -5,9 +5,9 @@
 
 Set-Location $PSScriptRoot
 
-# Step 1) -------- Goto project root and create MyFileServer directory --------
+# -------- Goto project root and create MyFileServer directory --------
 
-Write-Host "`nStep 1) Setup MyFileServer directory"
+Write-Host "`nSetup MyFileServer directory"
 Set-Location ".."
 if (Test-Path "MyFileServer") {
     Remove-Item "MyFileServer" -Recurse -Force
@@ -17,9 +17,9 @@ New-Item -ItemType File -Path "MyFileServer\.nomedia"
 Copy-Item -Path "README.md" -Destination "MyFileServer" -Force
 
 
-# Step 2) -------- Build frontend and move the generated dist as public --------
+# -------- Build frontend and move the generated dist as public --------
 
-Write-Host "`nStep 2) Building the frontend"
+Write-Host "`nBuilding the frontend"
 Set-Location "frontend"
 if (Get-Command npm -ErrorAction SilentlyContinue) {
     if (-not (Test-Path "node_modules")) {
@@ -34,17 +34,17 @@ if (-not (Test-Path "dist")) {
 Copy-Item -Path "dist" -Destination "..\MyFileServer\public" -Recurse -Force
 
 
-# Step 3) -------- Copy required python backend files to MyFileServer --------
+# -------- Copy required python backend files to MyFileServer --------
 
-Write-Host "`nStep 3) Copying the backend files"
+Write-Host "`nCopying the backend files"
 Set-Location "..\backend"
 Copy-Item -Path "server.py" -Destination "..\MyFileServer"
 Copy-Item -Path "services\*.py" -Destination "..\MyFileServer\services"
 
 
-# Step 4) -------- Verifying the final MyFileServer folder structure --------
+# -------- Verifying the final MyFileServer folder structure --------
 
-Write-Host "`nStep 4) Verifying final structure"
+Write-Host "`nVerifying final structure"
 Set-Location ".."
 
 $expectedPaths = @(
@@ -53,7 +53,8 @@ $expectedPaths = @(
     "MyFileServer\public\favicon.ico",
     "MyFileServer\services\__init__.py",
     "MyFileServer\server.py",
-    "MyFileServer\.nomedia"
+    "MyFileServer\.nomedia",
+    "MyFileServer\README.md"
 )
 
 foreach ($path in $expectedPaths) {

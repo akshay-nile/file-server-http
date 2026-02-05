@@ -1,6 +1,6 @@
 # -------- DESCRIPTION --------
-# This script automates the process of installing the MyFileServer
-# in Windows PC and send its launch shortcut to the Desktop.
+# This script automates the process of installing (or updating) 
+# the MyFileServer in Windows PC and create shortcut to desktop.
 
 Set-Location $PSScriptRoot
 
@@ -18,45 +18,53 @@ if (-not $IsAdmin) {
 }
 
 
-# -------- Step 1) Run uninstaller and packager to generate MyFileServer core package --------
+# -------- Run package.ps1 to generate a fresh MyFileServer core --------
 
-Write-Host "`nStep 1) Running packager to generate MyFileServer core"
+Write-Host "`nRunning package.ps1 to generate MyFileServer core"
 & .\package.ps1
+$ProjectRoot = (Get-Location).Path
 
 
-# -------- Step 2) Copy required backend files to MyFileServer core --------
+# -------- Copy required backend files to MyFileServer core --------
 
-Write-Host "`nStep 2) Copying required backend files to MyFileServer core"
+Write-Host "`nCopying required backend files to MyFileServer core"
 Copy-Item -Path "backend\tone.mp3" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\pyproject.toml" -Destination "MyFileServer" -Force
 Copy-Item -Path "backend\uv.lock" -Destination "MyFileServer" -Force
 Copy-Item -Path "scripts\uninstall.ps1" -Destination "MyFileServer" -Force
+Write-Host "`nMyFileServer core is ready to install/update"
 
 
-# -------- Step 3) Move/Replace the MyFileServer to Program Files --------
+# -------- Move (or Update) the MyFileServer to Program Files --------
 
-Write-Host "`nStep 3) Moving/Replacing MyFileServer core to Program Files"
-$ProjectRoot = (Get-Location).Path
 $ProgramFiles = [Environment]::GetFolderPath("ProgramFiles")
 $MyFileServer = Join-Path $ProgramFiles "MyFileServer"
-$UpdatingOldInstallation = $false
+
 if (Test-Path $MyFileServer) {
     Write-Host "`nUpdating the existing installation" -ForegroundColor Yellow
-    Copy-Item -Path "$MyFileServer\.venv" -Destination "MyFileServer\.venv" -Recurse -Force
-    Copy-Item -Path "$MyFileServer\tools" -Destination "MyFileServer\tools" -Recurse -Force
-    Remove-Item $MyFileServer -Recurse -Force
-    $UpdatingOldInstallation = $true
+
+    Get-ChildItem -Path $MyFileServer -Force |
+    Where-Object { $_.Name -notin '.venv', 'tools' } |
+    Remove-Item -Recurse -Force
+
+    Move-Item -Path "MyFileServer\*" -Destination $MyFileServer -Recurse -Force
+    Remove-Item "MyFileServer" -Recurse -Force
+    $UpdatedOldInstallation = $true
 }
-Move-Item -Path "MyFileServer" -Destination $ProgramFiles -Force
+else {
+    Write-Host "`nMoving the MyFileServer core to Program Files"
+    Move-Item -Path "MyFileServer" -Destination $ProgramFiles -Recurse -Force
+    $UpdatedOldInstallation = $false
+}
 
 
-# -------- Step 4) Download tools and sync project dependencies --------
+# -------- Download uv tools and sync project dependencies --------
 
-if (-not $UpdatingOldInstallation) {
-    Write-Host "`nStep 4) Downloading tools and syncing uv dependencies"
+if (-not $UpdatedOldInstallation) {
+    Write-Host "`nDownloading uv tools and syncing project dependencies"
     $env:UV_INSTALL_DIR = Join-Path $MyFileServer "tools";
     $env:UV_NO_MODIFY_PATH = "1"; 
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+    powershell.exe -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 }
 
 $UvExe = Join-Path $MyFileServer "tools\uv.exe"
@@ -74,9 +82,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 
-# -------- Step 5) Creating desktop shortcut of MyFileServer --------
+# -------- Creating the desktop shortcut to launch MyFileServer --------
 
-Write-Host "`nStep 5) Creating the Desktop Shortcut"
+Write-Host "`nCreating the Desktop Shortcut"
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
 $ShortcutPath = Join-Path $DesktopPath "MyFileServer.lnk"
 $IconPath = Join-Path $MyFileServer "public\favicon.ico"
@@ -90,9 +98,9 @@ $Shortcut.IconLocation = $IconPath
 $Shortcut.Save()
 
 
-# -------- Step 6) Registering MyFileServer to Windows OS --------
+# -------- Registering MyFileServer to Windows OS --------
 
-Write-Host "`nStep 6) Registering MyFileServer to Windows OS"
+Write-Host "`nRegistering MyFileServer to Windows OS"
 $Version = (Get-Content "$ProjectRoot\frontend\package.json" | ConvertFrom-Json).version
 $UninstallScript = Join-Path $MyFileServer "uninstall.ps1"
 $UninstallCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$UninstallScript`""

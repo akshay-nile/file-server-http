@@ -1,6 +1,7 @@
 # -------- DESCRIPTION --------
 # This script automates the process of installing the MyFileServer
-# in Windows PC remotly by downloading this project from GitHub repo.
+# in Windows PC remotely by downloading this project from GitHub repo
+# and then invoking the installer script to install (or update) the app.
 
 # The command to execute this script remotely in PowerShell as Administrator
 # Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -c irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1 | iex"
@@ -19,7 +20,7 @@ if (-not $IsAdmin) {
 }
 
 
-# -------- Download the project.zip --------
+# -------- Remove old junk if any --------
 
 Set-Location "$HOME\Downloads"
 
@@ -30,11 +31,14 @@ if (Test-Path "file-server-http-master") {
     Remove-Item .\file-server-http-master -Recurse -Force
 }
 
+
+# -------- Download the project.zip --------
+
 Write-Host "Downloading project.zip"
 Invoke-WebRequest `
     -Uri "https://github.com/akshay-nile/file-server-http/archive/refs/heads/master.zip" `
     -OutFile "project.zip" `
-    -UseBasicParsing;
+    -UseBasicParsing
 
 if (-not (Test-Path "project.zip")) {
     Write-Host "Downloading failed" -ForegroundColor Red
