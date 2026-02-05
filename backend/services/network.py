@@ -87,9 +87,9 @@ def publish_server_address(server_address: str):
             pythonanywhere = 'https://akshaynile.pythonanywhere.com/publish?socket='
             status = post(pythonanywhere + server_address, timeout=5).text
             if status == 'success':
-                print(' * Socket publication was successful ✅')
+                print(' ✅ Socket publication was successful')
         except RequestException:
-            print(' * Socket publication attempt failed ❌')
+            print(' ❌ Socket publication attempt failed')
         print_mid_line()
     threading.Thread(target=publisher).start()
 
@@ -102,7 +102,7 @@ def check_for_update():
             with open('./README.md', encoding='utf-8') as file:
                 local = file.read().splitlines()[0].strip()
             if (remote != local):
-                print(f' * Updated version {remote.split()[-1][1:]} is available ⚠️')
+                print(f' ⚠️ Updated version {remote.split()[-1][1:]} is available')
                 if IS_WIN_OS:
                     admin_command = f'irm {github}/scripts/remote.ps1 | iex'
                     user_command = [
@@ -117,7 +117,7 @@ def check_for_update():
                         with open(USER_HOME + '/restart.txt', 'wt') as file:
                             file.write('Yes' if is_public_ip else 'No')
         except Exception:
-            print(' * Failed to check for the update ❌')
+            print(' ❌ Failed to check for the update')
         print_mid_line()
     threading.Thread(target=updator).start()
 
