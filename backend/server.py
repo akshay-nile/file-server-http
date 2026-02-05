@@ -92,11 +92,11 @@ def modify_items(action: str):
     items = request.get_json()
     if action == 'delete':
         print('Delete - ', end='')
-        print(*items, sep='\nDelete - ')
+        print(*map(format_path, items), sep='\nDelete - ')
         return jsonify({'count': delete_items(items)})
     if action == 'rename':
-        print('Rename (old) -', items[0])
-        print('Rename (new) -', items[1])
+        print('Rename (old) -', format_path(items[0]))
+        print('Rename (new) -', format_path(items[1]))
         return jsonify({'count': rename_item(*items)})
     return jsonify({'count': 0})
 
