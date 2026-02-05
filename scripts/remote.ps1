@@ -21,7 +21,7 @@ if (-not $IsAdmin) {
 
 # -------- Download the project.zip --------
 
-Set-Location $HOME\Downloads
+Set-Location "$HOME\Downloads"
 
 if (Test-Path "project.zip") {
     Remove-Item .\project.zip -Recurse -Force
@@ -58,7 +58,7 @@ if (-not (Test-Path "file-server-http-master")) {
 $WasServerRunning = $false
 $PortPID = (Get-NetTCPConnection -LocalPort 8849 -ErrorAction SilentlyContinue).OwningProcess
 if ($PortPID) {
-    Write-Host "Killing process PID: $PortPID" -ForegroundColor Yellow
+    Write-Host "Stopping the running server" -ForegroundColor Yellow
     Stop-Process -Id $PortPID -Force
     $WasServerRunning = $true
 }
@@ -76,13 +76,16 @@ powershell.exe -ExecutionPolicy Bypass -File .\installer.ps1
 if ($WasServerRunning) {
     $Desktop = [Environment]::GetFolderPath("Desktop")
     $Shortcut = Join-Path $Desktop "MyFileServer.lnk"
-    if (Test-Path $Shortcut) { & $Shortcut }
+    if (Test-Path $Shortcut) {
+        Write-Host "Starting the server again" 
+        explorer.exe "$Shortcut" 
+    }
 }
 
 
 # -------- Clean up downloaded junk --------
 
-Set-Location $HOME\Downloads
+Set-Location "$HOME\Downloads"
 Write-Host "Clearning downloaded junk"
 Remove-Item .\project.zip -Recurse -Force
 Remove-Item .\file-server-http-master -Recurse -Force
