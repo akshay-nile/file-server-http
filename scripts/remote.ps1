@@ -58,7 +58,7 @@ if (-not (Test-Path "file-server-http-master")) {
 $WasServerRunning = $false
 $PortPID = (Get-NetTCPConnection -LocalPort 8849 -ErrorAction SilentlyContinue).OwningProcess
 if ($PortPID) {
-    Write-Host "Stopping the running server" -ForegroundColor Yellow
+    Write-Host "Stopping the active server" -ForegroundColor Yellow
     Stop-Process -Id $PortPID -Force
     $WasServerRunning = $true
 }

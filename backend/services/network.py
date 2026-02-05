@@ -57,7 +57,7 @@ def get_user_selection():
         restart = USER_HOME + '/restart.txt'
         if os.path.isfile(restart):
             with open(restart, 'rt') as file:
-                text = file.read().strip()
+                text = file.read().lower().strip()
             os.remove(restart)
 
     if text is None:
@@ -116,7 +116,6 @@ def check_for_update():
                     if result.returncode == 0:
                         with open(USER_HOME + '/restart.txt', 'wt') as file:
                             file.write('Yes' if is_public_ip else 'No')
-                        exit(0)
         except Exception:
             print(' * Failed to check for the update ❌')
         print_mid_line()

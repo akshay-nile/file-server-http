@@ -1,4 +1,4 @@
-# 📁 MyFileServer v1.4.6
+# 📁 MyFileServer v1.4.7
 
 A lightweight file server application to transfer/stream files over network with:
 
