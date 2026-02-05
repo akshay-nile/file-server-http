@@ -1,4 +1,3 @@
-import os
 import socket
 import threading
 import subprocess
@@ -10,13 +9,14 @@ from flask import Response, request, abort
 from requests import get, post, RequestException
 
 
+is_public_ip = False
 mid_line_printed = False
 
 
 def print_mid_line():
     global mid_line_printed
     if mid_line_printed:
-        print()
+        print()     # Extra blank line to saperate the server logs
     else:
         mid_line_printed = True
 
@@ -36,10 +36,12 @@ def get_local_ip():
 
 
 def get_public_ip():
+    global is_public_ip
     try:
         ip = get('https://ifconfig.me', timeout=5).text
         if ip.count('.') != 3:
             ip = f'[{ip}]'
+            is_public_ip = True
     except RequestException:
         ip = None
         print('Not connected to Internet')
@@ -60,7 +62,7 @@ def get_user_selection():
 
     if ip is None:
         exit()
-    print()     # Extra blank line to saperate the server logs
+    print()     # Extra blank line to saperate the status logs
 
     return ip
 
@@ -96,10 +98,8 @@ def check_for_update():
                             f"'-ExecutionPolicy Bypass -Command {admin_command}'"
                         )
                     ]
-                    result = subprocess.run(user_command, capture_output=True)
-                    if result.returncode == 0:
-                        os._exit(0)
-        except Exception as e:
+                    subprocess.run(user_command, capture_output=True)
+        except Exception:
             print(' * Failed to check for the update ❌')
         print_mid_line()
     threading.Thread(target=updator).start()
@@ -107,7 +107,7 @@ def check_for_update():
 
 def is_socket_available(host: str, port: int) -> bool:
     socket_family = socket.AF_INET
-    if host.startswith('[') and host.endswith(']'):
+    if is_public_ip:
         socket_family = socket.AF_INET6
         host = host[1:-1]
     with socket.socket(socket_family, socket.SOCK_STREAM) as sock:
@@ -157,7 +157,7 @@ def get_stream_or_download_response(filepath: str, stream=True) -> Response:
         direct_passthrough=True
     )
 
-    # Set common headers for both status-codes 200 and 206
+    # Set the common headers for both status-codes 200 and 206
     response.headers.set('Content-Length', end - start + 1)
     response.headers.set('Accept-Ranges', 'bytes')
 
@@ -168,6 +168,6 @@ def get_stream_or_download_response(filepath: str, stream=True) -> Response:
 
     # Set Content-Disposition with quoted filename
     disposition = 'inline' if stream else 'attachment'
-    response.headers.set('Content-Disposition', f'{disposition}; filename="{file_info["name"]}"')
+    response.headers.set('Content-Disposition', f'{disposition}; filename="{file_info['name']}"')
 
     return response

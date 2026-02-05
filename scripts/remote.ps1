@@ -53,11 +53,31 @@ if (-not (Test-Path "file-server-http-master")) {
 }
 
 
+# -------- Stop if the server is running --------
+
+$WasServerRunning = $false
+$PortPID = (Get-NetTCPConnection -LocalPort 8849 -ErrorAction SilentlyContinue).OwningProcess
+if ($PortPID) {
+    Write-Host "Killing process PID: $PortPID" -ForegroundColor Yellow
+    Stop-Process -Id $PortPID -Force
+    $WasServerRunning = $true
+}
+
+
 # -------- Invoke installer.ps1 script --------
 
 Write-Host "Running installer.ps1 script"
 Set-Location "file-server-http-master\scripts"
 powershell.exe -ExecutionPolicy Bypass -File .\installer.ps1
+
+
+# -------- Restart the server if updated --------
+
+if ($WasServerRunning) {
+    $Desktop = [Environment]::GetFolderPath("Desktop")
+    $Shortcut = Join-Path $Desktop "MyFileServer.lnk"
+    if (Test-Path $Shortcut) { & $Shortcut }
+}
 
 
 # -------- Clean up downloaded junk --------
