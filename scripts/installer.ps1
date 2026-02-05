@@ -47,7 +47,7 @@ if (Test-Path $MyFileServer) {
     Where-Object { $_.Name -notin '.venv', 'tools' } |
     Remove-Item -Recurse -Force
 
-    Move-Item -Path "MyFileServer\*" -Destination $MyFileServer -Recurse -Force
+    Move-Item -Path "MyFileServer\*" -Destination $MyFileServer -Force
     Remove-Item "MyFileServer" -Recurse -Force
     $UpdatedOldInstallation = $true
 }
