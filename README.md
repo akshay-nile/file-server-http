@@ -22,10 +22,8 @@ Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass 
 - Can be safely Uninstalled from Windows settings 
 
 
-## How to Use on Android
+## How to Setup and Use on Android
 - Make sure Pydroid-3 app is installed in Android device
-- Clone this repository in Windows PC
-- Open PowerShell terminal inside scripts folder
-- Run .\package.ps1 script
-- Move the MyFileServer folder to the Android device
-- In Pydroid-3 app, open and run server.py from MyFileServer
+- Download the install.sh script in Android device
+- Open Pydroid-3 terminal, locate and run .\install.sh
+- Open and run Documents/Pydroid 3/MyFileServer/server.py
