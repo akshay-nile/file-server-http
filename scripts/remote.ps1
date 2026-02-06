@@ -7,22 +7,22 @@
 # Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -c irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/remote.ps1 | iex"
 
 
-# -------- Check admin privilege --------
+# -------- Check for administator privilege --------
 
 $IsAdmin = ([Security.Principal.WindowsPrincipal] `
         [Security.Principal.WindowsIdentity]::GetCurrent()
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $IsAdmin) {
-    Write-Host "Administrator Privilege Required" -ForegroundColor Red
-    Write-Host "Please run this script as Administrator" -ForegroundColor Yellow
+    Write-Host "Administrator privilege required" -ForegroundColor Red
+    Write-Host "Please run this script as administrator" -ForegroundColor Yellow
     exit 1
 }
 
 
 # -------- Remove old junk if any --------
 
-Set-Location "$HOME\Downloads"
+Set-Location -Path "$HOME\Downloads" | Out-Null
 
 if (Test-Path "project.zip") {
     Remove-Item .\project.zip -Recurse -Force
@@ -70,9 +70,9 @@ if ($PortPID) {
 
 # -------- Invoke installer.ps1 script --------
 
-Write-Host "Running installer.ps1 script"
-Set-Location "file-server-http-master\scripts"
-powershell.exe -ExecutionPolicy Bypass -File .\installer.ps1
+Write-Host "Running install.ps1 script"
+Set-Location -Path "file-server-http-master\scripts" | Out-Null
+powershell.exe -ExecutionPolicy Bypass -File .\install.ps1 -NoFreshBuild
 
 
 # -------- Restart the server if updated --------
@@ -89,9 +89,12 @@ if ($WasServerRunning) {
 
 # -------- Clean up downloaded junk --------
 
-Set-Location "$HOME\Downloads"
+Set-Location -Path "$HOME\Downloads" | Out-Null
 Write-Host "Clearning downloaded junk"
 Remove-Item .\project.zip -Recurse -Force
 Remove-Item .\file-server-http-master -Recurse -Force
-Write-Host "Done!`n" -ForegroundColor Green
+
+
+# -------- Remote installation done --------
+Write-Host "Done`n" -ForegroundColor Green
 exit 0

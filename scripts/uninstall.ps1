@@ -2,18 +2,19 @@
 # This script automates the process of uninstalling MyFileServer
 # and all its components from the project root, user home/desktop
 
-Set-Location $PSScriptRoot
+
+Set-Location -Path $PSScriptRoot | Out-Null
 
 
-# -------- Check admin privilege is available or not --------
+# -------- Check for administator privilege --------
 
 $IsAdmin = ([Security.Principal.WindowsPrincipal] `
         [Security.Principal.WindowsIdentity]::GetCurrent()
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $IsAdmin) {
-    Write-Host "Administrator Privilege Required" -ForegroundColor Red
-    Write-Host "Please run this script as Administrator" -ForegroundColor Yellow
+    Write-Host "Administrator privilege required" -ForegroundColor Red
+    Write-Host "Please run this script as administrator" -ForegroundColor Yellow
     exit 1
 }
 
@@ -29,7 +30,7 @@ if ($PortPID) {
 
 # -------- Remove MyFileServer from project root -------- 
 
-Set-Location ".."
+Set-Location -Path ".." | Out-Null
 if (Test-Path "MyFileServer") {
     Remove-Item "MyFileServer" -Recurse -Force
     Write-Host "`nRemoved from Project Root"
@@ -85,4 +86,7 @@ if (Test-Path $RegPath) {
 }
 
 
-Write-Host "`nSuccessfully Uninstalled MyFileServer`n" -ForegroundColor Green
+# -------- Uninstall completed successfully
+
+Write-Host "`nSuccessfully uninstalled MyFileServer`n" -ForegroundColor Green
+exit 0
