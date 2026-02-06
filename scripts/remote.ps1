@@ -25,10 +25,10 @@ if (-not $IsAdmin) {
 Set-Location -Path "$HOME\Downloads" | Out-Null
 
 if (Test-Path "project.zip") {
-    Remove-Item .\project.zip -Recurse -Force
+    Remove-Item "project.zip" -Recurse -Force
 }
 if (Test-Path "file-server-http-master") {
-    Remove-Item .\file-server-http-master -Recurse -Force
+    Remove-Item "file-server-http-master" -Recurse -Force
 }
 
 
@@ -89,12 +89,11 @@ if ($WasServerRunning) {
 
 # -------- Clean up downloaded junk --------
 
-Set-Location -Path "$HOME\Downloads" | Out-Null
 Write-Host "Clearning downloaded junk"
-Remove-Item .\project.zip -Recurse -Force
-Remove-Item .\file-server-http-master -Recurse -Force
+Set-Location -Path "$HOME\Downloads" | Out-Null
+Remove-Item "project.zip" -Recurse -Force
+Remove-Item "file-server-http-master" -Recurse -Force
 
 
 # -------- Remote installation done --------
 Write-Host "Done`n" -ForegroundColor Green
-exit 0

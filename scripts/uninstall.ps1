@@ -89,4 +89,3 @@ if (Test-Path $RegPath) {
 # -------- Uninstall completed successfully
 
 Write-Host "`nSuccessfully uninstalled MyFileServer`n" -ForegroundColor Green
-exit 0
