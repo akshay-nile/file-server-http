@@ -53,7 +53,6 @@ mv "$SRC/frontend/dist" "$DST/public"
 mv "$SRC/backend/services/"*.py "$DST/services"
 mv "$SRC/backend/server.py" "$DST"
 mv "$SRC/README.md" "$DST"
-mv -f "$SRC/scripts/install.sh" "$DOCUMENT"
 
 
 echo "Cleaning downloaded junk..."
