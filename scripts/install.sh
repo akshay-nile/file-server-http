@@ -1,5 +1,5 @@
 #!/bin/sh
-# This script automates the process of packaging
+# This script automates the process of installing (or updating) 
 # the MyFileServer for Pydroid-3 on my Android phone
 
 
@@ -14,7 +14,6 @@ DST="$DOCUMENT/MyFileServer"
 
 
 echo "Pre-cleaning old junk..."
-
 rm -rf "$ZIP"
 rm -rf "$SRC"
 
