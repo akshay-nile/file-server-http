@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import type { FileInfo, FolderInfo, ItemsInfo } from '../services/models';
+import { getShortcuts } from '../services/settings';
 import DriveItem from './DriveItem';
 import FileItem from './FileItem';
 import FolderItem from './FolderItem';
-import { getShortcuts } from '../services/settings';
 
 function Home() {
     const { home } = useExplorerItems();
@@ -19,6 +19,18 @@ function Home() {
     }, []);
 
     return <div className='mb-4 mx-3'>
+        {
+            home.device.update.available &&
+            <div className='mt-4 border border-gray-300 rounded shadow'>
+                <div className='m-0 p-2 bg-gray-200 font-bold'>
+                    <span className='mx-1'>Warning</span>
+                </div>
+                <div className='m-1 p-2 flex gap-1.5 items-center justify-center'>
+                    <img src='/public/favicon.ico' width='25px' />
+                    <span>MyFileServer updated version <b>{home.device.update.version}</b> is available</span>
+                </div>
+            </div>
+        }
         {
             home.drives.length > 0 &&
             <div className='mt-4 border border-gray-300 rounded shadow'>

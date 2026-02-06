@@ -1,10 +1,17 @@
 export type Platform = 'Windows' | 'Android' | undefined;
 
-export type DeviceInfo = { hostname: string, platform: Platform, protected: Array<string> };
+export type Update = { version: string, available: boolean };
 
 export type SizeInfo = { total: number, used: number, free: number };
 
 export type ClipboardInfo = { type: string, content: string | ItemsInfo | null };
+
+export interface DeviceInfo {
+    hostname: string,
+    platform: Platform,
+    protected: Array<string>,
+    update: Update
+}
 
 export interface DriveInfo {
     letter: string | null;

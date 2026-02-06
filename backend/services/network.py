@@ -3,23 +3,26 @@ import socket
 import threading
 import subprocess
 
-from services.explorer import get_file_info
+from services.explorer import get_file_info, update
 from services.environment import IS_WIN_OS, USER_HOME
 
 from flask import Response, request, abort
 from requests import get, post, RequestException
 
 
+# GitHub repository (master branch) link of MyFileServer app
+github = 'https://github.com/akshay-nile/file-server-http/raw/master'
+
 is_public_ip = False
-mid_line_printed = False
+is_mid_line_printed = False
 
 
 def print_mid_line():
-    global mid_line_printed
-    if mid_line_printed:
+    global is_mid_line_printed
+    if is_mid_line_printed:
         print()     # Extra blank line to saperate the server logs
     else:
-        mid_line_printed = True
+        is_mid_line_printed = True
 
 
 def get_local_ip():
@@ -94,28 +97,34 @@ def publish_server_address(server_address: str):
     threading.Thread(target=publisher).start()
 
 
+def perform_app_update():
+    if IS_WIN_OS:
+        admin_command = f'irm {github}/scripts/remote.ps1 | iex'
+        user_command = [
+            'powershell.exe', '-NoProfile', '-Command',
+            (
+                'Start-Process powershell.exe -Verb RunAs -ArgumentList '
+                f"'-ExecutionPolicy Bypass -Command {admin_command}'"
+            )
+        ]
+        result = subprocess.run(user_command, capture_output=True)
+        if result.returncode == 0:      # User accepted UAC prompt
+            with open(USER_HOME + '/restart.txt', 'wt') as file:
+                file.write('Yes' if is_public_ip else 'No')  # Store user ip selection
+
+
 def check_for_update():
     def updator():
+        global update
         try:
-            github = 'https://github.com/akshay-nile/file-server-http/raw/master'
-            remote = get(github + '/README.md', timeout=5).text.splitlines()[0].strip()
+            remote_version = get(f'{github}/README.md', timeout=5).text.splitlines()[0].strip().split()[-1][1:]
             with open('./README.md', encoding='utf-8') as file:
-                local = file.read().splitlines()[0].strip()
-            if (remote != local):
-                print(f' ⚠️ Updated version {remote.split()[-1][1:]} is available')
-                if IS_WIN_OS:
-                    admin_command = f'irm {github}/scripts/remote.ps1 | iex'
-                    user_command = [
-                        'powershell.exe', '-NoProfile', '-Command',
-                        (
-                            'Start-Process powershell.exe -Verb RunAs -ArgumentList '
-                            f"'-ExecutionPolicy Bypass -Command {admin_command}'"
-                        )
-                    ]
-                    result = subprocess.run(user_command, capture_output=True)
-                    if result.returncode == 0:
-                        with open(USER_HOME + '/restart.txt', 'wt') as file:
-                            file.write('Yes' if is_public_ip else 'No')
+                local_version = file.read().splitlines()[0].strip().split()[-1][1:]
+            update['version'] = remote_version
+            update['available'] = remote_version != local_version
+            if (update['available']):
+                print(f" ⚠️ Updated version {update['version']} is available")
+                perform_app_update()
         except Exception:
             print(' ❌ Failed to check for the update')
         print_mid_line()

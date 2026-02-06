@@ -13,7 +13,13 @@ from flask import request
 from pyperclip import paste, PyperclipException
 
 
+# To hold the app update info
+update = {'version': None, 'available': False}
+
+# Declare protected locations
 protected_paths = set((PROJECT_ROOT, APPDATA_LOCAL, APPDATA_ROAMING))
+
+# To cache folder-path and their calculated size
 total_size_cache: dict[str, int] = dict()
 
 
@@ -166,7 +172,8 @@ def get_device_info() -> dict:
     return {
         'hostname': HOST_NAME,
         'platform': 'Windows' if IS_WIN_OS else 'Android',
-        'protected': tuple(protected_paths)
+        'protected': tuple(protected_paths),
+        'update': update
     }
 
 

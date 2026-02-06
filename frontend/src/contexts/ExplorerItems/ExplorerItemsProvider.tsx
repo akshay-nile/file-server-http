@@ -12,7 +12,12 @@ function ExplorerItemsProvider({ children }: Props) {
     const [path, setPath] = useState<string>('/');
 
     const [home, setHome] = useState<HomeInfo>({
-        device: { hostname: 'Loading...', platform: undefined, protected: [] },
+        device: {
+            hostname: 'Loading...',
+            platform: undefined,
+            protected: [],
+            update: { version: '?.?.?', available: false }
+        },
         clipboard: { type: 'error', content: null },
         drives: [], shortcuts: null
     });
