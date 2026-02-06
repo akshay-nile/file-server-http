@@ -25,9 +25,9 @@ function Home() {
                 <div className='m-0 p-2 bg-gray-200 font-bold'>
                     <span className='mx-1'>Warning</span>
                 </div>
-                <div className='m-1 p-2 flex gap-1.5 items-center justify-center'>
+                <div className='m-1 p-2 flex gap-1.5 items-center justify-center text-sm'>
                     <img src='/public/favicon.ico' width='25px' />
-                    <span>MyFileServer updated version <b>{home.device.update.version}</b> is available</span>
+                    <span>MyFileServer version <b>{home.device.update.version}</b> is available</span>
                 </div>
             </div>
         }
