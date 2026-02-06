@@ -3,6 +3,7 @@
 # collecting required backend files and organizing them into a new
 # core directory named 'MyFileServer' created in the project root.
 
+param ( [switch]$SkipFreshBuild )
 Set-Location $PSScriptRoot
 
 # -------- Goto project root and create MyFileServer directory --------
@@ -19,14 +20,20 @@ Copy-Item -Path "README.md" -Destination "MyFileServer" -Force
 
 # -------- Build frontend and move the generated dist as public --------
 
-Write-Host "`nBuilding the frontend"
 Set-Location "frontend"
-if (Get-Command npm -ErrorAction SilentlyContinue) {
-    if (-not (Test-Path "node_modules")) {
-        npm ci
-    }
-    npm run build
-} 
+if (-not $SkipFreshBuild) {
+    Write-Host "`nBuilding fresh frontend dist"
+    if (Get-Command npm -ErrorAction SilentlyContinue) {
+        if (-not (Test-Path "node_modules")) {
+            npm ci
+        }
+        npm run build
+    } 
+}
+else {
+    Write-Host "`nUsing default frontend dist"
+}
+
 if (-not (Test-Path "dist")) {
     Write-Host "`nFrontend build not found" -ForegroundColor Red
     exit 1
@@ -36,16 +43,16 @@ Copy-Item -Path "dist" -Destination "..\MyFileServer\public" -Recurse -Force
 
 # -------- Copy required python backend files to MyFileServer --------
 
-Write-Host "`nCopying the backend files"
 Set-Location "..\backend"
+Write-Host "`nCopying the backend files"
 Copy-Item -Path "server.py" -Destination "..\MyFileServer"
 Copy-Item -Path "services\*.py" -Destination "..\MyFileServer\services"
 
 
 # -------- Verifying the final MyFileServer folder structure --------
 
-Write-Host "`nVerifying final structure"
 Set-Location ".."
+Write-Host "`nVerifying the final structure"
 
 $expectedPaths = @(
     "MyFileServer\public\assets",

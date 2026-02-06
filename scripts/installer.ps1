@@ -21,7 +21,7 @@ if (-not $IsAdmin) {
 # -------- Run package.ps1 to generate a fresh MyFileServer core --------
 
 Write-Host "`nRunning package.ps1 to generate MyFileServer core"
-& .\package.ps1
+& .\package.ps1 -SkipFreshBuild
 $ProjectRoot = (Get-Location).Path
 
 
