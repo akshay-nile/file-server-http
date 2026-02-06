@@ -71,8 +71,7 @@ if ($PortPID) {
 # -------- Invoke installer.ps1 script --------
 
 Write-Host "Running install.ps1 script"
-Set-Location -Path "file-server-http-master\scripts" | Out-Null
-powershell.exe -ExecutionPolicy Bypass -File .\install.ps1 -NoFreshBuild
+& ".\file-server-http-master\scripts\install.ps1" -NoFreshBuild
 
 
 # -------- Restart the server if updated --------

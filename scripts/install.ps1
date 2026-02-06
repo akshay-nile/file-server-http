@@ -147,5 +147,4 @@ Set-ItemProperty $RegPath NoRepair 1
 
 # -------- Installation completed successfully --------
 
-Set-Location -Path "$ProjectRoot" | Out-Null
 Write-Host "`nMyFileServer installed successfully" -ForegroundColor Green
