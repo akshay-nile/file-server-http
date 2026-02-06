@@ -24,22 +24,22 @@ else:               # For Pydorid-3 (PROD)
 
 # Initialise resouces path variables depending on ENV and OS
 if IS_DEV_ENV or not IS_WIN_OS:      # For DEV (on Windows) and PROD (on Pydroid-3)
-    THUMBNAILS_DIR = PROJECT_ROOT + '/thumbnails'
-    TOKENS_DIR = PROJECT_ROOT
+    APPDATA_LOCAL = PROJECT_ROOT
+    APPDATA_ROAMING = PROJECT_ROOT
 else:                                # For PROD (on Windows)
-    # Location to store generated thumbnails cache
+    # Location to store app cache (generated thumbnails)
     local_app_data = os.getenv('LOCALAPPDATA')
     if local_app_data is None:
-        THUMBNAILS_DIR = USER_HOME + '/AppData/Local/MyFileServer/thumbnails'
+        APPDATA_LOCAL = USER_HOME + '/AppData/Local/MyFileServer'
     else:
-        THUMBNAILS_DIR = local_app_data.replace('\\', '/') + '/MyFileServer/thumbnails'
-    # Location to store user authentication tokens
+        APPDATA_LOCAL = local_app_data.replace('\\', '/') + '/MyFileServer'
+    # Location to store app settings (authentication tokens)
     roaming_app_data = os.getenv('APPDATA')
     if roaming_app_data is None:
-        TOKENS_DIR = USER_HOME + '/AppData/Roaming/MyFileServer'
+        APPDATA_ROAMING = USER_HOME + '/AppData/Roaming/MyFileServer'
     else:
-        TOKENS_DIR = roaming_app_data.replace('\\', '/') + '/MyFileServer'
+        APPDATA_ROAMING = roaming_app_data.replace('\\', '/') + '/MyFileServer'
 
 # Finalize all path to make sure they exists in file system
-for path in (USER_DOWNLOADS, THUMBNAILS_DIR, TOKENS_DIR):
+for path in (USER_DOWNLOADS, APPDATA_LOCAL, APPDATA_ROAMING):
     os.makedirs(path, exist_ok=True)

@@ -7,12 +7,13 @@ from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
 
 from services.thumbnails import get_cached_thumbnail
-from services.environment import IS_WIN_OS, PROJECT_ROOT, USER_HOME, HOST_NAME
+from services.environment import IS_WIN_OS, PROJECT_ROOT, USER_HOME, APPDATA_LOCAL, APPDATA_ROAMING, HOST_NAME
 
 from flask import request
 from pyperclip import paste, PyperclipException
 
 
+protected_paths = set((PROJECT_ROOT, APPDATA_LOCAL, APPDATA_ROAMING))
 total_size_cache: dict[str, int] = dict()
 
 
@@ -164,7 +165,8 @@ def deep_search(query: str, root: str):
 def get_device_info() -> dict:
     return {
         'hostname': HOST_NAME,
-        'platform': 'Windows' if IS_WIN_OS else 'Android'
+        'platform': 'Windows' if IS_WIN_OS else 'Android',
+        'protected': tuple(protected_paths)
     }
 
 
@@ -231,8 +233,8 @@ def get_items_info(path: str):
     show_hidden = request.args.get('show_hidden', 'false').lower() == 'true'
     files, folders = [], []
 
-    # Not allowed to explore the items inside the project folder
-    if path.startswith(PROJECT_ROOT):
+    # Not allowed to explore the items inside these protected locations
+    if any((path.startswith(p) for p in protected_paths)):
         return folders, files
 
     # Only filtered items will be considered if the search query is provided

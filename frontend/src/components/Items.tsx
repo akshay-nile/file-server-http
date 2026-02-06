@@ -38,7 +38,7 @@ function Items() {
     return <>
         {
             (items.folders.length === 0 && items.files.length === 0)
-                ? <EmptyFolder />
+                ? <EmptyFolder protectedPaths={home.device.protected} />
                 : <>
                     {
                         items.folders.map((folder, i) =>

@@ -1,8 +1,8 @@
 from services import configure_flask_app
 from services.validator import validate_path
-from services.thumbnails import get_generated_thumbnail
+from services.environment import USER_DOWNLOADS
 from services.network import get_stream_or_download_response
-from services.environment import THUMBNAILS_DIR, USER_DOWNLOADS
+from services.thumbnails import get_generated_thumbnail, THUMBNAILS_DIR
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
 from services.explorer import delete_items, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 

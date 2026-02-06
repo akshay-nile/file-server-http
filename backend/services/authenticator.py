@@ -3,23 +3,25 @@ import random
 import string
 
 from functools import wraps
-from services.environment import TOKENS_DIR, IS_WIN_OS
+from services.environment import APPDATA_ROAMING, IS_WIN_OS
 
 from flask import abort, request
 
 
-filename = TOKENS_DIR + '/tokens.txt'
+# File location to store authentication tokens
+TOKENS_FILE = APPDATA_ROAMING + '/tokens.txt'
+
 tokens: set[str] = set()
 token: str | None = None
 
-if os.path.isfile(filename):
-    with open(filename, 'rt') as file:
+if os.path.isfile(TOKENS_FILE):
+    with open(TOKENS_FILE, 'rt') as file:
         lines = file.read().split('\n')
         striped = map(lambda b: b.strip(), lines)
         filtered = filter(lambda b: len(b) == 4, striped)
         tokens = set(filtered)
 else:
-    open(filename, 'wt').close()
+    open(TOKENS_FILE, 'wt').close()
 
 
 def generate_unique_token() -> str:
@@ -43,7 +45,7 @@ def verify_user_token(user_token: str) -> bool:
     global token
     if token and user_token == token:
         tokens.add(token)
-        with open(filename, 'wt') as file:
+        with open(TOKENS_FILE, 'wt') as file:
             file.write('\n'.join(tokens))
         token = None
         return True

@@ -4,7 +4,7 @@ from io import BytesIO
 from urllib.parse import quote
 from warnings import filterwarnings
 
-from services.environment import THUMBNAILS_DIR, IS_WIN_OS
+from services.environment import APPDATA_LOCAL, IS_WIN_OS
 
 from flask import request
 from PIL import Image
@@ -12,6 +12,10 @@ from mutagen.id3 import ID3
 from mutagen.flac import FLAC
 from mutagen.id3._frames import APIC
 
+
+# Location to store generated thumbnails cache
+THUMBNAILS_DIR = APPDATA_LOCAL + '/thumbnails'
+os.makedirs(THUMBNAILS_DIR, exist_ok=True)
 
 # Remove moviepy/ffmpeg verbose output from server console
 filterwarnings('ignore', category=UserWarning, module='moviepy')

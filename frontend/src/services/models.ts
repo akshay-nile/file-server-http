@@ -1,6 +1,6 @@
 export type Platform = 'Windows' | 'Android' | undefined;
 
-export type DeviceInfo = { hostname: string, platform: Platform };
+export type DeviceInfo = { hostname: string, platform: Platform, protected: Array<string> };
 
 export type SizeInfo = { total: number, used: number, free: number };
 
