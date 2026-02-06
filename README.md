@@ -25,5 +25,5 @@ Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass 
 ## How to Setup and Use on Android
 - Make sure Pydroid-3 app is installed in Android device
 - Download the install.sh script in Android device
-- Open Pydroid-3 terminal, locate and run .\install.sh
-- Open and run Documents/Pydroid 3/MyFileServer/server.py
+- Open Pydroid-3 terminal, locate and run ./install.sh
+- Open and run 'Internal Storage/Documents/Pydroid 3/MyFileServer/server.py'
