@@ -51,7 +51,7 @@ if (-not (Test-Path "project.zip")) {
 Write-Host "Extracting project.zip"
 Expand-Archive -Path "project.zip" -DestinationPath "."
 
-if (-not (Test-Path "file-server-http-master")) {
+if (-not (Test-Path ".\file-server-http-master\scripts\install.ps1")) {
     Write-Host "Extraction failed" -ForegroundColor Red
     exit 1
 }
