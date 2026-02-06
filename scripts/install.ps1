@@ -130,7 +130,7 @@ $PackageJson = Join-Path "$ProjectRoot" "frontend\package.json"
 $Version = (Get-Content "$PackageJson" | ConvertFrom-Json).version
 
 $UninstallScript = Join-Path "$InstallDir" "uninstall.ps1"
-$UninstallCommand = "powershell.exe -ExecutionPolicy Bypass -File '$UninstallScript'"
+$UninstallCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$UninstallScript`""
 
 $RegPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\MyFileServer"
 New-Item -Path $RegPath -Force | Out-Null
