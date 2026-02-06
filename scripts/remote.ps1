@@ -63,7 +63,7 @@ $WasServerRunning = $false
 $PortPID = (Get-NetTCPConnection -LocalPort 8849 -ErrorAction SilentlyContinue).OwningProcess
 if ($PortPID) {
     Write-Host "Stopping the active server" -ForegroundColor Yellow
-    Stop-Process -Id $PortPID -Force
+    Stop-Process -Id $PortPID -Force -ErrorAction SilentlyContinue
     $WasServerRunning = $true
 }
 
