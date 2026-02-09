@@ -36,10 +36,13 @@ function Authentication() {
     return (
         <div className='w-full flex justify-center'>
             <div className='bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%]'>
-                <div className='h-[80%] flex flex-col justify-center items-center gap-2'>
-                    <label htmlFor='token' className='text-xl font-medium'>
+                <div className='h-[90%] flex flex-col justify-center items-center gap-2'>
+                    <label htmlFor='token' className='mb-4 font-semibold text-center text-3xl text-gray-800'>
                         Token Required
                     </label>
+
+                    <img src='/public/icons/token-required.png' width='150px' className='mt-2 mb-4' />
+
                     <InputText id='token' aria-describedby='token-info' required
                         spellCheck={false} autoCorrect='off' autoCapitalize='off'
                         value={token} autoFocus onKeyDown={onEnterOrEscapeKey}
@@ -47,13 +50,15 @@ function Authentication() {
                         style={{
                             border: '1px solid blue', textAlign: 'center',
                             fontSize: 'larger', fontWeight: 'bold', letterSpacing: '0.25rem',
-                            padding: '0.5rem', width: '13ch'
+                            padding: '0.5rem', marginTop: '1rem', width: '13ch'
                         }} />
+
                     <small id='token-info' className='text-sm font-light'>
                         {showHelp
                             ? 'Enter the token shown in the server logs'
                             : 'Generating unique token... Please wait...'}
                     </small>
+
                     <Button label='Verify' style={{ marginTop: '1rem' }}
                         disabled={token.trim().length === 0 || !showHelp}
                         onClick={verify} />

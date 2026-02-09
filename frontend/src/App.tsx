@@ -10,7 +10,7 @@ function App() {
   const toastRef = useRef<Toast>(null);
 
   const [isServerOffline, setIsServerOffline] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
   useEffect(() => {
     if (toastRef.current) setToast(toastRef.current);
