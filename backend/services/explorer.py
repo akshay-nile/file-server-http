@@ -30,8 +30,14 @@ def joiner(path: str, item_name: str) -> str:
     return f'{path}/{item_name}'
 
 
+# To represent Internal Storage as IS: in Pydroid-3
 def format_path(path: str) -> str:
     return path if IS_WIN_OS else path.replace(USER_HOME, 'IS:')
+
+
+# To check if any item belongs to protected paths
+def is_protected(path: str) -> bool:
+    return any((path.startswith(p) for p in protected_paths))
 
 
 # Keeps only the existing shortcuts with updated items info
@@ -241,7 +247,7 @@ def get_items_info(path: str):
     files, folders = [], []
 
     # Not allowed to explore the items inside these protected locations
-    if any((path.startswith(p) for p in protected_paths)):
+    if is_protected(path):
         return folders, files
 
     # Only filtered items will be considered if the search query is provided
@@ -279,6 +285,8 @@ def delete_items(items: list[str]) -> int:
     delete_count = 0
     for item in items:
         try:
+            if is_protected(item):
+                raise PermissionError
             if os.path.isdir(item):
                 shutil.rmtree(item)
             elif os.path.isfile(item):
@@ -294,8 +302,8 @@ def delete_items(items: list[str]) -> int:
 
 def rename_item(old_item: str, new_item: str) -> int:
     try:
-        if os.path.exists(new_item):
-            return 0
+        if is_protected(old_item) or os.path.exists(new_item):
+            raise PermissionError
         if os.path.exists(old_item):
             os.rename(old_item, new_item)
     except PermissionError:

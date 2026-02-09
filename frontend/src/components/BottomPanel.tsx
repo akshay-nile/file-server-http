@@ -159,7 +159,7 @@ function BottomPanel() {
             const response = await modifyItems('delete', itemsToDelete);
             if (response && response.count === itemsToDelete.length) toast.show({
                 severity: 'success',
-                summary: 'Items Deleted',
+                summary: 'Deleted',
                 detail: response.count + ' item(s) has been deleted.'
             });
             else toast.show({
@@ -189,8 +189,8 @@ function BottomPanel() {
             const response = await modifyItems('rename', [itemToRename.path, path + '/' + name]);
             if (response && response.count === 1) toast.show({
                 severity: 'success',
-                summary: 'Item Renamed',
-                detail: itemToRename.name + ' is renamed to ' + name
+                summary: 'Renamed',
+                detail: 'Item renamed to ' + name
             });
             else toast.show({
                 severity: 'error',
