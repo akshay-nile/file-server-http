@@ -38,7 +38,7 @@ function TopPanel() {
                 setPanelOpened(false);
                 setTimeout(() => {
                     setPanelContent(null);
-                    dispatchEvent(new Event(`on${newContent}panelclose`));
+                    dispatchEvent(new Event(newContent + 'panelclose'));
                 }, 333);
             } else setPanelContent(newContent);  // Keep panel open and switch the content
         } else {

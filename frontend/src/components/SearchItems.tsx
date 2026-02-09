@@ -7,7 +7,9 @@ import { clearSearchInfo, searchInfo, setSearchInfo } from '../services/utilitie
 
 function SearchItems() {
     const { path, items, setItems, explore } = useExplorerItems();
+
     const pathRef = useRef<string>(null);
+    const statusRef = useRef<string>(null);
 
     const [search, setSearch] = useState<string>('');
     const [deepSearch, setDeepSearch] = useState<boolean>(false);
@@ -15,12 +17,14 @@ function SearchItems() {
 
     useEffect(() => {
         pathRef.current = path;
+        statusRef.current = status;
+
         if (searchInfo !== null && path !== searchInfo.path) {
             setSearch('');
             setDeepSearch(false);
             setStatus('none');
         }
-    }, [path]);
+    }, [path, status]);
 
     async function performSearch() {
         if (status === 'searching') return;
@@ -46,10 +50,10 @@ function SearchItems() {
         setDeepSearch(false);
         setStatus('none');
         clearSearchInfo();
-        if (status !== 'none' && pathRef.current) {
+        if (statusRef.current !== 'none' && pathRef.current) {
             await explore(pathRef.current, false);
         }
-    }, [status, explore]);
+    }, [explore]);
 
     function onEnterOrEscapeKey(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key === 'Enter') {
