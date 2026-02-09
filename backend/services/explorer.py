@@ -171,7 +171,9 @@ def deep_search(query: str, root: str):
     for path, folders, files in os.walk(root):
         for item in folders + files:
             if query in item.lower():
-                yield joiner(path.replace("\\", "/"), item)
+                item_path = joiner(path.replace("\\", "/"), item)
+                if not is_protected(item_path):
+                    yield item_path
 
 
 def get_device_info() -> dict:
