@@ -58,7 +58,7 @@ def generate_thumbnail(path):
 @validate_path('file')
 @require_authentication
 def open_file(path):
-    token = request.args.get('token')
+    token = request.cookies.get('token')
     stream = request.args.get('stream') == 'true'
     range_header = request.headers.get('Range')
     print('Stream -' if stream else 'Download -', format_path(path), range_header, token)
