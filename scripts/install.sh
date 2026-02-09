@@ -1,6 +1,6 @@
 #!/bin/sh
-# This script automates the process of installing (or updating) 
-# the MyFileServer for Pydroid-3 on my Android phone
+# This script automates the process of setting-up 
+# the MyFileServer for Pydroid-3 on Android phone
 
 
 URL="https://github.com/akshay-nile/file-server-http/archive/refs/heads/master.zip"
@@ -20,7 +20,7 @@ rm -rf "$SRC"
 
 echo "Downloading project..."
 mkdir -p "$DOWNLOAD"
-curl -s -L "$URL" -o "$ZIP" || exit 1
+curl -sL "$URL" -o "$ZIP" || exit 1
 
 
 echo "Unzipping project..."
@@ -29,7 +29,7 @@ unzip -oq project.zip || exit 1
 
 
 if [ -e "$DST" ]; then
-    echo "Updating existing installation..."
+    echo "Updating existing setup..."
     for item in "$DST"/* "$DST"/.*; do
         name="$(basename "$item")"
     
@@ -41,7 +41,7 @@ if [ -e "$DST" ]; then
         rm -rf "$item"
     done
 else
-    echo "Preparing fresh installation..."
+    echo "Preparing fresh setup..."
 fi
 
 mkdir -p "$DST/services"
@@ -50,7 +50,7 @@ touch "$DST/.nomedia"
 
 echo "Moving required files..."
 mv "$SRC/frontend/dist" "$DST/public"
-mv "$SRC/backend/services/"*.py "$DST/services"
+mv "$SRC/backend/services"/*.py "$DST/services"
 mv "$SRC/backend/server.py" "$DST"
 mv "$SRC/README.md" "$DST"
 
@@ -60,5 +60,5 @@ rm -rf "$ZIP"
 rm -rf "$SRC"
 
 
-echo "Installation completed successfully ✅"
+echo "Setup finished successfully ✅"
 exit 0
