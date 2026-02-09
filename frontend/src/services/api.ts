@@ -18,17 +18,9 @@ async function fetchWithBrowserId(input: RequestInfo | URL, init: RequestInit = 
     }
 }
 
-let baseURL = import.meta.env.VITE_BASE_URL || window.location.origin;
-try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    await fetch(baseURL, { method: 'HEAD', mode: 'no-cors', signal: controller.signal });
-    clearTimeout(timeout);
-} catch { baseURL = import.meta.env.VITE_WIFI_URL || window.location.origin; }
-
 async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET' }): Promise<T> {
     try {
-        const response = await fetchWithBrowserId(baseURL + path, options);
+        const response = await fetchWithBrowserId(path, options);
         return await (response as Response).json();
     } catch (error) { console.error(error); }
     return [] as T;
@@ -65,7 +57,7 @@ export async function getThumbanil(path: string): Promise<Thumbnail> {
 export function getFileURL(path: string, stream: boolean) {
     const token = localStorage.getItem('token');
     const params = 'path=' + encodeURIComponent(path) + '&stream=' + stream + '&token=' + token;
-    return baseURL + '/open?' + params;
+    return '/open?' + params;
 }
 
 export async function uploadFile(file: File): Promise<{ status: 'uploaded' | 'failed' }> {
@@ -83,7 +75,7 @@ export async function modifyItems(action: 'delete' | 'rename', items: Array<stri
 }
 
 export async function getTotalSize(folders: string[]): Promise<{ totalSize: number }> {
-    return await tryToFetch('/total-size', {
+    return await tryToFetch('/total', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(folders)

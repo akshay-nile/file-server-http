@@ -6,7 +6,6 @@ from warnings import filterwarnings
 
 from services.environment import APPDATA_LOCAL, IS_WIN_OS
 
-from flask import request
 from PIL import Image
 from mutagen.id3 import ID3
 from mutagen.flac import FLAC
@@ -25,7 +24,7 @@ def get_cached_thumbnail(filepath: str) -> str | None:
     # Make thumbnail path from file-name to find-in-cache
     filename = filepath.split('/')[-1]
     thumbpath = f'{THUMBNAILS_DIR}/{filename}.png'
-    thumbnail = f'{request.host_url}thumbnails/{quote(filename, safe='')}.png'
+    thumbnail = f'/thumbnails/{quote(filename, safe='')}.png'
 
     # If thumbnail exists then return the url-encoded thumbnail path
     if os.path.isfile(thumbpath):
@@ -39,7 +38,7 @@ def get_generated_thumbnail(filepath: str) -> str | None:
     # Make thumbnail path to generate and store the thumbnail in cache
     filename = filepath.split('/')[-1]
     thumbpath = f'{THUMBNAILS_DIR}/{filename}.png'
-    thumbnail = f'{request.host_url}thumbnails/{quote(filename, safe='')}.png'
+    thumbnail = f'/thumbnails/{quote(filename, safe='')}.png'
 
     # Extract the file extention
     extention = filename.split('.')[-1].lower()

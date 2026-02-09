@@ -15,24 +15,16 @@ from waitress import serve
 app = configure_flask_app(Flask(__name__))
 
 
-# To serve the index.html from public folder
-@app.route('/', methods=['GET'])
-def home():
-    if app.config['DEBUG']:
-        return redirect('http://localhost:3000')
-    return send_from_directory('./public', 'index.html')
-
-
-# To serve static frontend resources from public folder
-@app.route('/public/<path:resource>', methods=['GET'])
-def serve_public(resource: str):
-    return send_from_directory('./public', resource)
-
-
-# To serve thumbanils from the thumbanails cache folder
-@app.route('/thumbnails/<path:thumbnail>', methods=['GET'])
-def serve_thumbnail(thumbnail: str):
-    return send_from_directory(THUMBNAILS_DIR, thumbnail)
+# To serve static resources from public or thumbnails folder
+@app.route('/', endpoint='public')
+@app.route('/public/<path:resource>', endpoint='public')
+@app.route('/thumbnails/<path:resource>', endpoint='thumbnails')
+def serve_public(resource: str = 'index.html'):
+    directory = './public' if request.endpoint == 'public' else THUMBNAILS_DIR
+    response = send_from_directory(directory, resource)
+    cache_control = 'no-cache' if resource == 'index.html' else 'public, max-age=31536000, immutable'
+    response.headers['Cache-Control'] = cache_control
+    return response
 
 
 # To get info about home or items at the given valid folder path
@@ -102,7 +94,7 @@ def modify_items(action: str):
 
 
 # To get the total size in bytes of all the given folders
-@app.route('/total-size', methods=['POST'])
+@app.route('/total', methods=['POST'])
 @require_authentication
 def get_folders_size():
     folders = request.get_json()
