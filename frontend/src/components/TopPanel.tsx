@@ -28,8 +28,8 @@ function TopPanel() {
             setPanelContent('search');
             setPanelOpened(true);
         };
-        addEventListener('onsearchpagecache', onSearchPageCache);
-        return () => { removeEventListener('onsearchpagecache', onSearchPageCache); };
+        addEventListener('searchpagecache', onSearchPageCache);
+        return () => { removeEventListener('searchpagecache', onSearchPageCache); };
     }, [path]);
 
     function togglePanel(newContent: typeof panelContent) {

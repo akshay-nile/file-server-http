@@ -17,15 +17,13 @@ function Authentication() {
 
     async function verify() {
         const response = await authenticate(token);
-        if (response.status === 'verified') {
-            localStorage.setItem('token', token);
-            window.dispatchEvent(new Event('authentication'));
-        } else {
+        if (response.status === 'verified') window.dispatchEvent(new Event('authsuccess'));
+        else {
             setToken('');
             toast.show({
                 severity: 'warn',
                 summary: 'Invalid Token',
-                detail: 'The token you entered is invalid. Please enter the valid server-generated token.'
+                detail: 'Please enter the valid server-generated token.'
             });
         }
     }

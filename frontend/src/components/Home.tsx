@@ -14,8 +14,8 @@ function Home() {
 
     useEffect(() => {
         const onShortcutsChange = () => setShortcuts(getShortcuts());
-        window.addEventListener('onshortcutschange', onShortcutsChange);
-        return () => window.removeEventListener('onshortcutschange', onShortcutsChange);
+        window.addEventListener('shortcutschange', onShortcutsChange);
+        return () => window.removeEventListener('shortcutschange', onShortcutsChange);
     }, []);
 
     return <div className='mb-4 mx-3'>

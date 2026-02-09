@@ -10,20 +10,23 @@ function App() {
   const toastRef = useRef<Toast>(null);
 
   const [isServerOffline, setIsServerOffline] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState('token' in localStorage);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
     if (toastRef.current) setToast(toastRef.current);
 
     const onServerOffline = () => setIsServerOffline(true);
-    const onAuthentication = () => setIsAuthenticated('token' in localStorage);
+    const onAuthSuccess = () => setIsAuthenticated(true);
+    const onAuthFailed = () => setIsAuthenticated(false);
 
     window.addEventListener('serveroffline', onServerOffline);
-    window.addEventListener('authentication', onAuthentication);
+    window.addEventListener('authsuccess', onAuthSuccess);
+    window.addEventListener('authfailed', onAuthFailed);
 
     return () => {
       window.removeEventListener('serveroffline', onServerOffline);
-      window.removeEventListener('authentication', onAuthentication);
+      window.removeEventListener('authsuccess', onAuthSuccess);
+      window.removeEventListener('authfailed', onAuthFailed);
     };
   }, []);
 

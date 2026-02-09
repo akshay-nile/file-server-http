@@ -13,8 +13,8 @@ function UserSettings() {
 
     useEffect(() => {
         const onSettingsPanelClose = () => setUserSettings(getSettings());
-        addEventListener('onsettingspanelclose', onSettingsPanelClose);
-        return () => { removeEventListener('onsettingspanelclose', onSettingsPanelClose); };
+        addEventListener('settingspanelclose', onSettingsPanelClose);
+        return () => { removeEventListener('settingspanelclose', onSettingsPanelClose); };
     }, []);
 
     const sortByOptions: Options[] = [

@@ -30,7 +30,7 @@ function ExplorerItemsProvider({ children }: Props) {
             if (searchInfo !== null && newPath === searchInfo.path) {
                 if (searchInfo.filteredItems) {
                     setItems({ ...searchInfo.filteredItems });
-                    window.dispatchEvent(new Event('onsearchpagecache'));
+                    window.dispatchEvent(new Event('searchpagecache'));
                 } else if (searchInfo.deepSearch) {
                     const query = searchInfo.query.toLowerCase().trim();
                     const filteredItems: ItemsInfo = await getItems(newPath, query); // Fetch items info with deepSearch query

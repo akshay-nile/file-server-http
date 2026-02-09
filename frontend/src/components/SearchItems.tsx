@@ -66,11 +66,11 @@ function SearchItems() {
             setDeepSearch(searchInfo.deepSearch);
             setStatus('searched');
         };
-        addEventListener('onsearchpagecache', onSearchPage);
-        addEventListener('onsearchpanelclose', clearSearch);
+        addEventListener('searchpagecache', onSearchPage);
+        addEventListener('searchpanelclose', clearSearch);
         return () => {
-            removeEventListener('onsearchpagecache', onSearchPage);
-            removeEventListener('onsearchpanelclose', clearSearch);
+            removeEventListener('searchpagecache', onSearchPage);
+            removeEventListener('searchpanelclose', clearSearch);
         };
     }, [clearSearch]);
 

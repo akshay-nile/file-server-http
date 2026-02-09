@@ -108,7 +108,7 @@ function BottomPanel() {
             setShortcuts(shortcuts);
         }
         clearSelection();
-        window.dispatchEvent(new Event('onshortcutschange'));
+        window.dispatchEvent(new Event('shortcutschange'));
         toast.show({
             severity: 'success',
             summary: 'Shortcuts Added',
@@ -130,7 +130,7 @@ function BottomPanel() {
         });
         setShortcuts(shortcuts);
         clearSelection();
-        window.dispatchEvent(new Event('onshortcutschange'));
+        window.dispatchEvent(new Event('shortcutschange'));
         toast.show({
             severity: 'warn',
             summary: 'Shortcuts Removed',

@@ -14,6 +14,7 @@ TOKENS_FILE = APPDATA_ROAMING + '/tokens.txt'
 tokens: set[str] = set()
 token: str | None = None
 
+
 if os.path.isfile(TOKENS_FILE):
     with open(TOKENS_FILE, 'rt') as file:
         lines = file.read().split('\n')
@@ -55,13 +56,10 @@ def verify_user_token(user_token: str) -> bool:
 def require_authentication(f):
     @wraps(f)
     def authenticate(*args, **kwargs):
-        token = request.headers.get('X-Token') or request.args.get('token')
+        token = request.cookies.get('token')
 
-        if not token:
-            abort(400, 'Missing Token')
-
-        if token not in tokens:
-            abort(401, 'Unauthentic Token: ' + token)
+        if not token or token not in tokens:
+            abort(401)
 
         return f(*args, **kwargs)
     return authenticate

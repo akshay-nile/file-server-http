@@ -6,7 +6,7 @@ from services.thumbnails import get_generated_thumbnail, THUMBNAILS_DIR
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
 from services.explorer import delete_items, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 
-from flask import Flask, jsonify, redirect, send_from_directory, request
+from flask import Flask, jsonify, make_response, send_from_directory, request
 from werkzeug.exceptions import HTTPException
 from waitress import serve
 
@@ -45,7 +45,7 @@ def get_items(path):
 
 
 # To generate the thumbnail of a supported file and get its thumbnail url
-@app.route('/thumbnail', methods=['GET'])
+@app.route('/thumbnail')
 @validate_path('file')
 @require_authentication
 def generate_thumbnail(path):
@@ -54,7 +54,7 @@ def generate_thumbnail(path):
 
 
 # To download or stream file contents in 1 MB chunks with Range header
-@app.route('/open', methods=['GET'])
+@app.route('/open')
 @validate_path('file')
 @require_authentication
 def open_file(path):
@@ -102,13 +102,17 @@ def get_folders_size():
 
 
 # To generate and verify the unique token for authentication
-@app.route('/authenticate', methods=['GET'])
+@app.route('/authenticate')
 def authenticate():
     user_token = request.args.get('verify')
     if user_token is not None:
         if verify_user_token(user_token):
-            return jsonify({'status': 'verified'})
-        return jsonify({'status': 'failed'})
+            response = make_response(jsonify({'status': 'verified'}))
+            response.set_cookie(key='token', value=user_token, httponly=True, samesite='Lax', max_age=31536000)
+            return response
+        response = make_response(jsonify({'status': 'failed'}))
+        response.delete_cookie(key='token')
+        return response
     token = generate_unique_token()
     print(f'\nToken Generated:  {token}\n')
     play_notification_tone()
