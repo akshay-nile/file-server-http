@@ -159,7 +159,7 @@ def get_stream_or_download_response(filepath: str, stream=True) -> Response:
     # Get file information like name, size and mime-type
     file_info = get_file_info(filepath)
     if file_info is None:
-        abort(403, description="Access Denied: " + filepath)
+        abort(403, description=f"Access Denied: '{filepath}'")
 
     # Set default start-end pointers and status-code
     start, end = 0, file_info['size'] - 1

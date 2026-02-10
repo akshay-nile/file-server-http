@@ -4,7 +4,7 @@ from functools import wraps
 from pydoc import describe
 from urllib.parse import unquote
 
-from services.explorer import is_protected_path
+from services.explorer import is_protected_path, format_path
 
 from flask import request, abort
 
@@ -25,19 +25,19 @@ def validate_path(path_type: str):
                 return func(*args, **kwargs)
 
             elif is_protected_path(path):
-                abort(403, description=f"Protected Path: '{path}'")
+                abort(403, description=f"Protected Path: '{format_path(path)}'")
 
             elif path_type == 'item':
                 if not os.path.exists(path):
-                    abort(404, description=f"Item Not Found: '{path}'")
+                    abort(404, description=f"Item Not Found: '{format_path(path)}'")
 
             elif path_type == 'folder':
                 if not os.path.isdir(path):
-                    abort(404, description=f"Folder Not Found: '{path}'")
+                    abort(404, description=f"Folder Not Found: '{format_path(path)}'")
 
             elif path_type == 'file':
                 if not os.path.isfile(path):
-                    abort(404, description=f"File Not Found: '{path}'")
+                    abort(404, description=f"File Not Found: '{format_path(path)}'")
 
             else:
                 raise TypeError(f"Invalid Argument path_type: {path_type}")

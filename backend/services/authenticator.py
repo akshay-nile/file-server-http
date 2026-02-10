@@ -59,7 +59,7 @@ def require_authentication(f):
         token = request.cookies.get('token')
 
         if not token or token not in tokens:
-            abort(401)
+            abort(401, description=f'Invalid Token: {token}')
 
         return f(*args, **kwargs)
     return authenticate
