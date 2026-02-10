@@ -29,3 +29,43 @@ Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass 
 ```
 curl -sSL https://github.com/akshay-nile/file-server-http/raw/master/scripts/install.sh | sh
 ```
+
+
+## Backend Architecture
+
+```mermaid
+graph LR
+    server[server.py]
+
+    subgraph services
+        init[#95;#95;init#95;#95;.py]
+        explorer[explorer.py]
+        authenticator[authenticator.py]
+        validator[validator.py]
+        network[network.py]
+        environment[environment.py]
+        thumbnails[thumbnails.py]
+    end
+
+    server --> init
+    server --> explorer
+    server --> authenticator
+    server --> thumbnails
+    server --> environment
+    server --> network
+    server --> validator
+
+    init --> environment
+
+    authenticator --> environment
+
+    explorer --> environment
+    explorer --> thumbnails
+
+    thumbnails --> environment
+
+    network --> environment
+    network --> explorer
+
+    validator --> explorer
+```
