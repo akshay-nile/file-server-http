@@ -7,7 +7,7 @@ from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
 
 from services.thumbnails import get_cached_thumbnail
-from services.environment import IS_WIN_OS, PROJECT_ROOT, USER_HOME, APPDATA_LOCAL, APPDATA_ROAMING, HOST_NAME
+from services.environment import IS_WIN_OS, PROTECTED_PATHS, USER_HOME, HOST_NAME
 
 from flask import request
 from pyperclip import paste, PyperclipException
@@ -15,9 +15,6 @@ from pyperclip import paste, PyperclipException
 
 # To hold the app update info
 update = {'version': None, 'available': False}
-
-# Declare protected locations
-protected_paths = set((PROJECT_ROOT, APPDATA_LOCAL, APPDATA_ROAMING))
 
 # To cache folder-path and their calculated size
 total_size_cache: dict[str, int] = dict()
@@ -36,8 +33,8 @@ def format_path(path: str) -> str:
 
 
 # To check if any item belongs to protected paths
-def is_protected(path: str) -> bool:
-    return any((path.startswith(p) for p in protected_paths))
+def is_protected_path(path: str) -> bool:
+    return any((path.startswith(p) for p in PROTECTED_PATHS))
 
 
 # Keeps only the existing shortcuts with updated items info
@@ -172,7 +169,7 @@ def deep_search(query: str, root: str):
         for item in folders + files:
             if query in item.lower():
                 item_path = joiner(path.replace("\\", "/"), item)
-                if not is_protected(item_path):
+                if not is_protected_path(item_path):
                     yield item_path
 
 
@@ -180,7 +177,6 @@ def get_device_info() -> dict:
     return {
         'hostname': HOST_NAME,
         'platform': 'Windows' if IS_WIN_OS else 'Android',
-        'protected': tuple(protected_paths),
         'update': update
     }
 
@@ -248,10 +244,6 @@ def get_items_info(path: str):
     show_hidden = request.args.get('show_hidden', 'false').lower() == 'true'
     files, folders = [], []
 
-    # Not allowed to explore the items inside these protected locations
-    if is_protected(path):
-        return folders, files
-
     # Only filtered items will be considered if the search query is provided
     if not search:
         items = map(lambda i: joiner(path, i), os.listdir(path))
@@ -287,7 +279,7 @@ def delete_items(items: list[str]) -> int:
     delete_count = 0
     for item in items:
         try:
-            if is_protected(item):
+            if is_protected_path(item):
                 raise PermissionError
             if os.path.isdir(item):
                 shutil.rmtree(item)
@@ -304,7 +296,7 @@ def delete_items(items: list[str]) -> int:
 
 def rename_item(old_item: str, new_item: str) -> int:
     try:
-        if is_protected(old_item) or os.path.exists(new_item):
+        if is_protected_path(old_item) or os.path.exists(new_item):
             raise PermissionError
         if os.path.exists(old_item):
             os.rename(old_item, new_item)

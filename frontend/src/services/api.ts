@@ -4,10 +4,22 @@ import { getSettings, getShortcuts } from './settings';
 async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET' }): Promise<T> {
     try {
         const response = await fetch(path, options);
-        if (response.status === 401) window.dispatchEvent(new Event('authfailed'));
+        if (response.status >= 400) {
+            if (response.status === 401) window.dispatchEvent(new Event('authentication'));
+            else window.dispatchEvent(new CustomEvent('error', { detail: await response.json() }));
+            return {} as T;
+        }
+        window.dispatchEvent(new CustomEvent('error', { detail: null }));
         return await (response as Response).json();
-    } catch { window.dispatchEvent(new Event('serveroffline')); }
-    return [] as T;
+    } catch {
+        window.dispatchEvent(new CustomEvent('error', {
+            detail: {
+                code: 500, status: 'Server Error',
+                message: 'Server went offline or encountered an error'
+            }
+        }));
+        return {} as T;
+    }
 }
 
 export async function authenticate(token: string | null = null): Promise<{ status: string }> {

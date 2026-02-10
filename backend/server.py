@@ -122,7 +122,7 @@ def authenticate():
 # Global http error handler to get jsonified error response
 @app.errorhandler(HTTPException)
 def handle_http_exception(error):
-    error_response = {'code': error.code, 'error': error.name, 'message': error.description}
+    error_response = {'code': error.code, 'status': error.name, 'message': error.description}
     return jsonify(error_response), error.code
 
 

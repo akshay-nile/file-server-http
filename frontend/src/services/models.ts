@@ -9,7 +9,6 @@ export type ClipboardInfo = { type: string, content: string | ItemsInfo | null }
 export interface DeviceInfo {
     hostname: string,
     platform: Platform,
-    protected: Array<string>,
     update: Update
 }
 
@@ -93,4 +92,12 @@ export interface SearchInfo {
     path: string;
     originalItems: ItemsInfo;
     filteredItems: ItemsInfo | null;
+}
+
+export type ErrorDetail = { code: number, status: string, message: string };
+
+declare global {
+    interface WindowEventMap {
+        'error': CustomEvent<ErrorDetail | null>;
+    }
 }

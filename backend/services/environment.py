@@ -43,3 +43,6 @@ else:                                # For PROD (on Windows)
 # Finalize all path to make sure they exists in file system
 for path in (USER_DOWNLOADS, APPDATA_LOCAL, APPDATA_ROAMING):
     os.makedirs(path, exist_ok=True)
+
+# Protected locations which are not allowed to view or modify
+PROTECTED_PATHS = set((PROJECT_ROOT, APPDATA_LOCAL, APPDATA_ROAMING))

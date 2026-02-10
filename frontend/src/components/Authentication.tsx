@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { authenticate } from '../services/api';
 import { toast } from '../services/utilities';
 
-function Authentication() {
+type Props = { onVerify: () => void };
+
+function Authentication({ onVerify }: Props) {
     const [token, setToken] = useState('');
     const [showHelp, setShowHelp] = useState(false);
 
@@ -17,7 +19,7 @@ function Authentication() {
 
     async function verify() {
         const response = await authenticate(token);
-        if (response.status === 'verified') window.dispatchEvent(new Event('authsuccess'));
+        if (response.status === 'verified') onVerify();
         else {
             setToken('');
             toast.show({

@@ -1,5 +1,5 @@
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import SelectedItemsProvider from '../contexts/SelectedItems/SelectedItemsProvider';
 import Breadcrumb from './Breadcrumb';
@@ -7,9 +7,12 @@ import Home from './Home';
 import Items from './Items';
 import TopPanel from './TopPanel';
 import BottomPanel from './BottomPanel';
+import type { ErrorDetail } from '../services/models';
+import ErrorDetails from './ErrorDetails';
 
 function AppLayout() {
     const { loading, path, explore } = useExplorerItems();
+    const [error, setError] = useState<ErrorDetail | null>(null);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -22,13 +25,19 @@ function AppLayout() {
             } else await explore('/', true);
         })();
 
+        const onError = (event: CustomEvent<ErrorDetail | null>) => setError(event.detail);
         const onHistory = async (e: PopStateEvent) => {
             e.preventDefault();
             await explore(e.state.path, false);
         };
 
+        window.addEventListener('error', onError);
         window.addEventListener('popstate', onHistory);
-        return () => window.removeEventListener('popstate', onHistory);
+
+        return () => {
+            window.removeEventListener('error', onError);
+            window.removeEventListener('popstate', onHistory);
+        };
     }, [explore]);
 
     return (
@@ -40,11 +49,13 @@ function AppLayout() {
                 </div>
                 <SelectedItemsProvider>
                     {
-                        loading
-                            ? <div className='h-[66%] flex justify-center items-center'>
-                                <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
-                            </div>
-                            : path === '/' ? <Home /> : <Items />
+                        error === null
+                            ? loading
+                                ? <div className='h-[66%] flex justify-center items-center'>
+                                    <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
+                                </div>
+                                : path === '/' ? <Home /> : <Items />
+                            : <ErrorDetails error={error} />
                     }
                     <BottomPanel />
                 </SelectedItemsProvider>
