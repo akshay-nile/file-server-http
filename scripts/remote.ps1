@@ -94,5 +94,6 @@ Remove-Item "project.zip" -Recurse -Force
 Remove-Item "file-server-http-master" -Recurse -Force
 
 
-# -------- Remote installation done --------
+# -------- Remote installation finished --------
 Write-Host "Done`n" -ForegroundColor Green
+Start-Sleep -Seconds 1

@@ -15,7 +15,7 @@ async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET
         window.dispatchEvent(new CustomEvent('error', {
             detail: {
                 code: 500, status: 'Server Error',
-                message: 'Server went offline or encountered an error'
+                message: 'Server is either offline or encountered an error'
             }
         }));
         return {} as T;
