@@ -24,7 +24,7 @@ curl -sSL https://github.com/akshay-nile/file-server-http/raw/master/scripts/ins
 ```
 
 
-## Backend Architecture
+## Backend Architecture (Mermaid Diagram)
 
 ```mermaid
 graph LR
@@ -61,4 +61,57 @@ graph LR
     network --> explorer
 
     validator --> explorer
+```
+
+
+## Frontend Architecture (Mermaid Diagram)
+
+```mermaid
+graph LR
+    App
+
+    subgraph components
+        AppLayout
+        Authentication
+        BottomPanel
+        Breadcrumb
+        DriveItem
+        EmptyFolder
+        ErrorDetails
+        FileItem
+        FolderItem
+        Home
+        ItemDetails
+        Items
+        RenameItem
+        SearchItems
+        TopPanel
+        UploadFiles
+        UserSettings
+    end
+
+    App --> AppLayout
+    App --> Authentication
+
+    AppLayout --> TopPanel
+    AppLayout --> Home
+    AppLayout --> Items
+    AppLayout --> BottomPanel
+    AppLayout --> ErrorDetails
+    AppLayout --> Breadcrumb
+
+    Home --> DriveItem
+    Home --> FileItem
+    Home --> FolderItem
+
+    Items --> EmptyFolder
+    Items --> FileItem
+    Items --> FolderItem
+
+    TopPanel --> UploadFiles
+    TopPanel --> SearchItems
+    TopPanel --> UserSettings
+
+    BottomPanel --> ItemDetails
+    BottomPanel --> RenameItem
 ```
