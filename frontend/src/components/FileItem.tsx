@@ -4,7 +4,7 @@ import { useState } from 'react';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
-import { formatSize, getTooltip } from '../services/utilities';
+import { formatSize, getTooltip, toast } from '../services/utilities';
 
 type Props = { file: FileInfo, selectable: boolean };
 
@@ -36,7 +36,14 @@ function FileItem({ file, selectable = true }: Props) {
     }
 
     function streamFile(file: FileInfo) {
-        if (file.mimetype === 'application/octet-stream') return;
+        if (file.mimetype === 'application/octet-stream') {
+            toast.show({
+                severity: 'info',
+                summary: 'Cannot Open ' + getExtention(file.name),
+                detail: 'This file can only be downloaded'
+            });
+            return;
+        }
         window.open(getFileURL(file.path, true));
     }
 
