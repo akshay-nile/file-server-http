@@ -1,31 +1,37 @@
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import SelectedItemsProvider from '../contexts/SelectedItems/SelectedItemsProvider';
+import type { ErrorDetail } from '../services/models';
+import BottomPanel from './BottomPanel';
 import Breadcrumb from './Breadcrumb';
+import ErrorDetails from './ErrorDetails';
 import Home from './Home';
 import Items from './Items';
 import TopPanel from './TopPanel';
-import BottomPanel from './BottomPanel';
-import type { ErrorDetail } from '../services/models';
-import ErrorDetails from './ErrorDetails';
 
 function AppLayout() {
+    const navigate = useNavigate();
+
     const { loading, path, explore } = useExplorerItems();
     const [error, setError] = useState<ErrorDetail | null>(null);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const path = params.get('path');
+        const urlPath = params.get('path');
 
         (async () => {
-            if (path) {
-                await explore('/', false);
-                if (path !== '/') await explore(path, false);
+            if (urlPath) {
+                await explore('/', false);  // Fetch Home info once
+                if (urlPath !== '/') await explore(urlPath, false);
             } else await explore('/', true);
         })();
 
-        const onError = (event: CustomEvent<ErrorDetail | null>) => setError(event.detail);
+        const onError = (event: CustomEvent<ErrorDetail | null>) => {
+            setError(event.detail);
+            if (event.detail && event.detail.code === 401) navigate('/authentication');
+        };
         const onHistory = async (e: PopStateEvent) => {
             e.preventDefault();
             await explore(e.state.path, false);
@@ -38,7 +44,7 @@ function AppLayout() {
             window.removeEventListener('error', onError);
             window.removeEventListener('popstate', onHistory);
         };
-    }, [explore]);
+    }, [explore, navigate]);
 
     return (
         <div className="w-full flex justify-center">

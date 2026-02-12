@@ -5,9 +5,8 @@ async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET
     try {
         const response = await fetch(path, options);
         if (response.status >= 400) {
-            if (response.status === 401) window.dispatchEvent(new Event('authentication'));
-            else window.dispatchEvent(new CustomEvent('error', { detail: await response.json() }));
-            return {} as T;
+            window.dispatchEvent(new CustomEvent('error', { detail: await response.json() }));
+            return null as T;
         }
         window.dispatchEvent(new CustomEvent('error', { detail: null }));
         return await (response as Response).json();
@@ -18,7 +17,7 @@ async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET
                 message: 'Server is either offline or encountered an error'
             }
         }));
-        return {} as T;
+        return null as T;
     }
 }
 

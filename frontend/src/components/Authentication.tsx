@@ -3,10 +3,11 @@ import { InputText } from 'primereact/inputtext';
 import { useEffect, useState } from 'react';
 import { authenticate } from '../services/api';
 import { toast } from '../services/utilities';
+import { useNavigate } from 'react-router-dom';
 
-type Props = { onVerify: () => void };
+function Authentication() {
+    const navigate = useNavigate();
 
-function Authentication({ onVerify }: Props) {
     const [token, setToken] = useState('');
     const [showHelp, setShowHelp] = useState(false);
 
@@ -19,7 +20,7 @@ function Authentication({ onVerify }: Props) {
 
     async function verify() {
         const response = await authenticate(token);
-        if (response.status === 'verified') onVerify();
+        if (response.status === 'verified') navigate('/');
         else {
             setToken('');
             toast.show({
