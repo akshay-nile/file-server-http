@@ -1,22 +1,21 @@
-import type { HomeInfo, ItemsInfo, Thumbnail } from './models';
+import type { ErrorDetail, HomeInfo, ItemsInfo, Thumbnail } from './models';
 import { getSettings, getShortcuts } from './settings';
+
+type Navigator = (to: string, option?: { state: ErrorDetail }) => void;
+export let navigate: Navigator;
+export const setNavigate = (func: Navigator) => navigate = func;
 
 async function tryToFetch<T>(path: string, options: RequestInit = { method: 'GET' }): Promise<T> {
     try {
         const response = await fetch(path, options);
         if (response.status >= 400) {
-            window.dispatchEvent(new CustomEvent('error', { detail: await response.json() }));
+            if (response.status === 401) navigate('/authentication');
+            else navigate('/error', { state: await response.json() });
             return null as T;
         }
-        window.dispatchEvent(new CustomEvent('error', { detail: null }));
-        return await (response as Response).json();
+        return await response.json() as T;
     } catch {
-        window.dispatchEvent(new CustomEvent('error', {
-            detail: {
-                code: 500, status: 'Server Error',
-                message: 'Server is either offline or encountered an error'
-            }
-        }));
+        navigate('/error', { state: { code: 500, status: 'Server Error', message: 'Server is either offline or encountered an error' } });
         return null as T;
     }
 }

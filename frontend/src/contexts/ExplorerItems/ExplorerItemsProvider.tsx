@@ -1,9 +1,9 @@
 import { useCallback, useState, type ReactNode } from 'react';
-import type { ExplorerItemsState, HomeInfo, ItemsInfo } from '../../services/models';
-import ExplorerItemsContext from './ExplorerItemsContext';
 import { getHome, getItems } from '../../services/api';
+import type { ExplorerItemsState, HomeInfo, ItemsInfo } from '../../services/models';
 import { setShortcuts } from '../../services/settings';
 import { searchInfo, setSearchInfo } from '../../services/utilities';
+import ExplorerItemsContext from './ExplorerItemsContext';
 
 type Props = { children: ReactNode };
 
@@ -29,16 +29,19 @@ function ExplorerItemsProvider({ children }: Props) {
                     window.dispatchEvent(new Event('searchpagecache'));
                 } else if (searchInfo.deepSearch) {
                     const query = searchInfo.query.toLowerCase().trim();
-                    const filteredItems: ItemsInfo = await getItems(newPath, query); // Fetch items info with deepSearch query
-                    setItems(filteredItems);
-                    setSearchInfo({ ...searchInfo, filteredItems });
+                    const data: ItemsInfo = await getItems(newPath, query); // Fetch items info with deepSearch query
+                    if (data === null) return;
+                    setItems(data);
+                    setSearchInfo({ ...searchInfo, filteredItems: data });
                 }
             } else if (newPath === '/') {
                 const data: HomeInfo = await getHome(); // Fetch home info (device, drives, shortcuts, clipboard)
+                if (data === null) return;
                 if (data.shortcuts) setShortcuts(data.shortcuts);
                 setHome(data);
             } else {
                 const data: ItemsInfo = await getItems(newPath); // Fetch items info (folder and files) at given path
+                if (data === null) return;
                 setItems(data);
             }
 

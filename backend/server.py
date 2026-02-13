@@ -22,8 +22,7 @@ app = configure_flask_app(Flask(__name__))
 def serve_public(resource: str = 'index.html'):
     directory = './public' if request.endpoint == 'public' else THUMBNAILS_DIR
     response = send_from_directory(directory, resource)
-    cache_control = 'no-cache' if resource == 'index.html' else 'public, max-age=31536000, immutable'
-    response.headers['Cache-Control'] = cache_control
+    response.headers['Cache-Control'] = 'no-cache' if resource == 'index.html' else 'public, max-age=31536000, immutable'
     return response
 
 

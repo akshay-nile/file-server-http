@@ -19,12 +19,13 @@ function Items() {
             for (const file of items.files) {
                 if (file.thumbnail || !canGenerateThumbnail(file.name, home.device.platform)) continue;
 
-                const thumbnail = await getThumbanil(file.path);
-                if (!thumbnail.thumbnail) continue;
+                const data = await getThumbanil(file.path);
+                if (data === null) return;
+                if (!data.thumbnail) continue;
 
                 setFiles(prevFiles => {
-                    const prevFile = prevFiles.find(file => file.path === thumbnail.filepath);
-                    if (prevFile) prevFile.thumbnail = thumbnail.thumbnail;
+                    const prevFile = prevFiles.find(file => file.path === data.filepath);
+                    if (prevFile) prevFile.thumbnail = data.thumbnail;
                     return prevFile ? [...prevFiles] : prevFiles;
                 });
 

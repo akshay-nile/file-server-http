@@ -1,9 +1,9 @@
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authenticate } from '../services/api';
 import { toast } from '../services/utilities';
-import { useNavigate } from 'react-router-dom';
 
 function Authentication() {
     const navigate = useNavigate();
@@ -13,8 +13,9 @@ function Authentication() {
 
     useEffect(() => {
         (async () => {
-            const response = await authenticate();
-            if (response.status === 'generated') setShowHelp(true);
+            const data = await authenticate();
+            if (data === null) return;
+            if (data.status === 'generated') setShowHelp(true);
         })();
     }, []);
 

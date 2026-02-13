@@ -1,21 +1,17 @@
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BottomPanel from '../components/BottomPanel';
+import Breadcrumb from '../components/Breadcrumb';
+import Home from '../components/Home';
+import Items from '../components/Items';
+import TopPanel from '../components/TopPanel';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import SelectedItemsProvider from '../contexts/SelectedItems/SelectedItemsProvider';
-import type { ErrorDetail } from '../services/models';
-import BottomPanel from './BottomPanel';
-import Breadcrumb from './Breadcrumb';
-import ErrorDetails from './ErrorDetails';
-import Home from './Home';
-import Items from './Items';
-import TopPanel from './TopPanel';
 
 function AppLayout() {
     const navigate = useNavigate();
-
     const { loading, path, explore } = useExplorerItems();
-    const [error, setError] = useState<ErrorDetail | null>(null);
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -28,22 +24,14 @@ function AppLayout() {
             } else await explore('/', true);
         })();
 
-        const onError = (event: CustomEvent<ErrorDetail | null>) => {
-            setError(event.detail);
-            if (event.detail && event.detail.code === 401) navigate('/authentication');
-        };
         const onHistory = async (e: PopStateEvent) => {
             e.preventDefault();
             await explore(e.state.path, false);
         };
 
-        window.addEventListener('error', onError);
         window.addEventListener('popstate', onHistory);
 
-        return () => {
-            window.removeEventListener('error', onError);
-            window.removeEventListener('popstate', onHistory);
-        };
+        return () => window.removeEventListener('popstate', onHistory);
     }, [explore, navigate]);
 
     return (
@@ -55,13 +43,11 @@ function AppLayout() {
                 </div>
                 <SelectedItemsProvider>
                     {
-                        error === null
-                            ? loading
-                                ? <div className='h-[66%] flex justify-center items-center'>
-                                    <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
-                                </div>
-                                : path === '/' ? <Home /> : <Items />
-                            : <ErrorDetails error={error} />
+                        loading
+                            ? <div className='h-[66%] flex justify-center items-center'>
+                                <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
+                            </div>
+                            : path === '/' ? <Home /> : <Items />
                     }
                     <BottomPanel />
                 </SelectedItemsProvider>

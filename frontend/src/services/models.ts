@@ -4,6 +4,8 @@ export type Update = { version: string, available: boolean };
 
 export type SizeInfo = { total: number, used: number, free: number };
 
+export type ErrorDetail = { code: number, status: string, message: string };
+
 export type ClipboardInfo = { type: string, content: string | ItemsInfo | null };
 
 export interface DeviceInfo {
@@ -94,10 +96,3 @@ export interface SearchInfo {
     filteredItems: ItemsInfo | null;
 }
 
-export type ErrorDetail = { code: number, status: string, message: string };
-
-declare global {
-    interface WindowEventMap {
-        'error': CustomEvent<ErrorDetail | null>;
-    }
-}
