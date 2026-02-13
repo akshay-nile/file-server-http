@@ -55,7 +55,7 @@ function FileItem({ file, selectable = true }: Props) {
                         ? <div className={`w-full h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide ${getFontSize(file.name)}`}>
                             {getExtention(file.name)}
                         </div>
-                        : <img src={file.thumbnail ?? '/public/icons/file.jpg'} className='w-full h-full object-contain object-center rounded-[5px]' />
+                        : <img src={file.thumbnail ?? '/icons/file.jpg'} className='w-full h-full object-contain object-center rounded-[5px]' />
                 }
             </div>
 

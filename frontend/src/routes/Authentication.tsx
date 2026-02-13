@@ -45,7 +45,7 @@ function Authentication() {
                         Token Required
                     </label>
 
-                    <img src='/public/icons/token-required.png' width='150px' className='mt-2 mb-4' />
+                    <img src='/icons/token-required.png' width='150px' className='mt-2 mb-4' />
 
                     <InputText id='token' aria-describedby='token-info' required
                         spellCheck={false} autoCorrect='off' autoCapitalize='off'

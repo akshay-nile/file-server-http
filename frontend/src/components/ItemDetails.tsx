@@ -39,7 +39,7 @@ function ItemDetails({ type, folder, file, items }: Props) {
             {
                 (type === 'folder' && folder !== undefined) &&
                 <div className='flex items-center gap-2.5'>
-                    <img src='/public/icons/folder.jpg' width='64px' className='shadow' />
+                    <img src='/icons/folder.jpg' width='64px' className='shadow' />
                     <div className='flex flex-col text-[13px]'>
                         <h2 className='text-[16px] font-semibold leading-4.5 mb-1'>{folder.name}</h2>
                         <span>
@@ -58,7 +58,7 @@ function ItemDetails({ type, folder, file, items }: Props) {
             {
                 (type === 'file' && file !== undefined) &&
                 <div className='flex items-center gap-2.5'>
-                    <img src={file?.thumbnail ?? '/public/icons/file.jpg'} width='64px' className='shadow' />
+                    <img src={file?.thumbnail ?? '/icons/file.jpg'} width='64px' className='shadow' />
                     <div className='flex flex-col text-[13px] font-medium'>
                         <h2 className='text-[16px] font-semibold leading-4.5 mb-1'>{file.name}</h2>
                         <span>Size: {formatSize(file.size)} &nbsp;&nbsp; {file.hidden && 'Hidden'}</span>

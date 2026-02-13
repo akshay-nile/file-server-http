@@ -21,7 +21,7 @@ function FolderItem({ folder, selectable = true }: Props) {
 
     return (
         <div className='flex items-center gap-1'>
-            <img src='/public/icons/folder.jpg' className={`w-[50px] h-[50px] m-1 p-0 rounded-[5px] ${selectable && 'cursor-pointer'} ${folder.hidden && 'opacity-70'}`} onClick={() => selectable && toggleFolderSelection(folder)} />
+            <img src='/icons/folder.jpg' className={`w-[50px] h-[50px] m-1 p-0 rounded-[5px] ${selectable && 'cursor-pointer'} ${folder.hidden && 'opacity-70'}`} onClick={() => selectable && toggleFolderSelection(folder)} />
             <div className="w-full flex justify-between items-center">
                 <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer' onClick={explore_folder}>
                     <span className='font-medium group-hover:text-blue-700 text-sm leading-3.75 min-w-0 break-words break-all'>
