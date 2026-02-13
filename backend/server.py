@@ -4,7 +4,7 @@ from services.environment import USER_DOWNLOADS
 from services.network import get_stream_or_download_response
 from services.thumbnails import get_generated_thumbnail, THUMBNAILS_DIR
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
-from services.explorer import delete_items, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
+from services.explorer import delete_items, is_public_resource, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 
 from flask import Flask, jsonify, make_response, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -15,12 +15,16 @@ from waitress import serve
 app = configure_flask_app(Flask(__name__))
 
 
-# To serve static resources from public or thumbnails folder
+# To serve static resources from public and thumbnails folder
 @app.route('/', endpoint='public')
-@app.route('/public/<path:resource>', endpoint='public')
+@app.route('/<path:resource>', endpoint='public')
 @app.route('/thumbnails/<path:resource>', endpoint='thumbnails')
-def serve_public(resource: str = 'index.html'):
-    directory = './public' if request.endpoint == 'public' else THUMBNAILS_DIR
+def serve_static_files(resource='index.html'):
+    directory = THUMBNAILS_DIR
+    if request.endpoint == 'public':
+        directory = './public'
+        if not is_public_resource(resource):
+            resource = 'index.html'
     response = send_from_directory(directory, resource)
     response.headers['Cache-Control'] = 'no-cache' if resource == 'index.html' else 'public, max-age=31536000, immutable'
     return response
@@ -34,10 +38,8 @@ def get_items(path):
     print('Explore -', format_path(path))
     if request.method == 'POST':
         return jsonify({
-            'device': get_device_info(),
-            'drives': get_drives_info(),
-            'shortcuts': get_updated_shortcuts(),
-            'clipboard': get_clipboard_info()
+            'device': get_device_info(), 'drives': get_drives_info(),
+            'shortcuts': get_updated_shortcuts(), 'clipboard': get_clipboard_info()
         })
     folders, files = get_items_info(path)
     return jsonify({'folders': folders, 'files': files})

@@ -12,8 +12,3 @@ dependencies = [
     "requests~=2.32.4",
     "waitress~=3.0.2",
 ]
-
-[dependency-groups]
-dev = [
-    "flask-cors~=6.0.1",
-]

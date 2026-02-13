@@ -7,7 +7,7 @@ from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
 
 from services.thumbnails import get_cached_thumbnail
-from services.environment import IS_WIN_OS, PROTECTED_PATHS, USER_HOME, HOST_NAME
+from services.environment import IS_DEV_ENV, IS_WIN_OS, PROTECTED_PATHS, USER_HOME, HOST_NAME
 
 from flask import request
 from pyperclip import paste, PyperclipException
@@ -35,6 +35,11 @@ def format_path(path: str) -> str:
 # To check if any item belongs to protected paths
 def is_protected_path(path: str) -> bool:
     return any((path.startswith(p) for p in PROTECTED_PATHS))
+
+
+# To check if any resource exists in public folder or not
+def is_public_resource(resource: str) -> bool:
+    return not IS_DEV_ENV and os.path.isfile('./public/' + resource)
 
 
 # Keeps only the existing shortcuts with updated items info

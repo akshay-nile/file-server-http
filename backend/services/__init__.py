@@ -30,10 +30,6 @@ def configure_flask_app(app: Flask) -> Flask:
         app.config['HOST'] = 'localhost'
         app.config['PORT'] = 5000
         app.config['DEBUG'] = True
-
-        # Enable CORS for all routes in dev mode only
-        from flask_cors import CORS
-        CORS(app)
     else:
         from services.network import is_socket_available, check_for_update, get_user_selection, publish_server_address
 
