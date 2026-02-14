@@ -1,4 +1,4 @@
-# 📁 MyFileServer v1.4.10
+# 📁 MyFileServer v1.5.10
 
 A lightweight file server application to transfer/stream files over network with:
 
@@ -83,6 +83,7 @@ graph LR
         Home
         ItemDetails
         Items
+        MusicPlayer
         RenameItem
         SearchItems
         TopPanel
@@ -92,12 +93,13 @@ graph LR
 
     App --> AppLayout
     App --> Authentication
+    App --> MusicPlayer
+    App --> ErrorDetails
 
     AppLayout --> TopPanel
     AppLayout --> Home
     AppLayout --> Items
     AppLayout --> BottomPanel
-    AppLayout --> ErrorDetails
     AppLayout --> Breadcrumb
 
     Home --> DriveItem

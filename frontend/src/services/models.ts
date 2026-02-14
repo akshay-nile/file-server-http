@@ -96,3 +96,4 @@ export interface SearchInfo {
     filteredItems: ItemsInfo | null;
 }
 
+export type MusicPlayerData = { songs: FileInfo[], index: number };

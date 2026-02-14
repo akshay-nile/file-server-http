@@ -1,5 +1,6 @@
-import type { ItemInfo, ItemsInfo, Settings } from './models';
+import type { ItemInfo, ItemsInfo, MusicPlayerData, Settings } from './models';
 
+const MUSIC_KEY = 'music-player';
 const SETTINGS_KEY = 'settings';
 const SHORTCUTS_KEY = 'shortcuts';
 
@@ -43,4 +44,15 @@ export function shortcutsExists(item: ItemInfo): boolean {
     if (shortcuts.folders.find(folder => folder.path === item.path)) return true;
     if (shortcuts.files.find(file => file.path === item.path)) return true;
     return false;
+}
+
+export function getMusicPlayerData(): MusicPlayerData | null {
+    if (MUSIC_KEY in localStorage) {
+        return JSON.parse(localStorage.getItem(MUSIC_KEY) as string);
+    }
+    return null;
+}
+
+export function setMusicPlayerData(data: MusicPlayerData) {
+    localStorage.setItem(MUSIC_KEY, JSON.stringify(data));
 }

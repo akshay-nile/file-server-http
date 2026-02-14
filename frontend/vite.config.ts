@@ -12,5 +12,19 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    target: 'esnext',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('primereact')) return 'primereact';
+            if (id.includes('primeicons')) return 'primeicons';
+            return 'vendor';
+          }
+        }
+      },
+    },
   }
 });

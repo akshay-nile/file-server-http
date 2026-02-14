@@ -197,7 +197,7 @@ wheels = [
 
 [[package]]
 name = "myfileserver"
-version = "1.4.9"
+version = "1.5.10"
 source = { virtual = "." }
 dependencies = [
     { name = "flask" },

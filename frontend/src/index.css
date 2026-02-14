@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+audio,
+audio::-webkit-media-controls-enclosure {
+    border-radius: 8px;
+    background-color: #f9fafb;
+}
+
 .p-button:focus {
     box-shadow: none !important;
 }

@@ -7,6 +7,7 @@ import Authentication from './routes/Authentication';
 import ErrorDetails from './routes/ErrorDetails';
 import { setNavigate } from './services/api';
 import { setToast } from './services/utilities';
+import MusicPlayer from './routes/MusicPlayer';
 
 function App() {
   const toastRef = useRef<Toast>(null);
@@ -22,6 +23,7 @@ function App() {
       <Routes>
         <Route path='/' element={<ExplorerItemsProvider><AppLayout /></ExplorerItemsProvider>} />
         <Route path='/authentication' element={<Authentication />} />
+        <Route path='/music-player' element={<MusicPlayer />} />
         <Route path='/error' element={<ErrorDetails />} />
         <Route path='*' element={<Navigate to="/error" state={{ code: 404, status: 'Page Not Found' }} replace />} />
       </Routes>

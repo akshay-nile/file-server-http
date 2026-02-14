@@ -6,9 +6,9 @@ import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
 import { formatSize, getTooltip, toast } from '../services/utilities';
 
-type Props = { file: FileInfo, selectable: boolean };
+type Props = { file: FileInfo, selectable: boolean, onMusicPlay?: (file: FileInfo) => void };
 
-function FileItem({ file, selectable = true }: Props) {
+function FileItem({ file, selectable = true, onMusicPlay }: Props) {
     const [downloading, setDownloading] = useState<boolean>(false);
     const { toggleFileSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
@@ -44,7 +44,8 @@ function FileItem({ file, selectable = true }: Props) {
             });
             return;
         }
-        window.open(getFileURL(file.path, true));
+        if (onMusicPlay && file.mimetype.startsWith('audio')) onMusicPlay(file);
+        else window.open(getFileURL(file.path, true));
     }
 
     return (
