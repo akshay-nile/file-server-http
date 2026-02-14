@@ -13,17 +13,5 @@ export default defineConfig({
       }
     }
   },
-  build: {
-    target: 'esnext',
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('primereact')) return 'primereact';
-            return 'vendor';
-          }
-        }
-      },
-    },
-  }
+  build: { chunkSizeWarningLimit: 1024 }
 });
