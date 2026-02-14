@@ -29,7 +29,7 @@ function MusicPlayer() {
     function getItemTemplate(song: FileInfo) {
         return (
             <div className='flex items-center gap-2'>
-                <img src={song.thumbnail ?? '/icons/file.jpg'} width='40px' height='40px' className='rounded-[4px]' />
+                <img src={song.thumbnail ?? '/icons/album.png'} width='40px' height='40px' className='shadow rounded-[4px]' />
                 <span className='font-medium text-[15px] leading-5 min-w-0 break-words'>
                     {song.name.substring(0, song.name.lastIndexOf('.'))}
                 </span>
@@ -57,8 +57,8 @@ function MusicPlayer() {
                         </div>
                         : <div className='h-full flex flex-col gap-4 justify-center'>
                             <div className='flex items-center gap-4'>
-                                <img width='70px' height='70px' src={songs[index].thumbnail ?? '/icons/file.jpg'}
-                                    className={playing ? 'rounded-full animate-[spin_3s_linear_infinite]' : 'rounded-[8px]'} />
+                                <img width='70px' height='70px' src={songs[index].thumbnail ?? '/icons/album.png'}
+                                    className={`shadow ${playing ? 'rounded-full animate-[spin_3s_linear_infinite]' : 'rounded-[8px]'}`} />
 
                                 <div className='flex flex-col gap-1 group cursor-pointer'>
                                     <span className='text-lg leading-5.5 font-semibold min-w-0 break-words'>
