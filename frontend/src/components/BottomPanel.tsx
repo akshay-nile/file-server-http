@@ -8,7 +8,7 @@ import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL, modifyItems } from '../services/api';
 import type { FileInfo, FolderInfo, ItemInfo, ItemsInfo } from '../services/models';
 import { getShortcuts, setShortcuts } from '../services/settings';
-import { getTooltip, toast } from '../services/utilities';
+import { getTooltip, searchInfo, toast } from '../services/utilities';
 import ItemDetails from './ItemDetails';
 import RenameItem from './RenameItem';
 
@@ -158,17 +158,19 @@ function BottomPanel() {
             setStatus('deleting');
             const response = await modifyItems('delete', itemsToDelete);
             if (response && response.count === itemsToDelete.length) toast.show({
-                severity: 'success',
-                summary: 'Deleted',
+                severity: 'success', summary: 'Deleted',
                 detail: response.count + ' item(s) has been deleted.'
             });
             else toast.show({
-                severity: 'error',
-                summary: 'Deletion Failed',
+                severity: 'error', summary: 'Deletion Failed',
                 detail: response.count + ' item(s) were deleted.'
             });
             setStatus('none');
             clearSelection();
+            if (searchInfo && searchInfo.filteredItems) {
+                searchInfo.filteredItems.folders = searchInfo.filteredItems.folders.filter(f => itemsToDelete.includes(f.path));
+                searchInfo.filteredItems.files = searchInfo.filteredItems.files.filter(f => itemsToDelete.includes(f.path));
+            }
             explore(path, false);
         };
         confirmDialog({
@@ -187,16 +189,14 @@ function BottomPanel() {
             setDialogInfo(null);
             setStatus('renaming');
             const response = await modifyItems('rename', [itemToRename.path, path + '/' + name]);
-            if (response && response.count === 1) toast.show({
-                severity: 'success',
-                summary: 'Renamed',
-                detail: 'Item renamed to ' + name
-            });
-            else toast.show({
-                severity: 'error',
-                summary: 'Renaming Failed',
-                detail: itemToRename.name + ' could not be renamed.'
-            });
+            if (response && response.count === 1) {
+                toast.show({ severity: 'success', summary: 'Renamed', detail: 'Item renamed to ' + name });
+                if (searchInfo && searchInfo.filteredItems) {
+                    const itemRenamed = [...searchInfo.filteredItems.folders, ...searchInfo.filteredItems.files].find(f => f.path === itemToRename.path);
+                    if (itemRenamed) itemRenamed.name = name;
+                }
+            }
+            else toast.show({ severity: 'error', summary: 'Renaming Failed', detail: itemToRename.name + ' could not be renamed.' });
             setStatus('none');
             clearSelection();
             explore(path, false);
