@@ -168,8 +168,8 @@ function BottomPanel() {
             setStatus('none');
             clearSelection();
             if (searchInfo && searchInfo.filteredItems) {
-                searchInfo.filteredItems.folders = searchInfo.filteredItems.folders.filter(f => itemsToDelete.includes(f.path));
-                searchInfo.filteredItems.files = searchInfo.filteredItems.files.filter(f => itemsToDelete.includes(f.path));
+                searchInfo.filteredItems.folders = searchInfo.filteredItems.folders.filter(f => !itemsToDelete.includes(f.path));
+                searchInfo.filteredItems.files = searchInfo.filteredItems.files.filter(f => !itemsToDelete.includes(f.path));
             }
             explore(path, false);
         };
