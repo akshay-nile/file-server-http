@@ -3,6 +3,7 @@ import { Dialog } from 'primereact/dialog';
 import { ListBox, type ListBoxChangeEvent } from 'primereact/listbox';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
+import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
 import { getMusicPlayerData } from '../services/settings';
 import { formatSize } from '../services/utilities';
@@ -71,8 +72,9 @@ function MusicPlayer() {
                             </div>
 
                             <audio autoPlay controls className='w-full h-12'
-                                src={`/open?path=${encodeURIComponent(songs[index].path)}&stream=true`}
-                                onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
+                                src={getFileURL(songs[index].path, true)}
+                                onPlay={() => setPlaying(true)}
+                                onPause={() => setPlaying(false)}
                                 onEnded={playNext} />
 
                             <div className='flex justify-between items-center w-full h-12 gap-2'>
