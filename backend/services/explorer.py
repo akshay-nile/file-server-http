@@ -42,6 +42,13 @@ def is_public_resource(resource: str) -> bool:
     return not IS_DEV_ENV and os.path.isfile('./public/' + resource)
 
 
+# To take or release the screen lock for the main server thread
+def keep_screen_awake(lock: bool):
+    if IS_WIN_OS:
+        state = 0x80000003 if lock else 0x80000000
+        ctypes.windll.kernel32.SetThreadExecutionState(state)
+
+
 # Keeps only the existing shortcuts with updated items info
 def get_updated_shortcuts() -> dict | None:
     shortcuts: dict | None = request.get_json()

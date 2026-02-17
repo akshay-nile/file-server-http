@@ -4,7 +4,7 @@ from services.environment import USER_DOWNLOADS
 from services.network import get_stream_or_download_response
 from services.thumbnails import get_generated_thumbnail, THUMBNAILS_DIR
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
-from services.explorer import delete_items, is_public_resource, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
+from services.explorer import delete_items, is_public_resource, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size, keep_screen_awake
 
 from flask import Flask, jsonify, make_response, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -128,19 +128,23 @@ def handle_http_exception(error):
 
 
 # Run the app on dev or prod server depending on current mode
-if app.config['DEBUG']:
-    app.run(
-        host=app.config['HOST'],
-        port=app.config['PORT'],
-        debug=app.config['DEBUG']
-    )
-else:
-    serve(
-        app=app,
-        host=app.config['HOST'],
-        port=app.config['PORT'],
-        threads=16,                                     # Max concurrent connections 16
-        max_request_body_size=8 * 1024 * 1024 * 1024,   # Max upload size limit (8 GB)
-        channel_timeout=15 * 60,                        # Max request timeout (15 Minutes)
-        ident='MyFileServer'
-    )
+try:
+    if app.config['DEBUG']:
+        app.run(
+            host=app.config['HOST'],
+            port=app.config['PORT'],
+            debug=app.config['DEBUG']
+        )
+    else:
+        keep_screen_awake(True)
+        serve(
+            app=app,
+            host=app.config['HOST'],
+            port=app.config['PORT'],
+            threads=16,                                     # Max concurrent connections 16
+            max_request_body_size=8 * 1024 * 1024 * 1024,   # Max upload size limit (8 GB)
+            channel_timeout=15 * 60,                        # Max request timeout (15 Minutes)
+            ident='MyFileServer'
+        )
+finally:
+    keep_screen_awake(False)
