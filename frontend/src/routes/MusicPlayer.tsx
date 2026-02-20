@@ -1,6 +1,6 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { ListBox, type ListBoxChangeEvent } from 'primereact/listbox';
+import { ListBox } from 'primereact/listbox';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
 import { getFileURL } from '../services/api';
@@ -39,13 +39,17 @@ function MusicPlayer() {
     }
 
     function playNext() {
-        if (index < songs.length - 1) setIndex(index + 1);
-        setPlaying(false);
+        if (index < songs.length - 1) {
+            setIndex(index + 1);
+            setPlaying(false);
+        }
     }
 
     function playPrev() {
-        if (index > 0) setIndex(index - 1);
-        setPlaying(false);
+        if (index > 0) {
+            setIndex(index - 1);
+            setPlaying(false);
+        }
     }
 
     return (
@@ -78,16 +82,16 @@ function MusicPlayer() {
                                 onEnded={playNext} />
 
                             <div className='flex justify-between items-center w-full h-12 gap-2'>
-                                <Button label='Prev' icon='pi pi-arrow-left' size='small' severity='secondary' raised
+                                <Button label='Prev' icon='pi pi-arrow-left' size='small' raised
                                     disabled={index <= 0}
                                     onClick={playPrev} />
 
-                                <Button label='Playlist' size='small' severity='secondary' raised
+                                <Button label='Playlist' size='small' raised
                                     icon={showList ? 'pi pi-spin pi-spinner' : 'pi pi-list'}
                                     disabled={showList}
                                     onClick={() => setShowList(!showList)} />
 
-                                <Button label='Next' icon="pi pi-arrow-right" iconPos='right' size='small' severity='secondary' raised
+                                <Button label='Next' icon="pi pi-arrow-right" iconPos='right' size='small' raised
                                     disabled={index >= songs.length - 1}
                                     onClick={playNext} />
                             </div>
@@ -97,10 +101,11 @@ function MusicPlayer() {
                                 contentStyle={{ padding: '0px', margin: '0px' }}
                                 visible={showList} onHide={() => setShowList(false)}>
 
-                                <ListBox filter optionLabel='name' optionValue='path' filterBy='name'
-                                    itemTemplate={(song: FileInfo) => getItemTemplate(song)}
+                                <ListBox filter optionValue='path' filterBy='name' filterPlaceholder='Search Songs'
+                                    pt={{ header: { className: 'sticky top-0 z-10' }, root: { className: 'relative overflow-visible' } }}
+                                    itemTemplate={song => getItemTemplate(song)}
                                     options={songs} value={songs[index].path}
-                                    onChange={(e: ListBoxChangeEvent) => setIndex(songs.findIndex(s => s.path === e.value))} />
+                                    onChange={e => setIndex(songs.findIndex(s => s.path === e.value))} />
                             </Dialog>
                         </div>
                 }
