@@ -117,7 +117,7 @@ def check_for_update():
     def updator():
         global update
         try:
-            remote_version = get(f'{github}/version.txt', timeout=5).text
+            remote_version = get(f'{github}/MyFileServer/version.txt', timeout=5).text
             with open('./version.txt', encoding='utf-8') as file:
                 local_version = file.read()
             update['version'] = remote_version
