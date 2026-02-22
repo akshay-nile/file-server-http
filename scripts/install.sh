@@ -33,15 +33,15 @@ if [ -e "$DST" ]; then
     
         [ "$name" = "thumbnails" ] && continue
         [ "$name" = "tokens.txt" ] && continue
+        [ "$name" = ".nomedia" ] && continue
     
         rm -rf "$item"
     done
 else
     echo "Preparing fresh setup..."
+    mkdir -p "$DST"
+    touch "$DST/.nomedia"
 fi
-
-mkdir -p "$DST"
-touch "$DST/.nomedia"
 
 echo "Moving all the files..."
 mv "$SRC"/* "$DST"
