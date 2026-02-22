@@ -11,7 +11,7 @@ from requests import get, post, RequestException
 
 
 # GitHub repository (master branch) link of MyFileServer app
-github = 'https://github.com/akshay-nile/file-server-http/raw/package'
+github = 'https://github.com/akshay-nile/file-server-http/raw'
 
 is_public_ip = False
 is_mid_line_printed = False
@@ -99,7 +99,7 @@ def publish_server_address(server_address: str):
 
 def perform_app_update():
     if IS_WIN_OS:
-        admin_command = f'irm {github}/scripts/install.ps1 | iex'
+        admin_command = f'irm {github}/master/scripts/install.ps1 | iex'
         user_command = [
             'powershell.exe', '-NoProfile', '-Command',
             (
@@ -117,7 +117,7 @@ def check_for_update():
     def updator():
         global update
         try:
-            remote_version = get(f'{github}/MyFileServer/version.txt', timeout=5).text
+            remote_version = get(f'{github}/package/MyFileServer/version.txt', timeout=5).text
             with open('./version.txt', encoding='utf-8') as file:
                 local_version = file.read()
             update['version'] = remote_version
