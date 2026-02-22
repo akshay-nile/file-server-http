@@ -11,7 +11,7 @@ from requests import get, post, RequestException
 
 
 # GitHub repository (master branch) link of MyFileServer app
-github = 'https://github.com/akshay-nile/file-server-http/raw/master'
+github = 'https://github.com/akshay-nile/file-server-http/raw/package'
 
 is_public_ip = False
 is_mid_line_printed = False
@@ -117,9 +117,9 @@ def check_for_update():
     def updator():
         global update
         try:
-            remote_version = get(f'{github}/README.md', timeout=5).text.splitlines()[0].strip().split()[-1][1:]
-            with open('./README.md', encoding='utf-8') as file:
-                local_version = file.read().splitlines()[0].strip().split()[-1][1:]
+            remote_version = get(f'{github}/version.txt', timeout=5).text
+            with open('./version.txt', encoding='utf-8') as file:
+                local_version = file.read()
             update['version'] = remote_version
             update['available'] = remote_version != local_version
             if (update['available']):
