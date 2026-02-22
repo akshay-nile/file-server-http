@@ -1,32 +1,28 @@
 #!/bin/sh
 # This script automates the process of setting-up 
-# the MyFileServer for Pydroid-3 on Android phone
+# the MyFileServer for Pydroid-3 on Android device
 
-
-URL="https://github.com/akshay-nile/file-server-http/archive/refs/heads/master.zip"
+set -e
+URL="https://github.com/akshay-nile/file-server-http/archive/refs/heads/package.zip"
 
 DOWNLOAD="/storage/emulated/0/Download"
 DOCUMENT="/storage/emulated/0/Documents/Pydroid 3"
 
-ZIP="$DOWNLOAD/project.zip"
-SRC="$DOWNLOAD/file-server-http-master"
+ZIP="$DOWNLOAD/package.zip"
+SRC="$DOWNLOAD/file-server-http-package/MyFileServer"
 DST="$DOCUMENT/MyFileServer"
-
 
 echo "Pre-cleaning old junk..."
 rm -rf "$ZIP"
 rm -rf "$SRC"
 
-
-echo "Downloading project..."
+echo "Downloading package..."
 mkdir -p "$DOWNLOAD"
 curl -sL "$URL" -o "$ZIP" || exit 1
 
-
-echo "Unzipping project..."
+echo "Unzipping package..."
 cd "$DOWNLOAD" || exit 1
-unzip -oq project.zip || exit 1
-
+unzip -oq package.zip || exit 1
 
 if [ -e "$DST" ]; then
     echo "Updating existing setup..."
@@ -44,21 +40,15 @@ else
     echo "Preparing fresh setup..."
 fi
 
-mkdir -p "$DST/services"
+mkdir -p "$DST"
 touch "$DST/.nomedia"
 
-
 echo "Moving required files..."
-mv "$SRC/frontend/dist" "$DST/public"
-mv "$SRC/backend/services"/*.py "$DST/services"
-mv "$SRC/backend/server.py" "$DST"
-mv "$SRC/README.md" "$DST"
-
+mv "$SRC"/* "$DST"
 
 echo "Cleaning downloaded junk..."
 rm -rf "$ZIP"
 rm -rf "$SRC"
-
 
 echo "Setup finished successfully ✅"
 exit 0

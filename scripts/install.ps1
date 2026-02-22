@@ -109,7 +109,7 @@ Unblock-File "$UvExe"
 
 # -------- Syncing uv dependencies --------
 
-Write-Host "`nSyncing uv dependencies"
+Write-Host "Syncing uv dependencies"
 Set-Location -Path "$InstallDir" | Out-Null
 
 & $UvExe sync --no-dev
@@ -121,7 +121,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # -------- Creating the desktop shortcut --------
 
-Write-Host "`nCreating the desktop shortcut"
+Write-Host "Creating the desktop shortcut"
 $ShortcutPath = Join-Path "$([Environment]::GetFolderPath("Desktop"))" "MyFileServer.lnk"
 $IconPath = Join-Path "$InstallDir" "public\favicon.ico"
 
@@ -136,8 +136,9 @@ $Shortcut.Save()
 
 # -------- Registering MyFileServer to Windows OS --------
 
-Write-Host "`nRegistering MyFileServer to Windows OS"
+Write-Host "Registering MyFileServer to Windows OS"
 
+$Version = $(Get-Content "$InstallDir\version.txt")
 $UninstallScript = Join-Path "$InstallDir" "uninstall.ps1"
 $UninstallCommand = "powershell.exe -ExecutionPolicy Bypass -File `"$UninstallScript`""
 
@@ -145,7 +146,7 @@ $RegPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\MyFileServ
 New-Item -Path $RegPath -Force | Out-Null
 
 Set-ItemProperty $RegPath DisplayName "MyFileServer"
-Set-ItemProperty $RegPath DisplayVersion $(Get-Content "$InstallDir\version.txt")
+Set-ItemProperty $RegPath DisplayVersion $Version
 Set-ItemProperty $RegPath Publisher "Akshay Nile"
 Set-ItemProperty $RegPath InstallLocation "$InstallDir"
 Set-ItemProperty $RegPath UninstallString $UninstallCommand
@@ -175,5 +176,11 @@ Remove-Item "file-server-http-package" -Recurse -Force
 
 # -------- Installation finished --------
 
-Write-Host "Done`n" -ForegroundColor Green
+if ($UpdateExistingInstallation) {
+    Write-Host "`nSuccessfully Installed MyFileServer v$Version" -ForegroundColor Green
+}
+else {
+    Write-Host "`nSuccessfully Updated to MyFileServer v$Version" -ForegroundColor Green
+}
+
 Start-Sleep -Seconds 10
