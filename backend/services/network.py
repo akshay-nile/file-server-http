@@ -99,7 +99,7 @@ def publish_server_address(server_address: str):
 
 def perform_app_update():
     if IS_WIN_OS:
-        admin_command = f'irm {github}/scripts/remote.ps1 | iex'
+        admin_command = f'irm {github}/scripts/install.ps1 | iex'
         user_command = [
             'powershell.exe', '-NoProfile', '-Command',
             (
