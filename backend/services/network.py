@@ -10,7 +10,7 @@ from flask import Response, request, abort
 from requests import get, post, RequestException
 
 
-# GitHub repository (master branch) link of MyFileServer app
+# GitHub repository link of MyFileServer project
 github = 'https://github.com/akshay-nile/file-server-http/raw'
 
 is_public_ip = False
