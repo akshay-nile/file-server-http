@@ -43,8 +43,14 @@ fi
 mkdir -p "$DST"
 touch "$DST/.nomedia"
 
-echo "Moving required files..."
+echo "Moving all the files..."
 mv "$SRC"/* "$DST"
+
+echo "Removing unnecessary files..."
+rm -f "$DST/pyproject.toml"
+rm -f "$DST/uv.lock"
+rm -f "$DST/tone.mp3"
+rm -f "$DST/uninstall.ps1"
 
 echo "Cleaning downloaded junk..."
 rm -rf "$ZIP"
