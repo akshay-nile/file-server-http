@@ -177,10 +177,10 @@ Remove-Item "file-server-http-package" -Recurse -Force
 # -------- Installation finished --------
 
 if ($UpdateExistingInstallation) {
-    Write-Host "`nSuccessfully Installed MyFileServer v$Version" -ForegroundColor Green
+    Write-Host "`nSuccessfully Updated to MyFileServer v$Version" -ForegroundColor Green
 }
 else {
-    Write-Host "`nSuccessfully Updated to MyFileServer v$Version" -ForegroundColor Green
+    Write-Host "`nSuccessfully Installed MyFileServer v$Version" -ForegroundColor Green
 }
 
 Start-Sleep -Seconds 10
