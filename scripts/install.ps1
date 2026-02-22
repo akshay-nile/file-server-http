@@ -14,8 +14,7 @@ $IsAdmin = ([Security.Principal.WindowsPrincipal] `
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $IsAdmin) {
-    Write-Host "Administrator privilege required" -ForegroundColor Red
-    Write-Host "Please run this script as administrator" -ForegroundColor Yellow
+    Write-Host "Administrator Privilege Required" -ForegroundColor Red
     exit 1
 }
 
@@ -51,7 +50,7 @@ if (-not (Test-Path "package.zip")) {
 Write-Host "Extracting package.zip"
 Expand-Archive -Path "package.zip" -DestinationPath "."
 
-if (-not (Test-Path ".\file-server-http-package\MyFileServer")) {
+if (-not (Test-Path "$HOME\Downloads\file-server-http-package\MyFileServer")) {
     Write-Host "Extraction failed" -ForegroundColor Red
     exit 1
 }
@@ -59,13 +58,12 @@ if (-not (Test-Path ".\file-server-http-package\MyFileServer")) {
 
 # -------- Declare fixed directory paths --------
 
-$PackageDir = ".\file-server-http-package\MyFileServer"
+$PackageDir = "$HOME\Downloads\file-server-http-package\MyFileServer"
 $InstallDir = Join-Path $([Environment]::GetFolderPath("ProgramFiles")) "MyFileServer"
 
 
 # -------- Prepare installation directory --------
 
-Write-Host "`nPreparing installation directory"
 $UvExe = Join-Path "$InstallDir" "tools\uv.exe"
 $UpdateExistingInstallation = Test-Path "$UvExe"
 $IsServerAlreadyRunning = $false
@@ -91,7 +89,7 @@ if ($UpdateExistingInstallation) {
 }
 else {
     Write-Host "Preparing the fresh installation"
-    Move-Item -Path "$PackageDir" "$InstallDir" -Force | Out-Null
+    Move-Item -Path "$PackageDir" -Destination "$InstallDir" -Force | Out-Null
 
     Write-Host "Downloading uv tools"
     $env:UV_INSTALL_DIR = Join-Path "$InstallDir" "tools";
@@ -147,7 +145,7 @@ $RegPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\MyFileServ
 New-Item -Path $RegPath -Force | Out-Null
 
 Set-ItemProperty $RegPath DisplayName "MyFileServer"
-Set-ItemProperty $RegPath DisplayVersion $(Get-Content "$PackageDir\version.txt")
+Set-ItemProperty $RegPath DisplayVersion $(Get-Content "$InstallDir\version.txt")
 Set-ItemProperty $RegPath Publisher "Akshay Nile"
 Set-ItemProperty $RegPath InstallLocation "$InstallDir"
 Set-ItemProperty $RegPath UninstallString $UninstallCommand
@@ -159,8 +157,7 @@ Set-ItemProperty $RegPath NoRepair 1
 # -------- Restart the server if it is updated --------
 
 if ($IsServerAlreadyRunning) {
-    $Desktop = [Environment]::GetFolderPath("Desktop")
-    $Shortcut = Join-Path $Desktop "MyFileServer.lnk"
+    $Shortcut = "$HOME\Desktop\MyFileServer.lnk"
     if (Test-Path $Shortcut) {
         Write-Host "Starting the server again" -ForegroundColor Yellow 
         explorer.exe "$Shortcut" 
