@@ -80,6 +80,7 @@ if ($UpdateExistingInstallation) {
     }
 
     Write-Host "Updating the existing installation" -ForegroundColor Yellow
+    $SuccessMessage = "Successfully Updated to MyFileServer"
     
     Get-ChildItem -Path "$InstallDir" -Force |
     Where-Object { $_.Name -notin '.venv', 'tools' } |
@@ -89,6 +90,8 @@ if ($UpdateExistingInstallation) {
 }
 else {
     Write-Host "Preparing the fresh installation"
+    $SuccessMessage = "Successfully Installed MyFileServer"
+
     Move-Item -Path "$PackageDir" -Destination "$InstallDir" -Force | Out-Null
 
     Write-Host "Downloading uv tools"
@@ -176,11 +179,5 @@ Remove-Item "file-server-http-package" -Recurse -Force
 
 # -------- Installation finished --------
 
-if ($UpdateExistingInstallation) {
-    Write-Host "`nSuccessfully Updated to MyFileServer v$Version" -ForegroundColor Green
-}
-else {
-    Write-Host "`nSuccessfully Installed MyFileServer v$Version" -ForegroundColor Green
-}
-
-Start-Sleep -Seconds 10
+Write-Host "$SuccessMessage v$Version" -ForegroundColor Green
+Start-Sleep -Seconds 1
