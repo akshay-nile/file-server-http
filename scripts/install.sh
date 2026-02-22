@@ -9,11 +9,11 @@ DOWNLOAD="/storage/emulated/0/Download"
 DOCUMENT="/storage/emulated/0/Documents/Pydroid 3"
 
 ZIP="$DOWNLOAD/package.zip"
-SRC="$DOWNLOAD/file-server-http-package/MyFileServer"
+SRC="$DOWNLOAD/file-server-http-package"
 DST="$DOCUMENT/MyFileServer"
 
 echo "Pre-cleaning old junk..."
-rm -rf "$ZIP"
+rm -f "$ZIP"
 rm -rf "$SRC"
 
 echo "Downloading package..."
@@ -44,7 +44,7 @@ else
 fi
 
 echo "Moving all the files..."
-mv "$SRC"/* "$DST"
+mv "$SRC/MyFileServer"/* "$DST"
 
 echo "Removing unnecessary files..."
 rm -f "$DST/pyproject.toml"
@@ -53,7 +53,7 @@ rm -f "$DST/tone.mp3"
 rm -f "$DST/uninstall.ps1"
 
 echo "Cleaning downloaded junk..."
-rm -rf "$ZIP"
+rm -f "$ZIP"
 rm -rf "$SRC"
 
 echo "Setup finished successfully ✅"
