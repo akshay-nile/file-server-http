@@ -1,6 +1,6 @@
 [project]
 name = "MyFileServer"
-version = "1.6.10"
+version = "1.6.11"
 requires-python = "~=3.12.10"
 dependencies = [
     "flask~=3.1.1",

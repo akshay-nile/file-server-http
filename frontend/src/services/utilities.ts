@@ -1,5 +1,5 @@
 import type { Toast } from 'primereact/toast';
-import type { Platform, SearchInfo } from './models';
+import type { ItemsInfo, Platform, SearchInfo } from './models';
 
 // Detects Phone/Tablet devices with touch input to avoid tooltip
 const isTouchDevice = window && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -51,3 +51,5 @@ export const setToast = (toastRef: Toast) => toast = toastRef;
 export let searchInfo: SearchInfo | null = null;
 export function setSearchInfo(info: SearchInfo) { searchInfo = info; }
 export function clearSearchInfo() { searchInfo = null; }
+
+export const itemsCache: Map<string, ItemsInfo> = new Map<string, ItemsInfo>();

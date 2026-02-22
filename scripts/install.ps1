@@ -177,7 +177,7 @@ Remove-Item "package.zip" -Recurse -Force
 Remove-Item "file-server-http-package" -Recurse -Force
 
 
-# -------- Installation finished --------
+# -------- Installation/Update finished --------
 
 Write-Host "$SuccessMessage v$Version" -ForegroundColor Green
 Start-Sleep -Seconds 1
