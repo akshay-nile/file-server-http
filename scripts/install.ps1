@@ -20,7 +20,7 @@ if (-not $IsAdmin) {
 }
 
 
-# -------- Remove old junk if any --------
+# -------- Remove the old junk if any --------
 
 Set-Location -Path "$HOME\Downloads" | Out-Null
 
@@ -32,7 +32,7 @@ if (Test-Path "file-server-http-package") {
 }
 
 
-# -------- Download the project.zip --------
+# -------- Download the package.zip --------
 
 Write-Host "Downloading package.zip"
 Invoke-WebRequest `
@@ -46,7 +46,7 @@ if (-not (Test-Path "package.zip")) {
 }
 
 
-# -------- Extract the project.zip --------
+# -------- Extract the package.zip --------
 
 Write-Host "Extracting package.zip"
 Expand-Archive -Path "package.zip" -DestinationPath "."
@@ -66,7 +66,8 @@ $InstallDir = Join-Path $([Environment]::GetFolderPath("ProgramFiles")) "MyFileS
 # -------- Prepare installation directory --------
 
 Write-Host "`nPreparing installation directory"
-$UpdateExistingInstallation = Test-Path "$InstallDir"
+$UvExe = Join-Path "$InstallDir" "tools\uv.exe"
+$UpdateExistingInstallation = Test-Path "$UvExe"
 $IsServerAlreadyRunning = $false
 
 if ($UpdateExistingInstallation) {
@@ -101,7 +102,6 @@ else {
 
 # -------- Verify and unblock tools/uv.exe --------
 
-$UvExe = Join-Path "$InstallDir" "tools\uv.exe"
 if (-not (Test-Path "$UvExe")) {
     Write-Host "Downloading tools failed" -ForegroundColor Red
     exit 1
@@ -147,7 +147,7 @@ $RegPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\MyFileServ
 New-Item -Path $RegPath -Force | Out-Null
 
 Set-ItemProperty $RegPath DisplayName "MyFileServer"
-Set-ItemProperty $RegPath DisplayVersion (Get-Content "$PackageDir\version.txt")
+Set-ItemProperty $RegPath DisplayVersion $(Get-Content "$PackageDir\version.txt")
 Set-ItemProperty $RegPath Publisher "Akshay Nile"
 Set-ItemProperty $RegPath InstallLocation "$InstallDir"
 Set-ItemProperty $RegPath UninstallString $UninstallCommand
