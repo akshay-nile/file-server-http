@@ -1,0 +1,65 @@
+import os
+import random
+import string
+
+from functools import wraps
+from services.environment import APPDATA_ROAMING, IS_WIN_OS
+
+from flask import abort, request
+
+
+# File location to store authentication tokens
+TOKENS_FILE = APPDATA_ROAMING + '/tokens.txt'
+
+tokens: set[str] = set()
+token: str | None = None
+
+
+if os.path.isfile(TOKENS_FILE):
+    with open(TOKENS_FILE, 'rt') as file:
+        lines = file.read().split('\n')
+        striped = map(lambda b: b.strip(), lines)
+        filtered = filter(lambda b: len(b) == 4, striped)
+        tokens = set(filtered)
+else:
+    open(TOKENS_FILE, 'wt').close()
+
+
+def generate_unique_token() -> str:
+    global token
+    if token is None:
+        chars = string.ascii_uppercase + string.digits
+        token = ''.join(random.choices(chars, k=4))
+    return token
+
+
+def play_notification_tone():
+    if IS_WIN_OS:
+        from playsound3 import playsound
+        try:
+            playsound('tone.mp3', False)
+        except Exception:
+            pass
+
+
+def verify_user_token(user_token: str) -> bool:
+    global token
+    if token and user_token == token:
+        tokens.add(token)
+        with open(TOKENS_FILE, 'wt') as file:
+            file.write('\n'.join(tokens))
+        token = None
+        return True
+    return False
+
+
+def require_authentication(f):
+    @wraps(f)
+    def authenticate(*args, **kwargs):
+        token = request.cookies.get('token')
+
+        if not token or token not in tokens:
+            abort(401, description=f'Invalid Token: {token}')
+
+        return f(*args, **kwargs)
+    return authenticate
