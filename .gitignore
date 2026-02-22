@@ -2,6 +2,7 @@
 # Frontend (React-JS with vite)
 /frontend/node_modules/
 /frontend/npm-debug.log*
+/frontend/dist
 
 # IDE and OS clutter
 /frontend/.env
