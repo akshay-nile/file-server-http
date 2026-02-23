@@ -157,20 +157,21 @@ function BottomPanel() {
         const accept = async () => {
             setStatus('deleting');
             const response = await modifyItems('delete', itemsToDelete);
-            if (response && response.count === itemsToDelete.length) toast.show({
+            if (!('deleted' in response)) throw Error(JSON.stringify(response));
+            if (response.deleted.length === itemsToDelete.length) toast.show({
                 severity: 'success', summary: 'Deleted',
-                detail: response.count + ' item(s) has been deleted.'
+                detail: response.deleted.length + ' item(s) has been deleted.'
             });
             else toast.show({
                 severity: 'error', summary: 'Deletion Failed',
-                detail: response.count + ' item(s) were deleted.'
+                detail: "Some item(s) couldn't deleted."
             });
+            if (searchInfo && searchInfo.filteredItems) {
+                searchInfo.filteredItems.folders = searchInfo.filteredItems.folders.filter(f => !response.deleted.includes(f.path));
+                searchInfo.filteredItems.files = searchInfo.filteredItems.files.filter(f => !response.deleted.includes(f.path));
+            }
             setStatus('none');
             clearSelection();
-            if (searchInfo && searchInfo.filteredItems) {
-                searchInfo.filteredItems.folders = searchInfo.filteredItems.folders.filter(f => !itemsToDelete.includes(f.path));
-                searchInfo.filteredItems.files = searchInfo.filteredItems.files.filter(f => !itemsToDelete.includes(f.path));
-            }
             explore(path, false);
         };
         confirmDialog({
@@ -189,14 +190,21 @@ function BottomPanel() {
             setDialogInfo(null);
             setStatus('renaming');
             const response = await modifyItems('rename', [itemToRename.path, path + '/' + name]);
-            if (response && response.count === 1) {
+            if (!('renamed' in response)) throw Error(JSON.stringify(response));
+            if (response.renamed !== null) {
                 toast.show({ severity: 'success', summary: 'Renamed', detail: 'Item renamed to ' + name });
                 if (searchInfo && searchInfo.filteredItems) {
-                    const itemRenamed = [...searchInfo.filteredItems.folders, ...searchInfo.filteredItems.files].find(f => f.path === itemToRename.path);
-                    if (itemRenamed) itemRenamed.name = name;
+                    const renamedItem = [...searchInfo.filteredItems.folders, ...searchInfo.filteredItems.files].find(f => f.path === itemToRename.path);
+                    if (renamedItem) {
+                        renamedItem.name = name;
+                        renamedItem.path = response.renamed;
+                    }
                 }
             }
-            else toast.show({ severity: 'error', summary: 'Renaming Failed', detail: itemToRename.name + ' could not be renamed.' });
+            else toast.show({
+                severity: 'error', summary: 'Renaming Failed',
+                detail: itemToRename.name + ' could not be renamed.'
+            });
             setStatus('none');
             clearSelection();
             explore(path, false);

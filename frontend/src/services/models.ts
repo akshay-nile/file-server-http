@@ -97,3 +97,5 @@ export interface SearchInfo {
 }
 
 export type MusicPlayerData = { songs: FileInfo[], index: number };
+
+export type ModifyResponse = { deleted: string[] } | { renamed: string | null } | { unknown: string };

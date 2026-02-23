@@ -1,9 +1,10 @@
 # -------- DESCRIPTION --------
-# This script automates the process of installing the MyFileServer
-# remotely by downloading the project build from GitHub repository
-# and then install or update the MyFileServer in Windows PC.
 
-# The command to execute this script remotely in PowerShell as Administrator
+# This script automates the process of installing the MyFileServer
+# by downloading the project build from GitHub repository (package branch)
+# and using the downloaded package to install or update the MyFileServer in Windows PC.
+
+# Command to execute this script in PowerShell terminal
 # Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -c irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/install.ps1 | iex"
 
 

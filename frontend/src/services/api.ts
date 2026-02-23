@@ -1,4 +1,4 @@
-import type { ErrorDetail, HomeInfo, ItemsInfo, Thumbnail } from './models';
+import type { ErrorDetail, HomeInfo, ItemsInfo, ModifyResponse, Thumbnail } from './models';
 import { getSettings, getShortcuts } from './settings';
 
 type Navigator = (to: string, option?: { state: ErrorDetail }) => void;
@@ -54,7 +54,7 @@ export async function uploadFile(file: File): Promise<{ status: 'uploaded' | 'fa
     return await tryToFetch('/upload', { method: 'POST', body: body });
 }
 
-export async function modifyItems(action: 'delete' | 'rename', items: Array<string>): Promise<{ count: number }> {
+export async function modifyItems(action: 'delete' | 'rename', items: Array<string>): Promise<ModifyResponse> {
     return await tryToFetch('/modify/' + action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

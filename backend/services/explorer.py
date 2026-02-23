@@ -3,50 +3,21 @@ import shutil
 import ctypes
 
 from shutil import disk_usage
-from mimetypes import guess_type
 from stat import FILE_ATTRIBUTE_HIDDEN
 
 from services.thumbnails import get_cached_thumbnail
-from services.environment import IS_DEV_ENV, IS_WIN_OS, PROTECTED_PATHS, USER_HOME, HOST_NAME
+from services.environment import IS_WIN_OS, USER_HOME, HOST_NAME
+from services.utilities import joiner, is_protected_path, get_mime_type
 
 from flask import request
 from pyperclip import paste, PyperclipException
 
 
-# To hold the app update info
+# To hold the app update information
 update = {'version': None, 'available': False}
 
 # To cache folder-path and their calculated size
 total_size_cache: dict[str, int] = dict()
-
-
-# To ensure that '//' do not appear in any path
-def joiner(path: str, item_name: str) -> str:
-    while path.endswith('/'):
-        path = path[:-1]
-    return f'{path}/{item_name}'
-
-
-# To represent Internal Storage as IS: in Pydroid-3
-def format_path(path: str) -> str:
-    return path if IS_WIN_OS else path.replace(USER_HOME, 'IS:')
-
-
-# To check if any item belongs to protected paths
-def is_protected_path(path: str) -> bool:
-    return any((path.startswith(p) for p in PROTECTED_PATHS))
-
-
-# To check if any resource exists in public folder or not
-def is_public_resource(resource: str) -> bool:
-    return not IS_DEV_ENV and os.path.isfile('./public/' + resource)
-
-
-# To take or release the screen lock for the main server thread
-def keep_screen_awake(lock: bool):
-    if IS_WIN_OS:
-        state = 0x80000003 if lock else 0x80000000
-        ctypes.windll.kernel32.SetThreadExecutionState(state)
 
 
 # Keeps only the existing shortcuts with updated items info
@@ -126,6 +97,7 @@ def get_drive_label(drive_letter: str) -> str:
     return f"{drive_letter}:"
 
 
+# To check if any item has hidden attribute
 def is_item_hidden(item_path: str, item_name: str) -> bool:
     try:
         marked_hidden = item_name != '' and item_name[0] in '.$'
@@ -287,76 +259,36 @@ def get_items_info(path: str):
     return folders, files
 
 
-def delete_items(items: list[str]) -> int:
-    delete_count = 0
+# To permanently delete all the given items
+def delete_items(items: list[str]) -> list[str]:
+    deleted_items: list[str] = []
     for item in items:
         try:
             if is_protected_path(item):
-                raise PermissionError
+                continue
             if os.path.isdir(item):
                 shutil.rmtree(item)
+                deleted_items.append(item)
             elif os.path.isfile(item):
                 os.remove(item)
+                deleted_items.append(item)
             else:
                 print('Invalid Delete:', item)
                 continue
-            delete_count += 1
         except PermissionError:
+            print('Access Denied:', item)
             continue
-    return delete_count
+    return deleted_items
 
 
-def rename_item(old_item: str, new_item: str) -> int:
+# To rename old_item name to new_item name
+def rename_item(old_item: str, new_item: str) -> str | None:
     try:
         if is_protected_path(old_item) or os.path.exists(new_item):
             raise PermissionError
         if os.path.exists(old_item):
             os.rename(old_item, new_item)
     except PermissionError:
-        return 0
-    return 1
-
-
-def get_mime_type(file_path: str) -> str:
-    guess = guess_type(file_path)[0]
-
-    # Return most generic mime-type from the guessed ones
-    if guess is not None:
-        if guess.startswith('text/'):
-            return 'text/plain'
-        if guess.startswith('audio/'):
-            return 'audio/mpeg'
-        if guess.startswith('video/'):
-            return 'video/mp4'
-        if guess.startswith('image/'):
-            return guess
-        if guess.startswith('application/'):
-            return guess
-
-    # Return most generic mime-type from custom file extention map
-    if file_path.count('.') > 0:
-        extention = file_path.split('.')[-1].lower()
-
-        audio_extentions = {'flac', 'm4a'}
-        image_extentions = {'heic', 'heif'}
-        video_extentions = {'mkv', 'webm', 'avi', 'mov'}
-        text_extentions = {
-            'cfg', 'ini', 'env', 'log', 'md', 'yaml', 'yml', 'toml',
-            'sql', 'properties', 'lock', 'rs', 'go', 'dart',
-            'ts', 'tsx', 'jsx', 'vue', 'cjs', 'cmd', 'ps1',
-            'docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp',
-            'db', 'sqlite', 'sqlite3', 'pkl', 'dat',
-            'cer', 'crt', 'pem', 'key', 'ics', 'vcf'
-        }
-
-        if extention in text_extentions:
-            return 'text/plain'
-        if extention in image_extentions:
-            return 'image/jpeg'
-        if extention in audio_extentions:
-            return 'audio/mpeg'
-        if extention in video_extentions:
-            return 'video/mp4'
-
-    # Fallback to download if not possible to stream the file
-    return 'application/octet-stream'
+        print('Access Denied:', old_item)
+        return None
+    return new_item

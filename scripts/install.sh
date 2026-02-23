@@ -1,6 +1,11 @@
 #!/bin/sh
+
 # This script automates the process of setting-up 
 # the MyFileServer for Pydroid-3 on Android device
+
+# Command to execute this script in Pydroid-3 terminal
+# curl -sSL https://github.com/akshay-nile/file-server-http/raw/master/scripts/install.sh | sh
+
 
 set -e
 URL="https://github.com/akshay-nile/file-server-http/archive/refs/heads/package.zip"

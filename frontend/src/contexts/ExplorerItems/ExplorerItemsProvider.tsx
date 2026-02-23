@@ -41,7 +41,7 @@ function ExplorerItemsProvider({ children }: Props) {
                 setHome(data);
             } else {
                 const cachedInfo = itemsCache.get(newPath); // Load the cached items info temporarily if available
-                if (cachedInfo) {
+                if (cachedInfo && pushHistory) {
                     setItems(cachedInfo);
                     setLoading(false);
                 }

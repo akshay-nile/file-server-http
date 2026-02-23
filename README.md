@@ -38,6 +38,7 @@ graph LR
         network[network.py]
         environment[environment.py]
         thumbnails[thumbnails.py]
+        utilities[utilities.py]
     end
 
     server --> init
@@ -47,6 +48,7 @@ graph LR
     server --> environment
     server --> network
     server --> validator
+    server --> utilities
 
     init --> environment
 
@@ -54,13 +56,16 @@ graph LR
 
     explorer --> environment
     explorer --> thumbnails
+    explorer --> utilities
 
     thumbnails --> environment
 
     network --> environment
     network --> explorer
 
-    validator --> explorer
+    validator --> utilities
+
+    utilities --> environment
 ```
 
 

@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      '^/(thumbnail|thumbnails|explore|open|upload|authenticate|total)': {
+      '^/(thumbnail|thumbnails|explore|open|upload|authenticate|total|modify)': {
         target: 'http://localhost:5000',
         changeOrigin: true
       }

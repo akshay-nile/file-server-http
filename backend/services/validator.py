@@ -1,10 +1,9 @@
 import os
 
 from functools import wraps
-from pydoc import describe
 from urllib.parse import unquote
 
-from services.explorer import is_protected_path, format_path
+from services.utilities import is_protected_path, format_path
 
 from flask import request, abort
 

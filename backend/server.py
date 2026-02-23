@@ -3,8 +3,9 @@ from services.validator import validate_path
 from services.environment import USER_DOWNLOADS
 from services.network import get_stream_or_download_response
 from services.thumbnails import get_generated_thumbnail, THUMBNAILS_DIR
+from services.utilities import is_public_resource, format_path, keep_screen_awake
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
-from services.explorer import delete_items, is_public_resource, rename_item, format_path, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size, keep_screen_awake
+from services.explorer import delete_items, rename_item, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 
 from flask import Flask, jsonify, make_response, send_from_directory, request
 from werkzeug.exceptions import HTTPException
@@ -86,12 +87,12 @@ def modify_items(action: str):
     if action == 'delete':
         print('Delete - ', end='')
         print(*map(format_path, items), sep='\nDelete - ')
-        return jsonify({'count': delete_items(items)})
+        return jsonify({'deleted': delete_items(items)})
     if action == 'rename':
         print('Rename (old) -', format_path(items[0]))
         print('Rename (new) -', format_path(items[1]))
-        return jsonify({'count': rename_item(*items)})
-    return jsonify({'count': 0})
+        return jsonify({'renamed': rename_item(*items)})
+    return jsonify({'unknown': action})
 
 
 # To get the total size in bytes of all the given folders
