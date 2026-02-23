@@ -19,8 +19,13 @@ def format_path(path: str) -> str:
 
 
 # To check if any item belongs to protected paths
-def is_protected_path(path: str) -> bool:
+def is_child_of_protected_path(path: str) -> bool:
     return any((path.startswith(p) for p in PROTECTED_PATHS))
+
+
+# To check if any item belongs to protected paths
+def is_parent_of_protected_path(path: str) -> bool:
+    return any((p.startswith(path) for p in PROTECTED_PATHS))
 
 
 # To check if any resource exists in public folder or not

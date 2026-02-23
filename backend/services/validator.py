@@ -3,7 +3,7 @@ import os
 from functools import wraps
 from urllib.parse import unquote
 
-from services.utilities import is_protected_path, format_path
+from services.utilities import is_child_of_protected_path, format_path
 
 from flask import request, abort
 
@@ -23,7 +23,7 @@ def validate_path(path_type: str):
                 kwargs['path'] = path
                 return func(*args, **kwargs)
 
-            elif is_protected_path(path):
+            elif is_child_of_protected_path(path):
                 abort(403, description=f"Protected Path: '{format_path(path)}'")
 
             elif path_type == 'item':

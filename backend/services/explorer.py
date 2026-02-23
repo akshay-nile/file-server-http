@@ -7,7 +7,7 @@ from stat import FILE_ATTRIBUTE_HIDDEN
 
 from services.thumbnails import get_cached_thumbnail
 from services.environment import IS_WIN_OS, USER_HOME, HOST_NAME
-from services.utilities import joiner, is_protected_path, get_mime_type
+from services.utilities import joiner, is_child_of_protected_path, is_parent_of_protected_path, get_mime_type
 
 from flask import request
 from pyperclip import paste, PyperclipException
@@ -153,7 +153,7 @@ def deep_search(query: str, root: str):
         for item in folders + files:
             if query in item.lower():
                 item_path = joiner(path.replace("\\", "/"), item)
-                if not is_protected_path(item_path):
+                if not is_child_of_protected_path(item_path):
                     yield item_path
 
 
@@ -261,17 +261,25 @@ def get_items_info(path: str):
 
 # To permanently delete all the given items
 def delete_items(items: list[str]) -> list[str]:
+    items.sort(key=len)
     deleted_items: list[str] = []
     for item in items:
         try:
-            if is_protected_path(item):
+            # skip item if it's either parent or child of any of the protected paths
+            if is_child_of_protected_path(item) or is_parent_of_protected_path(item):
                 continue
+            # skip item if its parent folder is already deleted
+            if any((item.startswith(d) for d in deleted_items)):
+                continue
+            # deleting the folder item
             if os.path.isdir(item):
                 shutil.rmtree(item)
                 deleted_items.append(item)
+            # deleting the file item
             elif os.path.isfile(item):
                 os.remove(item)
                 deleted_items.append(item)
+            # item does not exist
             else:
                 print('Invalid Delete:', item)
                 continue
@@ -284,11 +292,12 @@ def delete_items(items: list[str]) -> list[str]:
 # To rename old_item name to new_item name
 def rename_item(old_item: str, new_item: str) -> str | None:
     try:
-        if is_protected_path(old_item) or os.path.exists(new_item):
+        # cannot rename a child item of any of the protected paths
+        if is_child_of_protected_path(old_item) or os.path.exists(new_item):
             raise PermissionError
         if os.path.exists(old_item):
             os.rename(old_item, new_item)
+            return new_item
     except PermissionError:
         print('Access Denied:', old_item)
-        return None
-    return new_item
+    return None
