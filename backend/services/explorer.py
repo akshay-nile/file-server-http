@@ -2,10 +2,11 @@ import os
 import shutil
 import ctypes
 
+from threading import Thread
 from shutil import disk_usage
 from stat import FILE_ATTRIBUTE_HIDDEN
 
-from services.thumbnails import get_cached_thumbnail
+from services.thumbnails import get_cached_thumbnail, get_generated_thumbnail
 from services.environment import IS_WIN_OS, USER_HOME, HOST_NAME
 from services.utilities import joiner, is_child_of_protected_path, is_parent_of_protected_path, get_mime_type
 
@@ -255,6 +256,11 @@ def get_items_info(path: str):
     else:
         folders.sort(key=lambda x: x[sort_by], reverse=reverse)
         files.sort(key=lambda x: x[sort_by], reverse=reverse)
+
+    # Launch a saperate thread to start generating missing thumbnails
+    missing = [file['path'] for file in files if file['thumbnail'] is None]
+    if len(missing) > 0:
+        Thread(target=lambda: [get_generated_thumbnail(p) for p in missing]).start()
 
     return folders, files
 

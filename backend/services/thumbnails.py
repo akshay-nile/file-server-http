@@ -16,6 +16,9 @@ from mutagen.id3._frames import APIC
 THUMBNAILS_DIR = APPDATA_LOCAL + '/thumbnails'
 os.makedirs(THUMBNAILS_DIR, exist_ok=True)
 
+# Load in-memory thumbnails cache for faster access
+thumbnails = set(os.listdir(THUMBNAILS_DIR))
+
 # Remove moviepy/ffmpeg verbose output from server console
 filterwarnings('ignore', category=UserWarning, module='moviepy')
 
@@ -27,7 +30,7 @@ def get_cached_thumbnail(filepath: str) -> str | None:
     thumbnail = f'/thumbnails/{quote(filename, safe='')}.png'
 
     # If thumbnail exists then return the url-encoded thumbnail path
-    if os.path.isfile(thumbpath):
+    if thumbpath in thumbnails or os.path.isfile(thumbpath):
         return thumbnail
 
     # If thumbnail doesn't exists in cache
@@ -40,22 +43,29 @@ def get_generated_thumbnail(filepath: str) -> str | None:
     thumbpath = f'{THUMBNAILS_DIR}/{filename}.png'
     thumbnail = f'/thumbnails/{quote(filename, safe='')}.png'
 
+    # Check if thumbpath exists in in-memory cache
+    if thumbpath in thumbnails:
+        return thumbnail
+
     # Extract the file extention
     extention = filename.split('.')[-1].lower()
 
     # Supported image extentions
     if extention in ('jpg', 'jpeg', 'png', 'ico', 'bmp', 'gif', 'webp'):
         if generate_image_thumbnail(filepath, thumbpath):
+            thumbnails.add(thumbpath)
             return thumbnail
 
     # Supported audio extentions
     if extention in ('mp3', 'flac', 'wav'):
         if generate_audio_thumbnail(filepath, thumbpath, extention):
+            thumbnails.add(thumbpath)
             return thumbnail
 
     # Supported video extensions (only on Windows platform)
     if extention in ('mp4', 'mkv', 'avi', 'mov', 'webm', '3gp') and IS_WIN_OS:
         if generate_video_thumbnail(filepath, thumbpath):
+            thumbnails.add(thumbpath)
             return thumbnail
 
     # Thumbnail not generated either due to error or unsupported format/platform
