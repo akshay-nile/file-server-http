@@ -21,8 +21,7 @@ function Items() {
                 if (file.thumbnail || !canGenerateThumbnail(file.name, home.device.platform)) continue;
 
                 const data = await getThumbanil(file.path);
-                if (data === null) return;
-                if (!data.thumbnail) continue;
+                if (data === null || !data.thumbnail) continue;
 
                 setFiles(prevFiles => {
                     const prevFile = prevFiles.find(file => file.path === data.filepath);
