@@ -10,10 +10,10 @@ import FolderItem from './FolderItem';
 
 function Items() {
     const { home, items } = useExplorerItems();
-    const [files, setFiles] = useState<FileInfo[]>([...items.files]);
+    const [files, setFiles] = useState<FileInfo[]>(items.files);
 
     useEffect(() => {
-        setFiles([...items.files]);
+        setFiles(items.files);
         let isMounted = true;
 
         (async () => {
