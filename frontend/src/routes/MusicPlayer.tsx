@@ -69,7 +69,7 @@ function MusicPlayer() {
                                     <span className='text-lg leading-5.5 font-semibold min-w-0 break-words'>
                                         {songs[index].name.substring(0, songs[index].name.lastIndexOf('.'))}
                                     </span>
-                                    <div className='flex justify-between text-[13px] tracking-wider ml-0.25 me-1'>
+                                    <div className='flex justify-between text-[13px] tracking-wider ml-0.25'>
                                         <span>Size {formatSize(songs[index].size)}</span>
                                         <span>{index + 1} of {songs.length} Songs</span>
                                     </div>
