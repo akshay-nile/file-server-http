@@ -96,6 +96,7 @@ export interface SearchInfo {
     filteredItems: ItemsInfo | null;
 }
 
-export type MusicPlayerData = { songs: FileInfo[], index: number };
+export type Song = { name: string, path: string, size: number, thumbnail: string | null };
+export type MusicPlayerData = { songs: Song[], index: number };
 
 export type ModifyResponse = { deleted: string[] } | { renamed: string | null } | { unknown: string };

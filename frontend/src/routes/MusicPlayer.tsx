@@ -4,30 +4,30 @@ import { ListBox } from 'primereact/listbox';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
 import { getFileURL } from '../services/api';
-import type { FileInfo } from '../services/models';
+import type { Song } from '../services/models';
 import { getMusicPlayerData } from '../services/settings';
 import { formatSize } from '../services/utilities';
 
 function MusicPlayer() {
-    const [songs, setSongs] = useState<FileInfo[]>([]);
+    const [songs, setSongs] = useState<Song[]>([]);
     const [index, setIndex] = useState<number>(-1);
     const [playing, setPlaying] = useState<boolean>(false);
     const [showList, setShowList] = useState<boolean>(false);
 
     useEffect(() => {
-        const loadMusicData = () => {
+        const loadMusicPlayerData = () => {
             const data = getMusicPlayerData();
             if (!data) return;
             setSongs(data.songs);
             setIndex(data.index);
         };
-        loadMusicData();
+        loadMusicPlayerData();
         const channel = new BroadcastChannel('music_channel');
-        channel.onmessage = loadMusicData;
+        channel.onmessage = loadMusicPlayerData;
         return () => channel.close();
     }, []);
 
-    function getItemTemplate(song: FileInfo) {
+    function getItemTemplate(song: Song) {
         return (
             <div className='flex items-center gap-2'>
                 <img src={song.thumbnail ?? '/icons/album.png'} width='40px' height='40px' className='shadow rounded-[4px]' />
@@ -65,12 +65,13 @@ function MusicPlayer() {
                                 <img width='70px' height='70px' src={songs[index].thumbnail ?? '/icons/album.png'}
                                     className={`shadow ${playing ? 'rounded-full animate-[spin_3s_linear_infinite]' : 'rounded-[8px]'}`} />
 
-                                <div className='flex flex-col gap-1 group cursor-pointer'>
+                                <div className=' w-full flex flex-col gap-1 group cursor-pointer'>
                                     <span className='text-lg leading-5.5 font-semibold min-w-0 break-words'>
                                         {songs[index].name.substring(0, songs[index].name.lastIndexOf('.'))}
                                     </span>
-                                    <div className='flex text-[13px] tracking-wider ml-0.25'>
+                                    <div className='flex justify-between text-[13px] tracking-wider ml-0.25 me-1'>
                                         <span>Size {formatSize(songs[index].size)}</span>
+                                        <span>Song {index} of {songs.length} Songs</span>
                                     </div>
                                 </div>
                             </div>

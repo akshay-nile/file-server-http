@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import { getThumbanil } from '../services/api';
-import type { FileInfo } from '../services/models';
+import type { FileInfo, MusicPlayerData, Song } from '../services/models';
 import { setMusicPlayerData } from '../services/settings';
 import { canGenerateThumbnail } from '../services/utilities';
 import EmptyFolder from './EmptyFolder';
@@ -37,9 +37,10 @@ function Items() {
     }, [items.files, home.device.platform]);
 
     function onMusicPlay(file: FileInfo) {
-        const songs = files.filter(f => f.mimetype.startsWith('audio'));
+        const toSong = (f: FileInfo) => ({ name: f.name, path: f.path, size: f.size, thumbnail: f.thumbnail }) as Song;
+        const songs: Song[] = files.filter(f => f.mimetype.startsWith('audio')).map(toSong);
         const index = songs.findIndex(s => s.path === file.path);
-        setMusicPlayerData({ songs, index });
+        setMusicPlayerData({ songs, index } as MusicPlayerData);
         window.open('/music-player', 'music-player');
         const channel = new BroadcastChannel('music_channel');
         channel.postMessage(null);  // Send signal to reload music data in already opened tab
