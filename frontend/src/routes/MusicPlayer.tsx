@@ -71,7 +71,7 @@ function MusicPlayer() {
                                     </span>
                                     <div className='flex justify-between text-[13px] tracking-wider ml-0.25 me-1'>
                                         <span>Size {formatSize(songs[index].size)}</span>
-                                        <span>Song {index} of {songs.length} Songs</span>
+                                        <span>{index + 1} of {songs.length} Songs</span>
                                     </div>
                                 </div>
                             </div>
