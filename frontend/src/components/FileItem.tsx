@@ -1,16 +1,26 @@
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
-import { formatSize, getTooltip, toast } from '../services/utilities';
+import { formatSize, getCachedThumbnail, getTooltip, toast } from '../services/utilities';
 
 type Props = { file: FileInfo, selectable: boolean, onMusicPlay?: (file: FileInfo) => void };
 
 function FileItem({ file, selectable = true, onMusicPlay }: Props) {
-    const [downloading, setDownloading] = useState<boolean>(false);
     const { toggleFileSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
+
+    const [downloading, setDownloading] = useState<boolean>(false);
+    const [thumbnail, setThumbnail] = useState<string | null>(file.thumbnail);
+
+    useEffect(() => {
+        (async () => {
+            if (file.thumbnail && file.thumbnail.startsWith('/thumbnails/')) {
+                setThumbnail(await getCachedThumbnail(file.thumbnail));
+            }
+        })();
+    }, [file.thumbnail]);
 
     function getExtention(name: string): string {
         if (!name.includes('.')) return '';
@@ -19,7 +29,7 @@ function FileItem({ file, selectable = true, onMusicPlay }: Props) {
 
     function shouldShowCSSThumbnail(name: string): boolean {
         const extention = getExtention(name);
-        return !file.thumbnail && extention.length > 0 && extention.length <= 4;
+        return !thumbnail && extention.length > 0 && extention.length <= 4;
     }
 
     function getFontSize(name: string): string {
@@ -56,7 +66,7 @@ function FileItem({ file, selectable = true, onMusicPlay }: Props) {
                         ? <div className={`w-full h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide ${getFontSize(file.name)}`}>
                             {getExtention(file.name)}
                         </div>
-                        : <img src={file.thumbnail ?? '/icons/file.jpg'} className='w-full h-full object-contain object-center rounded-[5px]' />
+                        : <img src={thumbnail ?? '/icons/file.jpg'} className='w-full h-full object-contain object-center rounded-[5px]' />
                 }
             </div>
 

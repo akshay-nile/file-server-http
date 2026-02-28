@@ -53,3 +53,59 @@ export function setSearchInfo(info: SearchInfo) { searchInfo = info; }
 export function clearSearchInfo() { searchInfo = null; }
 
 export const itemsCache: Map<string, ItemsInfo> = new Map<string, ItemsInfo>();
+
+
+// Multi-layer thumbnail caching (In-Memory -> IndexedDB -> Server)
+
+const thumbnailsMap: Map<string, string> = new Map<string, string>();
+
+const thumbnailsDB = await new Promise<IDBDatabase>((resolve, reject) => {
+    const openRequest = indexedDB.open('ThumbnailsDB', 1);
+    openRequest.onupgradeneeded = () => {
+        if (!openRequest.result.objectStoreNames.contains('thumbnails')) {
+            openRequest.result.createObjectStore('thumbnails', { keyPath: 'url' });
+        }
+    };
+    openRequest.onsuccess = () => resolve(openRequest.result);
+    openRequest.onerror = () => reject(openRequest.error);
+});
+
+async function getThumbnailBlobFromDB(url: string): Promise<Blob> {
+    const store = thumbnailsDB.transaction('thumbnails', 'readonly').objectStore('thumbnails');
+    return await new Promise((resolve, reject) => {
+        const getRequest = store.get(url);
+        getRequest.onsuccess = () => resolve(getRequest.result ? getRequest.result.blob : null);
+        getRequest.onerror = () => reject(null);
+    });
+}
+
+async function putThumbnailBlobIntoDB(url: string, blob: Blob) {
+    const store = thumbnailsDB.transaction('thumbnails', 'readwrite').objectStore('thumbnails');
+    return await new Promise((resolve, reject) => {
+        const putRequest = store.put({ url, blob });
+        putRequest.onsuccess = () => resolve(putRequest.result);
+        putRequest.onerror = () => reject(null);
+    });
+}
+
+export async function getCachedThumbnail(url: string): Promise<string> {
+    // Try to get from In-Memory Map (Caching Layer 1)
+    let blobUrl = thumbnailsMap.get(url);
+    if (blobUrl) return blobUrl;
+
+    // Try to get from Indexed-DB (Caching Layer 2)
+    let blob = await getThumbnailBlobFromDB(url);
+
+    // Try to fetch from the Server (Caching Layer 3)
+    if (blob === null) {
+        const response = await fetch(url);
+        if (!response.ok) return url; // When server fetch fails
+        blob = await response.blob();
+        await putThumbnailBlobIntoDB(url, blob);  // Store in Indexed-DB
+    }
+
+    // Create blobUrl, put in Map, and then return it
+    blobUrl = URL.createObjectURL(blob);
+    thumbnailsMap.set(url, blobUrl);
+    return blobUrl;
+}

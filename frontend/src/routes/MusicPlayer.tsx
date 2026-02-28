@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { getFileURL } from '../services/api';
 import type { Song } from '../services/models';
 import { getMusicPlayerData } from '../services/settings';
-import { formatSize } from '../services/utilities';
+import { formatSize, getCachedThumbnail } from '../services/utilities';
 
 function MusicPlayer() {
     const [songs, setSongs] = useState<Song[]>([]);
@@ -18,8 +18,15 @@ function MusicPlayer() {
         const loadMusicPlayerData = () => {
             const data = getMusicPlayerData();
             if (!data) return;
-            setSongs(data.songs);
-            setIndex(data.index);
+            (async () => {
+                for (const song of data.songs) {
+                    if (song.thumbnail && song.thumbnail.startsWith('/thumbnails/')) {
+                        song.thumbnail = await getCachedThumbnail(song.thumbnail);
+                    }
+                }
+                setSongs(data.songs);
+                setIndex(data.index);
+            })();
         };
         loadMusicPlayerData();
         const channel = new BroadcastChannel('music_channel');
