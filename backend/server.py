@@ -89,8 +89,8 @@ def modify_items(action: str):
         log(*map(format_path, items), sep='\nDelete - ', color='R')
         return jsonify({'deleted': delete_items(items)})
     if action == 'rename':
-        log('Rename (old) -', format_path(items[0]), color='B')
-        log('Rename (new) -', format_path(items[1]), color='B')
+        log('Rename (old) -', format_path(items[0]), color='R')
+        log('Rename (new) -', format_path(items[1]), color='G')
         return jsonify({'renamed': rename_item(*items)})
     return jsonify({'unknown': action})
 
