@@ -32,7 +32,7 @@ def get_local_ip():
         sock.connect(('8.8.8.8', 80))
         ip = sock.getsockname()[0]
         if not ip.startswith('192.168.'):
-            log('Not connected to WiFi', 'R')
+            log('Not connected to WiFi', color='R')
     except OSError:
         ip = None
     finally:
@@ -49,7 +49,7 @@ def get_public_ip():
             is_public_ip = True
     except RequestException:
         ip = None
-        log('Not connected to Internet', 'R')
+        log('Not connected to Internet', color='R')
     return ip
 
 
@@ -127,7 +127,7 @@ def check_for_update():
                 log(f" ⚠️ Updated version {update['version']} is available", color='Y')
                 perform_app_update()
         except Exception:
-            log(' ❌ Failed to check for the update', 'R')
+            log(' ❌ Failed to check for the update', color='R')
         print_mid_line()
     threading.Thread(target=updator).start()
 
