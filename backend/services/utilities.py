@@ -85,3 +85,20 @@ def get_mime_type(file_path: str) -> str:
 
     # Fallback to download if not possible to stream the file
     return 'application/octet-stream'
+
+
+# To print the logs in different colors on ANSI console
+def log(*values: object, sep=' ', end='\n', color='W'):
+    colorCode = {
+        'R': '\033[91m',
+        'G': '\033[92m',
+        'Y': '\033[93m',
+        'B': '\033[94m',
+        'W': '\033[97m'
+    }.get(color, False)
+
+    if not IS_DEV_ENV and colorCode:  # Apply the selected color code
+        print(colorCode, end='')
+
+    print(*values, sep=sep, end=end)  # Print content
+    print('\033[0m', end='')  # Reset to default color

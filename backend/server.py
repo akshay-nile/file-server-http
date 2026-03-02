@@ -3,7 +3,7 @@ from services.validator import validate_path
 from services.environment import USER_DOWNLOADS
 from services.network import get_stream_or_download_response
 from services.thumbnails import get_generated_thumbnail, THUMBNAILS_DIR
-from services.utilities import is_public_resource, format_path, keep_screen_awake
+from services.utilities import is_public_resource, format_path, keep_screen_awake, log
 from services.authenticator import generate_unique_token, verify_user_token, require_authentication, play_notification_tone
 from services.explorer import delete_items, rename_item, get_clipboard_info, get_device_info, get_drives_info, get_items_info, get_updated_shortcuts, get_total_size
 
@@ -36,7 +36,7 @@ def serve_static_files(resource='index.html'):
 @validate_path('folder')
 @require_authentication
 def get_items(path):
-    print('Explore -', format_path(path))
+    log('Explore -', format_path(path), color='B')
     if request.method == 'POST':
         return jsonify({
             'device': get_device_info(), 'drives': get_drives_info(),
@@ -63,7 +63,7 @@ def open_file(path):
     token = request.cookies.get('token')
     stream = request.args.get('stream') == 'true'
     range_header = request.headers.get('Range')
-    print('Stream -' if stream else 'Download -', format_path(path), range_header, token)
+    log('Stream -' if stream else 'Download -', format_path(path), range_header, token, color='Y')
     return get_stream_or_download_response(path, stream)
 
 
@@ -75,7 +75,7 @@ def save_files():
     if file is None:
         return jsonify({'status': 'failed'})
     file.save(f'{USER_DOWNLOADS}/{file.filename}')
-    print('Upload -', file.filename)
+    log('Upload -', file.filename, color='Y')
     return jsonify({'status': 'uploaded'})
 
 
@@ -85,12 +85,12 @@ def save_files():
 def modify_items(action: str):
     items = request.get_json()
     if action == 'delete':
-        print('Delete - ', end='')
-        print(*map(format_path, items), sep='\nDelete - ')
+        log('Delete - ', end='', color='R')
+        log(*map(format_path, items), sep='\nDelete - ', color='R')
         return jsonify({'deleted': delete_items(items)})
     if action == 'rename':
-        print('Rename (old) -', format_path(items[0]))
-        print('Rename (new) -', format_path(items[1]))
+        log('Rename (old) -', format_path(items[0]), color='B')
+        log('Rename (new) -', format_path(items[1]), color='B')
         return jsonify({'renamed': rename_item(*items)})
     return jsonify({'unknown': action})
 
@@ -116,7 +116,7 @@ def authenticate():
         response.delete_cookie(key='token')
         return response
     token = generate_unique_token()
-    print(f'\nToken Generated:  {token}\n')
+    log(f'\nToken Generated:  {token}\n', color='Y')
     play_notification_tone()
     return jsonify({'status': 'generated'})
 

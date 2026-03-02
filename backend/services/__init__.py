@@ -1,4 +1,6 @@
 import os
+
+from services.utilities import log
 from services.environment import IS_WIN_OS, IS_DEV_ENV
 
 
@@ -40,7 +42,7 @@ def configure_flask_app(app: Flask) -> Flask:
 
         # Check for the socket availability before binding to the server
         if not is_socket_available(app.config['HOST'], app.config['PORT']):
-            print('Socket is already in use')
+            log('Socket is already in use', color='R')
             exit(0)
 
         # Publish the appropriate socket/server address to my website
@@ -48,7 +50,7 @@ def configure_flask_app(app: Flask) -> Flask:
         publish_server_address(server_address)
 
         from services.network import is_public_ip
-        print(f" {'🌐' if is_public_ip else '🛜'} Serving at {server_address}")
+        log(f" {'🌐' if is_public_ip else '🛜'} Serving at {server_address}")
 
         # Launch a new thread to check if updated version is available or not
         check_for_update()

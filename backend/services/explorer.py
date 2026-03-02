@@ -8,7 +8,7 @@ from stat import FILE_ATTRIBUTE_HIDDEN
 
 from services.thumbnails import get_cached_thumbnail, get_generated_thumbnail
 from services.environment import IS_WIN_OS, USER_HOME, HOST_NAME
-from services.utilities import joiner, is_child_of_protected_path, is_parent_of_protected_path, get_mime_type
+from services.utilities import joiner, is_child_of_protected_path, is_parent_of_protected_path, get_mime_type, log
 
 from flask import request
 from pyperclip import paste, PyperclipException
@@ -41,7 +41,6 @@ def get_updated_shortcuts() -> dict | None:
         file_path = file.get('path', '')
         if os.path.isfile(file_path):
             file_info = get_file_info(file_path)
-            print(file_info)
             if file_info is not None:
                 files.append(file_info)
 
@@ -105,7 +104,7 @@ def is_item_hidden(item_path: str, item_name: str) -> bool:
         actual_hidden = IS_WIN_OS and bool(os.stat(item_path).st_file_attributes & FILE_ATTRIBUTE_HIDDEN)
         return marked_hidden or actual_hidden
     except AttributeError:
-        print('Attribute Error:', item_path)
+        log('Attribute Error:', item_path, color='R')
         return marked_hidden
 
 
@@ -201,7 +200,7 @@ def get_folder_info(folder_path: str, show_hidden: bool) -> dict | None:
         folder_info['date'] = int(os.path.getctime(folder_path) * 1000)
         return folder_info
     except PermissionError:
-        print('Access Denied:', folder_path)
+        log('Access Denied:', folder_path, color='R')
         return None
 
 
@@ -217,7 +216,7 @@ def get_file_info(file_path: str) -> dict | None:
         file_info['mimetype'] = get_mime_type(file_path)
         return file_info
     except PermissionError:
-        print('Access Denied:', file_path)
+        log('Access Denied:', file_path, color='R')
         return None
 
 
@@ -287,10 +286,10 @@ def delete_items(items: list[str]) -> list[str]:
                 deleted_items.append(item)
             # item does not exist
             else:
-                print('Invalid Delete:', item)
+                log('Invalid Delete:', item, color='R')
                 continue
         except PermissionError:
-            print('Access Denied:', item)
+            log('Access Denied:', item, color='R')
             continue
     return deleted_items
 
@@ -305,5 +304,5 @@ def rename_item(old_item: str, new_item: str) -> str | None:
             os.rename(old_item, new_item)
             return new_item
     except PermissionError:
-        print('Access Denied:', old_item)
+        log('Access Denied:', old_item, color='R')
     return None

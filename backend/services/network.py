@@ -3,6 +3,7 @@ import socket
 import threading
 import subprocess
 
+from services.utilities import log
 from services.explorer import get_file_info, update
 from services.environment import IS_WIN_OS, USER_HOME
 
@@ -31,7 +32,7 @@ def get_local_ip():
         sock.connect(('8.8.8.8', 80))
         ip = sock.getsockname()[0]
         if not ip.startswith('192.168.'):
-            print('Not connected to WiFi')
+            log('Not connected to WiFi', 'R')
     except OSError:
         ip = None
     finally:
@@ -48,7 +49,7 @@ def get_public_ip():
             is_public_ip = True
     except RequestException:
         ip = None
-        print('Not connected to Internet')
+        log('Not connected to Internet', 'R')
     return ip
 
 
@@ -66,7 +67,7 @@ def get_user_selection():
     if text is None:
         text = input('Run server on Public IP (Yes/No): ').lower().strip()
     else:
-        print('Run server on Public IP (Yes/No):', text)
+        log('Run server on Public IP (Yes/No):', text, color='W')
 
     # Entering Yes, yes, or simply y will get public ip
     if text.startswith('y'):
@@ -90,9 +91,9 @@ def publish_server_address(server_address: str):
             pythonanywhere = 'https://akshaynile.pythonanywhere.com/publish?socket='
             status = post(pythonanywhere + server_address, timeout=5).text
             if status == 'success':
-                print(' ✅ Socket publication was successful')
+                log(' ✅ Socket publication was successful', color='G')
         except RequestException:
-            print(' ❌ Socket publication attempt failed')
+            log(' ❌ Socket publication attempt failed', color='R')
         print_mid_line()
     threading.Thread(target=publisher).start()
 
@@ -123,10 +124,10 @@ def check_for_update():
             update['version'] = remote_version
             update['available'] = remote_version != local_version
             if (update['available']):
-                print(f" ⚠️ Updated version {update['version']} is available")
+                log(f" ⚠️ Updated version {update['version']} is available", color='Y')
                 perform_app_update()
         except Exception:
-            print(' ❌ Failed to check for the update')
+            log(' ❌ Failed to check for the update', 'R')
         print_mid_line()
     threading.Thread(target=updator).start()
 

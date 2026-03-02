@@ -1,4 +1,4 @@
-# 📁 MyFileServer v1.6.12
+# 📁 MyFileServer v1.7.12
 
 A lightweight file server application to transfer/stream files over network with:
 
@@ -51,6 +51,7 @@ graph LR
     server --> utilities
 
     init --> environment
+    init --> utilities
 
     authenticator --> environment
 
@@ -62,6 +63,7 @@ graph LR
 
     network --> environment
     network --> explorer
+    network --> utilities
 
     validator --> utilities
 
