@@ -91,7 +91,7 @@ def publish_server_address(server_address: str):
             pythonanywhere = 'https://akshaynile.pythonanywhere.com/publish?socket='
             status = post(pythonanywhere + server_address, timeout=5).text
             if status == 'success':
-                log(' ✅ Socket publication was successful', color='G')
+                log(' ✅ Socket publication was successful', color='W')
         except RequestException:
             log(' ❌ Socket publication attempt failed', color='R')
         print_mid_line()
@@ -124,7 +124,7 @@ def check_for_update():
             update['version'] = remote_version
             update['available'] = remote_version != local_version
             if (update['available']):
-                log(f" ⚠️ Updated version {update['version']} is available", color='Y')
+                log(f" ⚠️ Updated version {update['version']} is available", color='W')
                 perform_app_update()
         except Exception:
             log(' ❌ Failed to check for the update', 'R')
