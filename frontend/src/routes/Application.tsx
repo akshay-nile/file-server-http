@@ -5,11 +5,13 @@ import BottomPanel from '../components/BottomPanel';
 import Breadcrumb from '../components/Breadcrumb';
 import Home from '../components/Home';
 import Items from '../components/Items';
+import Layout from '../components/Layout';
 import TopPanel from '../components/TopPanel';
 import useExplorerItems from '../contexts/ExplorerItems/useExplorerItems';
 import SelectedItemsProvider from '../contexts/SelectedItems/SelectedItemsProvider';
+import { loaderStyle } from '../services/utilities';
 
-function AppLayout() {
+function Application() {
     const navigate = useNavigate();
     const { loading, path, explore } = useExplorerItems();
 
@@ -35,25 +37,21 @@ function AppLayout() {
     }, [explore, navigate]);
 
     return (
-        <div className="w-full flex justify-center">
-            <div className="bg-gray-50 min-h-screen w-full md:w-[60%] lg:w-[34%] rounded-md">
-                <div className='sticky top-0 bg-gray-50 z-10'>
-                    <TopPanel />
-                    {path !== '/' && <Breadcrumb />}
-                </div>
-                <SelectedItemsProvider>
-                    {
-                        loading
-                            ? <div className='h-[66%] flex justify-center items-center'>
-                                <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
-                            </div>
-                            : path === '/' ? <Home /> : <Items />
-                    }
-                    <BottomPanel />
-                </SelectedItemsProvider>
+        <Layout theme='light'>
+            <div className='sticky top-0 bg-gray-50 z-10'>
+                <TopPanel />
+                {path !== '/' && <Breadcrumb />}
             </div>
-        </div>
+            <SelectedItemsProvider>
+                {
+                    loading
+                        ? <ProgressSpinner style={loaderStyle} strokeWidth='0.15rem' animationDuration='0.5s' />
+                        : path === '/' ? <Home /> : <Items />
+                }
+                <BottomPanel />
+            </SelectedItemsProvider>
+        </Layout>
     );
 }
 
-export default AppLayout;
+export default Application;

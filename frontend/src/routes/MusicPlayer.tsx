@@ -3,10 +3,11 @@ import { Dialog } from 'primereact/dialog';
 import { ListBox } from 'primereact/listbox';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useEffect, useState } from 'react';
+import Layout from '../components/Layout';
 import { getFileURL } from '../services/api';
 import type { Song } from '../services/models';
 import { getMusicPlayerData } from '../services/settings';
-import { formatSize, getCachedThumbnail } from '../services/utilities';
+import { formatSize, getCachedThumbnail, loaderStyle } from '../services/utilities';
 
 function MusicPlayer() {
     const [songs, setSongs] = useState<Song[]>([]);
@@ -60,14 +61,12 @@ function MusicPlayer() {
     }
 
     return (
-        <div className="w-full flex justify-center text-gray-50">
-            <div className="min-h-[92vh] w-[92%] md:w-[60%] lg:w-[34%] rounded-md">
+        <Layout theme='dark'>
+            <div className='h-full flex flex-col justify-center gap-4 mx-4'>
                 {
                     (index === -1 || songs.length === 0)
-                        ? <div className='h-[90%] flex justify-center items-center'>
-                            <ProgressSpinner strokeWidth='0.2rem' animationDuration='0.5s' />
-                        </div>
-                        : <div className='h-full flex flex-col gap-4 justify-center'>
+                        ? <ProgressSpinner style={loaderStyle} strokeWidth='0.15rem' animationDuration='0.5s' />
+                        : <>
                             <div className='flex items-center gap-4'>
                                 <img width='70px' height='70px' src={songs[index].thumbnail ?? '/icons/album.png'}
                                     className={`shadow ${playing ? 'rounded-full animate-[spin_3s_linear_infinite]' : 'rounded-[8px]'}`} />
@@ -115,10 +114,10 @@ function MusicPlayer() {
                                     options={songs} value={songs[index].path}
                                     onChange={e => setIndex(songs.findIndex(s => s.path === e.value))} />
                             </Dialog>
-                        </div>
+                        </>
                 }
             </div>
-        </div>
+        </Layout>
     );
 }
 

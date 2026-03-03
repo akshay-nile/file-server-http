@@ -2,12 +2,12 @@ import { Toast } from 'primereact/toast';
 import { useEffect, useRef } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import ExplorerItemsProvider from './contexts/ExplorerItems/ExplorerItemsProvider';
-import AppLayout from './routes/AppLayout';
+import Application from './routes/Application';
 import Authentication from './routes/Authentication';
 import ErrorDetails from './routes/ErrorDetails';
+import MusicPlayer from './routes/MusicPlayer';
 import { setNavigate } from './services/api';
 import { setToast } from './services/utilities';
-import MusicPlayer from './routes/MusicPlayer';
 
 function App() {
   const toastRef = useRef<Toast>(null);
@@ -21,7 +21,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path='/' element={<ExplorerItemsProvider><AppLayout /></ExplorerItemsProvider>} />
+        <Route path='/' element={<ExplorerItemsProvider><Application /></ExplorerItemsProvider>} />
         <Route path='/authentication' element={<Authentication />} />
         <Route path='/music-player' element={<MusicPlayer />} />
         <Route path='/error' element={<ErrorDetails />} />

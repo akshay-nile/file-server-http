@@ -1,5 +1,5 @@
 import type { Toast } from 'primereact/toast';
-import type { ItemsInfo, Platform, SearchInfo } from './models';
+import type { Platform, SearchInfo } from './models';
 
 // Detects Phone/Tablet devices with touch input to avoid tooltip
 const isTouchDevice = window && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -52,7 +52,13 @@ export let searchInfo: SearchInfo | null = null;
 export function setSearchInfo(info: SearchInfo) { searchInfo = info; }
 export function clearSearchInfo() { searchInfo = null; }
 
-export const itemsCache: Map<string, ItemsInfo> = new Map<string, ItemsInfo>();
+export const loaderStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '66vh',
+    width: '40%'
+};
 
 
 // Multi-layer thumbnail caching (In-Memory -> IndexedDB -> Server)
