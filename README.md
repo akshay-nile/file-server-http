@@ -78,7 +78,8 @@ graph LR
     App
 
     subgraph components
-        AppLayout
+        Layout
+        Application
         Authentication
         BottomPanel
         Breadcrumb
@@ -98,16 +99,23 @@ graph LR
         UserSettings
     end
 
-    App --> AppLayout
+    App --> Application
     App --> Authentication
     App --> MusicPlayer
     App --> ErrorDetails
 
-    AppLayout --> TopPanel
-    AppLayout --> Home
-    AppLayout --> Items
-    AppLayout --> BottomPanel
-    AppLayout --> Breadcrumb
+    Application --> Layout
+    Application --> TopPanel
+    Application --> Home
+    Application --> Items
+    Application --> BottomPanel
+    Application --> Breadcrumb
+
+    ErrorDetails --> Layout
+
+    Authentication --> Layout
+    
+    MusicPlayer --> Layout
 
     Home --> DriveItem
     Home --> FileItem
