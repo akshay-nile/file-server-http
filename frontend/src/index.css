@@ -33,3 +33,8 @@ input:focus {
 .p-overlaypanel-content {
     padding: 0.7rem;
 }
+
+.p-progressbar-label {
+    font-size: 14px;
+    font-weight: bold;
+}
