@@ -21,7 +21,7 @@ function UploadFiles() {
         files.sort((fileA, fileB) => fileA.file.size - fileB.file.size);
         setFiles(files as FileUploadInfo[]);
         setUploadLabel('Upload');
-        setUploadedInfo(prev => ({ ...prev, total: files.map(f => f.file.size).reduce((a, b) => a + b, 0) }));
+        setUploadedInfo({ count: 0, size: 0, total: files.map(f => f.file.size).reduce((a, b) => a + b, 0) });
     };
 
     async function uploadChoosenFiles() {
@@ -32,14 +32,14 @@ function UploadFiles() {
             if (!['pending', 'failed'].includes(files[i].status)) continue;
             files[i].status = 'uploading';
             setFiles([...files]);
-            const response = await uploadFile(files[i].file, n => setUploadedInfo(p => ({ ...p, size: p.size + n })));
-            if (cancelledRef.current) break;
+            const response = await uploadFile(files[i].file, n => {
+                setUploadedInfo(prev => cancelledRef.current ? prev : ({ ...prev, size: prev.size + n }));
+                return cancelledRef.current;
+            });
             files[i].status = response.status;
             setFiles([...files]);
-            if (files[i].status === 'uploaded') setUploadedInfo(prev => ({
-                ...prev,
-                count: prev.count + 1
-            }));
+            if (files[i].status === 'uploaded') setUploadedInfo(prev => ({ ...prev, count: prev.count + 1 }));
+            if (cancelledRef.current) break;
         }
         setUploadLabel('Uploaded');
         setTimeout(() => {
