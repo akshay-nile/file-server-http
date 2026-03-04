@@ -48,7 +48,7 @@ export async function getThumbanil(path: string): Promise<Thumbnail> {
     return await tryToFetch('/thumbnail?' + params);
 }
 
-export async function uploadFile(file: File, onProgress: (n: number) => boolean): Promise<{ status: 'uploaded' | 'failed' }> {
+export async function uploadFile(file: File, onProgress: (n: number) => boolean): Promise<{ status: 'uploaded' | 'failed' } | null> {
     const body = new FormData();
     body.append('file', file);
     let bytesUploadedSoFar = 0;
@@ -63,7 +63,7 @@ export async function uploadFile(file: File, onProgress: (n: number) => boolean)
             if (isCancelled) xhr.abort();
         };
         xhr.onload = () => resolve(JSON.parse(xhr.responseText));
-        xhr.onabort = xhr.onerror = () => reject({ status: 'failed' });
+        xhr.onabort = xhr.onerror = () => reject(null);
         xhr.send(body);
     });
 }

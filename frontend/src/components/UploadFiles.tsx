@@ -1,4 +1,5 @@
 import { Button } from 'primereact/button';
+import { ProgressBar } from 'primereact/progressbar';
 import { useRef, useState } from 'react';
 import { uploadFile } from '../services/api';
 import { formatSize, toast } from '../services/utilities';
@@ -36,10 +37,14 @@ function UploadFiles() {
                 setUploadedInfo(prev => cancelledRef.current ? prev : ({ ...prev, size: prev.size + n }));
                 return cancelledRef.current;
             });
+            if (response === null || cancelledRef.current) break;
             files[i].status = response.status;
             setFiles([...files]);
-            if (files[i].status === 'uploaded') setUploadedInfo(prev => ({ ...prev, count: prev.count + 1 }));
-            if (cancelledRef.current) break;
+            if (files[i].status === 'uploaded') {
+                const uploadedFiles = files.filter(f => f.status === 'uploaded');
+                const uploadedTotal = uploadedFiles.map(f => f.file.size).reduce((a, b) => a + b, 0);
+                setUploadedInfo(prev => ({ ...prev, count: uploadedFiles.length, size: uploadedTotal }));
+            }
         }
         setUploadLabel('Uploaded');
         setTimeout(() => {
@@ -104,7 +109,7 @@ function UploadFiles() {
                                     Uploaded <b>{fileOrFiles(uploadedInfo.count)}</b> [{formatSize(uploadedInfo.size)}]
                                     out of <b>{fileOrFiles(files.length)}</b> [{formatSize(uploadedInfo.total)}]
                                 </div>
-                                <div><b>{Math.round(100 * uploadedInfo.size / uploadedInfo.total)}%</b> complete</div>
+                                <ProgressBar value={Math.round(100 * uploadedInfo.size / uploadedInfo.total)} />
                             </div>
                             : <div>{fileOrFiles(files.length)} [{formatSize(uploadedInfo.total)}] selected for upload</div>
                 }
