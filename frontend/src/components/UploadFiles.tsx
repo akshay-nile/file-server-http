@@ -32,14 +32,13 @@ function UploadFiles() {
             if (!['pending', 'failed'].includes(files[i].status)) continue;
             files[i].status = 'uploading';
             setFiles([...files]);
-            const response = await uploadFile(files[i].file);
+            const response = await uploadFile(files[i].file, n => setUploadedInfo(p => ({ ...p, size: p.size + n })));
             if (cancelledRef.current) break;
             files[i].status = response.status;
             setFiles([...files]);
             if (files[i].status === 'uploaded') setUploadedInfo(prev => ({
                 ...prev,
-                count: prev.count + 1,
-                size: prev.size + files[i].file.size
+                count: prev.count + 1
             }));
         }
         setUploadLabel('Uploaded');
