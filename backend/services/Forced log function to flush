@@ -101,4 +101,4 @@ def log(*values: object, sep=' ', end='\n', color='W'):
         print(colorCode, end='')
 
     print(*values, sep=sep, end=end)  # Print content
-    print('\033[0m', end='')  # Reset to default color
+    print('\033[0m', end='', flush=True)  # Reset to default color
