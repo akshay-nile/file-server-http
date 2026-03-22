@@ -7,7 +7,7 @@ function Layout({ children, theme }: Props) {
 
     return (
         <div className='w-full flex justify-center'>
-            <div className={`w-full min-h-svh md:w-[60%] lg:w-[34%] rounded-lg ${colors}`}>
+            <div className={`w-full min-h-dvh md:w-[60%] lg:w-[34%] transition-all duration-300 ease-in-out rounded-lg ${colors}`}>
                 {children}
             </div>
         </div>
