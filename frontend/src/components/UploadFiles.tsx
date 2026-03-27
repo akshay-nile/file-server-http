@@ -97,7 +97,7 @@ function UploadFiles() {
                 />
             </div>
 
-            <div className="text-center text-sm my-1">
+            <div className="flex justify-center items-center text-sm my-1">
                 {
                     files.length === 0
                         ? uploading
@@ -105,10 +105,10 @@ function UploadFiles() {
                             : <div>No file selected for upload</div>
                         : uploading
                             ? <div className='flex flex-col gap-1.25'>
-                                <div>
+                                <span>
                                     Uploaded <b>{fileOrFiles(uploadedInfo.count)}</b> [{formatSize(uploadedInfo.size)}]
                                     out of <b>{fileOrFiles(files.length)}</b> [{formatSize(uploadedInfo.total)}]
-                                </div>
+                                </span>
                                 <ProgressBar value={Math.round(100 * uploadedInfo.size / uploadedInfo.total)} />
                             </div>
                             : <div>{fileOrFiles(files.length)} [{formatSize(uploadedInfo.total)}] selected for upload</div>

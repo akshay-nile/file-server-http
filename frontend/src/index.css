@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primereact/resources/themes/lara-light-blue/theme.css';
 
 audio,
 audio::-webkit-media-controls-enclosure {
