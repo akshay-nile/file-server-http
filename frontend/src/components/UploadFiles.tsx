@@ -78,10 +78,10 @@ function UploadFiles() {
     }
 
     return (
-        <div className="flex flex-col gap-2 mb-1">
+        <div className="flex flex-col gap-2 mt-4 mb-2 mx-1.25">
             <input ref={fileInputRef} type="file" multiple className="hidden" onChange={onFilesChoosen} />
 
-            <div className="flex items-center gap-3 mt-4 mb-1 selectbutton">
+            <div className="flex items-center justify-center gap-4 my-1 selectbutton">
                 <Button label='Choose' icon='pi pi-plus' size='small'
                     onClick={() => fileInputRef.current?.click()}
                     disabled={files.length > 0 || uploading}
@@ -97,18 +97,18 @@ function UploadFiles() {
                 />
             </div>
 
-            <div className="flex justify-center items-center text-sm my-1">
+            <div className="flex justify-center items-center text-sm">
                 {
                     files.length === 0
                         ? uploading
                             ? <div>Uploading cancelled</div>
                             : <div>No file selected for upload</div>
                         : uploading
-                            ? <div className='flex flex-col gap-1.25'>
-                                <span>
+                            ? <div className='w-full text-center m-1'>
+                                <div className='mb-1'>
                                     Uploaded <b>{fileOrFiles(uploadedInfo.count)}</b> [{formatSize(uploadedInfo.size)}]
                                     out of <b>{fileOrFiles(files.length)}</b> [{formatSize(uploadedInfo.total)}]
-                                </span>
+                                </div>
                                 <ProgressBar value={Math.round(100 * uploadedInfo.size / uploadedInfo.total)} />
                             </div>
                             : <div>{fileOrFiles(files.length)} [{formatSize(uploadedInfo.total)}] selected for upload</div>

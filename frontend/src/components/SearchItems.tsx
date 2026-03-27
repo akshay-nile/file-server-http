@@ -79,7 +79,7 @@ function SearchItems() {
     }, [clearSearch]);
 
     return (
-        <div className='flex mt-4 mb-2 mx-1'>
+        <div className='flex justify-between mt-4 mb-2 mx-1.25'>
             <div className='flex-3'>
                 <span className='block ml-0.5 mb-1 text-sm'>Deep Search</span>
                 <SelectButton value={deepSearch} className='selectbutton' allowEmpty={false}

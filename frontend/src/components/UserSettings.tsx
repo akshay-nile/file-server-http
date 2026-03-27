@@ -46,8 +46,8 @@ function UserSettings() {
     }
 
     return (
-        <div className='flex flex-col gap-4 mt-4 mb-2'>
-            <div className='flex items-center gap-5'>
+        <div className='flex flex-col gap-4 mt-4 mb-2 mx-1.25'>
+            <div className='flex justify-between items-center'>
                 <div>
                     <span className='block ml-0.75 mb-1 text-sm'>Sort Items By</span>
                     <SelectButton value={userSettings.sort_by} className='selectbutton'

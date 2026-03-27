@@ -80,7 +80,7 @@ function TopPanel() {
                 </div>
             </div>
 
-            <div className={`${panelOpened ? 'max-h-[50vh] opacity-100' : 'max-h-0 opacity-50'} w-full flex items-center justify-center overflow-hidden transition-all duration-300 ease-in-out`}>
+            <div className={`${panelOpened ? 'max-h-[50vh] opacity-100' : 'max-h-0 opacity-50'} w-full overflow-hidden transition-all duration-300 ease-in-out`}>
                 <div className={panelContent === 'upload' ? 'block' : 'hidden'}><UploadFiles /></div>
                 <div className={panelContent === 'search' ? 'block' : 'hidden'}><SearchItems /></div>
                 <div className={panelContent === 'settings' ? 'block' : 'hidden'}><UserSettings /></div>
