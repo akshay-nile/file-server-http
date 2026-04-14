@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL } from '../services/api';
 import type { FileInfo } from '../services/models';
-import { formatSize, getCachedThumbnail, getTooltip, toast } from '../services/utilities';
+import { formatSize, getCachedThumbnail, getTooltip } from '../services/utilities';
+import { useToastMessage } from '../contexts/ToastMessage/useToastMessage';
 
 type Props = { file: FileInfo, selectable: boolean, onMusicPlay?: (file: FileInfo) => void };
 
 function FileItem({ file, selectable = true, onMusicPlay }: Props) {
+    const { showToast } = useToastMessage();
     const { toggleFileSelection, isItemSelected, isAnyItemSelected } = useSelectedItems();
 
     const [downloading, setDownloading] = useState<boolean>(false);
@@ -47,7 +49,7 @@ function FileItem({ file, selectable = true, onMusicPlay }: Props) {
 
     function streamFile(file: FileInfo) {
         if (file.mimetype === 'application/octet-stream') {
-            toast.show({
+            showToast({
                 severity: 'info',
                 summary: 'Cannot Open ' + getExtention(file.name),
                 detail: 'This file can only be downloaded'
@@ -59,27 +61,27 @@ function FileItem({ file, selectable = true, onMusicPlay }: Props) {
     }
 
     return (
-        <div className='flex items-center gap-1'>
+        <div className="flex items-center gap-1">
             <div className={`w-[58px] h-[50px] overflow-hidden m-1 p-0  ${selectable && 'cursor-pointer'} ${file.hidden && 'opacity-70'}`} onClick={() => selectable && toggleFileSelection(file)}>
                 {
                     shouldShowCSSThumbnail(file.name)
                         ? <div className={`w-full h-full flex justify-center items-center rounded-[5px] bg-gray-500 text-white font-bold tracking-wide ${getFontSize(file.name)}`}>
                             {getExtention(file.name)}
                         </div>
-                        : <img src={thumbnail ?? '/icons/file.jpg'} className='w-full h-full object-contain object-center rounded-[5px]' />
+                        : <img src={thumbnail ?? '/icons/file.jpg'} className="w-full h-full object-contain object-center rounded-[5px]" />
                 }
             </div>
 
             <div className="w-full flex justify-between items-center">
-                <div className='w-full flex flex-col my-1 gap-1.5 group cursor-pointer justify-between' onClick={() => streamFile(file)}>
-                    <span className='group-hover:text-blue-700 text-sm leading-3.75 min-w-0 break-words break-all'>
+                <div className="w-full flex flex-col my-1 gap-1.5 group cursor-pointer justify-between" onClick={() => streamFile(file)}>
+                    <span className="group-hover:text-blue-700 text-sm leading-3.75 min-w-0 break-words break-all">
                         {file.name}
                     </span>
-                    <div className='flex gap-4 text-[10px] tracking-wider ml-0.25'>
+                    <div className="flex gap-4 text-[10px] tracking-wider ml-0.25">
                         <span>Size {formatSize(file.size)}</span>
                     </div>
                 </div>
-                <div className='ml-2 mr-1 z-0'>
+                <div className="ml-2 mr-1 z-0">
                     {
                         (selectable && isAnyItemSelected())
                             ? <Checkbox checked={isItemSelected(file)} onChange={() => toggleFileSelection(file)} style={{ zoom: 1.2 }}

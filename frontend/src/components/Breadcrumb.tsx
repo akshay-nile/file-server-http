@@ -35,16 +35,16 @@ function Breadcrumb() {
     function getItemTempate(item: BreadcrumbItem, isLast: boolean) {
         return (
             <span key={item.path}>
-                <span className='hover:text-blue-700 cursor-pointer' onClick={() => explore(item.path, true)}>
+                <span className="hover:text-blue-700 cursor-pointer" onClick={() => explore(item.path, true)}>
                     {item.label}
                 </span>
-                {!isLast && <span className='mx-1.5'>/</span>}
+                {!isLast && <span className="mx-1.5">/</span>}
             </span>
         );
     }
 
     return (
-        <div className='flex flex-wrap items-center text-[15px] leading-5 border border-gray-300 rounded shadow m-3 p-3'>
+        <div className="flex flex-wrap items-center text-[15px] leading-5 border border-gray-300 rounded shadow m-3 p-3">
             {items.map((item, i) => getItemTempate(item, items.length === i + 1))}
         </div>
     );

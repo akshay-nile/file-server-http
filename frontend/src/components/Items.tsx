@@ -54,19 +54,19 @@ function Items() {
                 : <>
                     {
                         items.folders.map((folder, i) =>
-                            <div key={folder.path} className='mx-2'>
-                                {i === 0 && <hr className='text-gray-300 m-1' />}
+                            <div key={folder.path} className="mx-2">
+                                {i === 0 && <hr className="text-gray-300 m-1" />}
                                 <FolderItem folder={folder} selectable={true} />
-                                <hr className='text-gray-300 m-1' />
+                                <hr className="text-gray-300 m-1" />
                             </div>
                         )
                     }
                     {
                         files.map((file, i) =>
-                            <div key={file.path} className='mx-2'>
-                                {(i === 0 && items.folders.length === 0) && <hr className='text-gray-300 m-1' />}
+                            <div key={file.path} className="mx-2">
+                                {(i === 0 && items.folders.length === 0) && <hr className="text-gray-300 m-1" />}
                                 <FileItem file={file} selectable={true} onMusicPlay={onMusicPlay} />
-                                <hr className='text-gray-300 m-1' />
+                                <hr className="text-gray-300 m-1" />
                             </div>
                         )
                     }

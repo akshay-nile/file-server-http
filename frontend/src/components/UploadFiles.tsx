@@ -2,12 +2,15 @@ import { Button } from 'primereact/button';
 import { ProgressBar } from 'primereact/progressbar';
 import { useRef, useState } from 'react';
 import { uploadFile } from '../services/api';
-import { formatSize, toast } from '../services/utilities';
+import { formatSize } from '../services/utilities';
+import { useToastMessage } from '../contexts/ToastMessage/useToastMessage';
 
 type UploadProgress = { count: number, size: number, total: number }
 type FileUploadInfo = { file: File; status: 'pending' | 'uploading' | 'uploaded' | 'failed'; }
 
 function UploadFiles() {
+    const { showToast } = useToastMessage();
+
     const cancelledRef = useRef<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -53,7 +56,7 @@ function UploadFiles() {
             setUploadLabel('Upload');
             setUploadedInfo({ count: 0, size: 0, total: 0 });
         }, 1000);
-        toast.show({
+        showToast({
             severity: 'success',
             summary: 'Uploaded Successfully',
             detail: fileOrFiles(files.length) + ' uploaded and saved to the Download folder of the server device.'
@@ -66,7 +69,7 @@ function UploadFiles() {
         setUploading(false);
         setUploadLabel('Upload');
         setUploadedInfo({ count: 0, size: 0, total: 0 });
-        toast.show({
+        showToast({
             severity: 'warn',
             summary: 'Uploading Cancelled',
             detail: 'Pending files will not be uploaded. Selection is cleared'
@@ -82,16 +85,16 @@ function UploadFiles() {
             <input ref={fileInputRef} type="file" multiple className="hidden" onChange={onFilesChoosen} />
 
             <div className="flex items-center justify-center gap-4 my-1 selectbutton">
-                <Button label='Choose' icon='pi pi-plus' size='small'
+                <Button label="Choose" icon="pi pi-plus" size="small"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={files.length > 0 || uploading}
                 />
-                <Button label={uploadLabel} size='small'
+                <Button label={uploadLabel} size="small"
                     icon={uploadLabel === 'Uploading' ? 'pi pi-spin pi-spinner' : uploadLabel === 'Uploaded' ? 'pi pi-check' : 'pi pi-upload'}
                     onClick={uploadChoosenFiles}
                     disabled={files.length === 0 || uploading}
                 />
-                <Button label='Cancel' icon='pi pi-times' size='small' severity='danger'
+                <Button label="Cancel" icon="pi pi-times" size="small" severity="danger"
                     onClick={onUploadingCancelled}
                     disabled={files.length === 0}
                 />
@@ -104,8 +107,8 @@ function UploadFiles() {
                             ? <div>Uploading cancelled</div>
                             : <div>No file selected for upload</div>
                         : uploading
-                            ? <div className='w-full text-center m-1'>
-                                <div className='mb-1'>
+                            ? <div className="w-full text-center m-1">
+                                <div className="mb-1">
                                     Uploaded <b>{fileOrFiles(uploadedInfo.count)}</b> [{formatSize(uploadedInfo.size)}]
                                     out of <b>{fileOrFiles(files.length)}</b> [{formatSize(uploadedInfo.total)}]
                                 </div>

@@ -79,19 +79,19 @@ function SearchItems() {
     }, [clearSearch]);
 
     return (
-        <div className='flex justify-between mt-4 mb-2 mx-1.25'>
-            <div className='flex-3'>
-                <span className='block ml-0.5 mb-1 text-sm'>Deep Search</span>
-                <SelectButton value={deepSearch} className='selectbutton' allowEmpty={false}
-                    options={[{ label: 'On', value: true }, { label: 'Off', value: false }]} optionLabel='label' optionValue='value'
+        <div className="flex justify-between mt-4 mb-2 mx-1.25">
+            <div className="flex-3">
+                <span className="block ml-0.5 mb-1 text-sm">Deep Search</span>
+                <SelectButton value={deepSearch} className="selectbutton" allowEmpty={false}
+                    options={[{ label: 'On', value: true }, { label: 'Off', value: false }]} optionLabel="label" optionValue="value"
                     onChange={e => { setDeepSearch(e.value); setStatus('none'); }} />
             </div>
-            <div className='flex-7'>
-                <span className='block ml-0.75 mb-1 text-sm'>
+            <div className="flex-7">
+                <span className="block ml-0.75 mb-1 text-sm">
                     {deepSearch ? 'Search all the items recursively' : 'Search items on this page only'}
                 </span>
                 <div className="p-inputgroup">
-                    <InputText placeholder="Search Items" style={{ fontSize: '14px' }} spellCheck={false} autoComplete='off'
+                    <InputText placeholder="Search Items" style={{ fontSize: '14px' }} spellCheck={false} autoComplete="off"
                         value={search} onChange={e => { setSearch(e.target.value); setStatus('none'); }}
                         onKeyDown={onEnterOrEscapeKey} />
                     <Button icon={`pi ${status === 'searching' ? 'pi-spin pi-spinner' : status === 'none' ? 'pi-search' : 'pi-times'}`}

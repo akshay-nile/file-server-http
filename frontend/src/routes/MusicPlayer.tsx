@@ -37,9 +37,9 @@ function MusicPlayer() {
 
     function getItemTemplate(song: Song) {
         return (
-            <div className='flex items-center gap-2'>
-                <img src={song.thumbnail ?? '/icons/album.png'} width='40px' height='40px' className='shadow rounded-[4px]' />
-                <span className='font-medium text-[15px] leading-5 min-w-0 break-words'>
+            <div className="flex items-center gap-2">
+                <img src={song.thumbnail ?? '/icons/album.png'} width="40px" height="40px" className="shadow rounded-[4px]" />
+                <span className="font-medium text-[15px] leading-5 min-w-0 break-words">
                     {song.name.substring(0, song.name.lastIndexOf('.'))}
                 </span>
             </div>
@@ -61,44 +61,44 @@ function MusicPlayer() {
     }
 
     return (
-        <Layout theme='dark'>
-            <div className='h-full flex flex-col justify-center gap-4 mx-4'>
+        <Layout theme="dark">
+            <div className="h-full flex flex-col justify-center gap-4 mx-4">
                 {
                     (index === -1 || songs.length === 0)
-                        ? <ProgressSpinner style={loaderStyle} strokeWidth='0.15rem' animationDuration='0.5s' />
+                        ? <ProgressSpinner style={loaderStyle} strokeWidth="0.15rem" animationDuration="0.5s" />
                         : <>
-                            <div className='flex items-center gap-4'>
-                                <img width='70px' height='70px' src={songs[index].thumbnail ?? '/icons/album.png'}
+                            <div className="flex items-center gap-4">
+                                <img width="70px" height="70px" src={songs[index].thumbnail ?? '/icons/album.png'}
                                     className={`shadow ${playing ? 'rounded-full animate-[spin_3s_linear_infinite]' : 'rounded-[8px]'}`} />
 
-                                <div className=' w-full flex flex-col gap-1 group cursor-pointer'>
-                                    <span className='text-lg leading-5.5 font-semibold min-w-0 break-words'>
+                                <div className=" w-full flex flex-col gap-1 group cursor-pointer">
+                                    <span className="text-lg leading-5.5 font-semibold min-w-0 break-words">
                                         {songs[index].name.substring(0, songs[index].name.lastIndexOf('.'))}
                                     </span>
-                                    <div className='flex justify-between text-[13px] tracking-wider ml-0.25'>
+                                    <div className="flex justify-between text-[13px] tracking-wider ml-0.25">
                                         <span>Size {formatSize(songs[index].size)}</span>
                                         <span>{index + 1} of {songs.length} Songs</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <audio autoPlay controls className='w-full h-12'
+                            <audio autoPlay controls className="w-full h-12"
                                 src={getFileURL(songs[index].path, true)}
                                 onPlay={() => setPlaying(true)}
                                 onPause={() => setPlaying(false)}
                                 onEnded={playNext} />
 
-                            <div className='flex justify-between items-center w-full h-12 gap-2'>
-                                <Button label='Prev' icon='pi pi-arrow-left' size='small' raised
+                            <div className="flex justify-between items-center w-full h-12 gap-2">
+                                <Button label="Prev" icon="pi pi-arrow-left" size="small" raised
                                     disabled={index <= 0}
                                     onClick={playPrev} />
 
-                                <Button label='Playlist' size='small' raised
+                                <Button label="Playlist" size="small" raised
                                     icon={showList ? 'pi pi-spin pi-spinner' : 'pi pi-list'}
                                     disabled={showList}
                                     onClick={() => setShowList(!showList)} />
 
-                                <Button label='Next' icon="pi pi-arrow-right" iconPos='right' size='small' raised
+                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right" size="small" raised
                                     disabled={index >= songs.length - 1}
                                     onClick={playNext} />
                             </div>
@@ -108,7 +108,7 @@ function MusicPlayer() {
                                 contentStyle={{ padding: '0px', margin: '0px' }}
                                 visible={showList} onHide={() => setShowList(false)}>
 
-                                <ListBox filter optionValue='path' filterBy='name' filterPlaceholder='Search Songs'
+                                <ListBox filter optionValue="path" filterBy="name" filterPlaceholder="Search Songs"
                                     pt={{ header: { className: 'sticky top-0 z-10' }, root: { className: 'relative overflow-visible' } }}
                                     itemTemplate={song => getItemTemplate(song)}
                                     options={songs} value={songs[index].path}

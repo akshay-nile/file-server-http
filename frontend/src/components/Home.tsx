@@ -18,31 +18,31 @@ function Home() {
         return () => window.removeEventListener('shortcutschange', onShortcutsChange);
     }, []);
 
-    return <div className='mb-4 mx-3'>
+    return <div className="mb-4 mx-3">
         {
             home.device.update.available &&
-            <div className='mt-4 border border-gray-300 rounded shadow'>
-                <div className='m-0 p-2 bg-gray-200 font-bold'>
-                    <span className='mx-1'>Warning</span>
+            <div className="mt-4 border border-gray-300 rounded shadow">
+                <div className="m-0 p-2 bg-gray-200 font-bold">
+                    <span className="mx-1">Warning</span>
                 </div>
-                <div className='m-1 p-2 flex gap-1.5 items-center justify-center text-[15px]'>
-                    <img src='/favicon.ico' width='20px' />
+                <div className="m-1 p-2 flex gap-1.5 items-center justify-center text-[15px]">
+                    <img src="/favicon.ico" width="20px" />
                     <span>MyFileServer <b>v{home.device.update.version}</b> update is available</span>
                 </div>
             </div>
         }
         {
             home.drives.length > 0 &&
-            <div className='mt-4 border border-gray-300 rounded shadow'>
-                <div className='m-0 p-2 bg-gray-200 font-bold'>
-                    <span className='mx-1'>Drives</span>
+            <div className="mt-4 border border-gray-300 rounded shadow">
+                <div className="m-0 p-2 bg-gray-200 font-bold">
+                    <span className="mx-1">Drives</span>
                 </div>
                 {
                     home.drives.map((drive, i) =>
-                        <div key={drive.path} className='mx-1'>
-                            {i === 0 && <hr className='text-gray-300 m-1' />}
+                        <div key={drive.path} className="mx-1">
+                            {i === 0 && <hr className="text-gray-300 m-1" />}
                             <DriveItem drive={drive} />
-                            <hr className='text-gray-300 m-1' />
+                            <hr className="text-gray-300 m-1" />
                         </div>
                     )
                 }
@@ -50,27 +50,27 @@ function Home() {
         }
         {
             shortcuts !== null &&
-            <div className='mt-4 border border-gray-300 rounded shadow'>
-                <div className='m-0 p-2 bg-gray-200 font-bold'>
-                    <span className='mx-1'>Shortcuts</span>
+            <div className="mt-4 border border-gray-300 rounded shadow">
+                <div className="m-0 p-2 bg-gray-200 font-bold">
+                    <span className="mx-1">Shortcuts</span>
                 </div>
                 {
                     <>
                         {
                             shortcuts.folders.map((folder: FolderInfo, i: number) =>
-                                <div key={folder.path} className='mx-1'>
-                                    {i === 0 && <hr className='text-gray-300 m-1' />}
+                                <div key={folder.path} className="mx-1">
+                                    {i === 0 && <hr className="text-gray-300 m-1" />}
                                     <FolderItem folder={folder} selectable={true} />
-                                    <hr className='text-gray-300 m-1' />
+                                    <hr className="text-gray-300 m-1" />
                                 </div>
                             )
                         }
                         {
                             shortcuts.files.map((file: FileInfo, i: number) =>
-                                <div key={file.path} className='mx-1'>
-                                    {(i === 0 && shortcuts.folders.length === 0) && <hr className='text-gray-300 m-1' />}
+                                <div key={file.path} className="mx-1">
+                                    {(i === 0 && shortcuts.folders.length === 0) && <hr className="text-gray-300 m-1" />}
                                     <FileItem file={file} selectable={true} />
-                                    <hr className='text-gray-300 m-1' />
+                                    <hr className="text-gray-300 m-1" />
                                 </div>
                             )
                         }
@@ -80,28 +80,28 @@ function Home() {
         }
         {
             home.clipboard.type !== 'error' &&
-            <div className='mt-4 border border-gray-300 rounded shadow'>
-                <div className='m-0 p-2 bg-gray-200 font-bold flex justify-between'>
-                    <span className='mx-1'>Clipboard</span>
+            <div className="mt-4 border border-gray-300 rounded shadow">
+                <div className="m-0 p-2 bg-gray-200 font-bold flex justify-between">
+                    <span className="mx-1">Clipboard</span>
                 </div>
                 {
                     home.clipboard.type === 'items' &&
                     <>
                         {
                             folders.map((folder: FolderInfo, i: number) =>
-                                <div key={folder.path} className='mx-1'>
-                                    {i === 0 && <hr className='text-gray-300 m-1' />}
+                                <div key={folder.path} className="mx-1">
+                                    {i === 0 && <hr className="text-gray-300 m-1" />}
                                     <FolderItem folder={folder} selectable={false} />
-                                    <hr className='text-gray-300 m-1' />
+                                    <hr className="text-gray-300 m-1" />
                                 </div>
                             )
                         }
                         {
                             files.map((file: FileInfo, i: number) =>
-                                <div key={file.path} className='mx-1'>
-                                    {(i === 0 && folders.length === 0) && <hr className='text-gray-300 m-1' />}
+                                <div key={file.path} className="mx-1">
+                                    {(i === 0 && folders.length === 0) && <hr className="text-gray-300 m-1" />}
                                     <FileItem file={file} selectable={false} />
-                                    <hr className='text-gray-300 m-1' />
+                                    <hr className="text-gray-300 m-1" />
                                 </div>
                             )
                         }
@@ -110,7 +110,7 @@ function Home() {
                 {
                     home.clipboard.type === 'text' &&
                     <pre contentEditable suppressContentEditableWarning spellCheck={false} autoCorrect="off" autoCapitalize="off"
-                        className='p-3 font-mono text-sm whitespace-pre overflow-x-auto break-keep select-text outline-none focus:outline-none focus:ring-0'>
+                        className="p-3 font-mono text-sm whitespace-pre overflow-x-auto break-keep select-text outline-none focus:outline-none focus:ring-0">
                         {home.clipboard.content as string}
                     </pre>
                 }

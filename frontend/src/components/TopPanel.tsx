@@ -49,29 +49,29 @@ function TopPanel() {
 
     return (
         <div className="flex flex-col items-center border border-gray-300 rounded shadow m-3 p-2">
-            <div className='w-full flex justify-between items-center'>
-                <span className='flex items-center hover:text-blue-700 cursor-pointer' onClick={() => explore('/', true)}>
+            <div className="w-full flex justify-between items-center">
+                <span className="flex items-center hover:text-blue-700 cursor-pointer" onClick={() => explore('/', true)}>
                     <i className={`${icon} m-2 mr-2.25 shadow`} style={{ fontSize: '1.75rem' }} />
-                    <span className='text-xl font-normal'>{home.device?.hostname}</span>
+                    <span className="text-xl font-normal">{home.device?.hostname}</span>
                 </span>
 
-                <div className='flex'>
-                    <div className='mr-3'>
-                        <Button size='large' style={style} raised
+                <div className="flex">
+                    <div className="mr-3">
+                        <Button size="large" style={style} raised
                             icon={(panelOpened && panelContent === 'upload') ? 'pi pi-times' : 'pi pi-upload'}
                             severity={(panelOpened && panelContent === 'upload') ? 'danger' : undefined}
                             tooltip={getTooltip('Upload')} tooltipOptions={{ position: 'bottom' }}
                             onClick={() => togglePanel('upload')} />
                     </div>
                     <div className={path === '/' ? 'hidden' : 'mr-3'}>
-                        <Button size='large' style={style} raised
+                        <Button size="large" style={style} raised
                             icon={(panelOpened && panelContent === 'search') ? 'pi pi-times' : 'pi pi-search'}
                             severity={(panelOpened && panelContent === 'search') ? 'danger' : undefined}
                             tooltip={getTooltip('Search')} tooltipOptions={{ position: 'bottom' }}
                             onClick={() => togglePanel('search')} />
                     </div>
-                    <div className='mr-1'>
-                        <Button size='large' style={style} raised
+                    <div className="mr-1">
+                        <Button size="large" style={style} raised
                             icon={(panelOpened && panelContent === 'settings') ? 'pi pi-times' : 'pi pi-cog'}
                             severity={(panelOpened && panelContent === 'settings') ? 'danger' : undefined}
                             tooltip={getTooltip('Settings')} tooltipOptions={{ position: 'left' }}

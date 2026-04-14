@@ -1,4 +1,3 @@
-import type { Toast } from 'primereact/toast';
 import type { Platform, SearchInfo } from './models';
 
 // Detects Phone/Tablet devices with touch input to avoid tooltip
@@ -44,9 +43,6 @@ export function canGenerateThumbnail(filename: string, platform: Platform): bool
     if (supportedVideoExtentions.has(extention.toLowerCase()) && platform === 'Windows') return true;
     return false;
 }
-
-export let toast: Toast;
-export const setToast = (toastRef: Toast) => toast = toastRef;
 
 export let searchInfo: SearchInfo | null = null;
 export function setSearchInfo(info: SearchInfo) { searchInfo = info; }

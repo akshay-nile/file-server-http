@@ -8,9 +8,10 @@ import useSelectedItems from '../contexts/SelectedItems/useSelectedItems';
 import { getFileURL, modifyItems } from '../services/api';
 import type { FileInfo, FolderInfo, ItemInfo, ItemsInfo } from '../services/models';
 import { getShortcuts, setShortcuts } from '../services/settings';
-import { getTooltip, searchInfo, toast } from '../services/utilities';
+import { getTooltip, searchInfo } from '../services/utilities';
 import ItemDetails from './ItemDetails';
 import RenameItem from './RenameItem';
+import { useToastMessage } from '../contexts/ToastMessage/useToastMessage';
 
 type ItemDetailsType = {
     type: 'folder' | 'file' | 'items',
@@ -23,6 +24,7 @@ type DialogInfo = {
 };
 
 function BottomPanel() {
+    const { showToast } = useToastMessage();
     const { path, items, explore } = useExplorerItems();
     const { selectedFiles, selectedFolders, isAnyItemSelected, selectAllItems, clearSelection } = useSelectedItems();
 
@@ -109,7 +111,7 @@ function BottomPanel() {
         }
         clearSelection();
         window.dispatchEvent(new Event('shortcutschange'));
-        toast.show({
+        showToast({
             severity: 'success',
             summary: 'Shortcuts Added',
             detail: count + ' new item(s) added to shortcuts.'
@@ -131,7 +133,7 @@ function BottomPanel() {
         setShortcuts(shortcuts);
         clearSelection();
         window.dispatchEvent(new Event('shortcutschange'));
-        toast.show({
+        showToast({
             severity: 'warn',
             summary: 'Shortcuts Removed',
             detail: count + ' item(s) removed from shortcuts.'
@@ -158,11 +160,11 @@ function BottomPanel() {
             setStatus('deleting');
             const response = await modifyItems('delete', itemsToDelete);
             if (!('deleted' in response)) throw Error(JSON.stringify(response));
-            if (response.deleted.length === itemsToDelete.length) toast.show({
+            if (response.deleted.length === itemsToDelete.length) showToast({
                 severity: 'success', summary: 'Deleted',
                 detail: response.deleted.length + ' item(s) has been deleted.'
             });
-            else toast.show({
+            else showToast({
                 severity: 'error', summary: 'Deletion Failed',
                 detail: "Some item(s) couldn't deleted."
             });
@@ -192,7 +194,7 @@ function BottomPanel() {
             const response = await modifyItems('rename', [itemToRename.path, path + '/' + name]);
             if (!('renamed' in response)) throw Error(JSON.stringify(response));
             if (response.renamed !== null) {
-                toast.show({ severity: 'success', summary: 'Renamed', detail: 'Item renamed to ' + name });
+                showToast({ severity: 'success', summary: 'Renamed', detail: 'Item renamed to ' + name });
                 if (searchInfo && searchInfo.filteredItems) {
                     const renamedItem = [...searchInfo.filteredItems.folders, ...searchInfo.filteredItems.files].find(f => f.path === itemToRename.path);
                     if (renamedItem) {
@@ -201,7 +203,7 @@ function BottomPanel() {
                     }
                 }
             }
-            else toast.show({
+            else showToast({
                 severity: 'error', summary: 'Renaming Failed',
                 detail: itemToRename.name + ' could not be renamed.'
             });
@@ -219,13 +221,13 @@ function BottomPanel() {
                 bg-white rounded-md shadow-lg border border-gray-300 p-3 pointer-events-auto
                 ${isAnyItemSelected() ? 'mb-[30px] opacity-100' : 'translate-y-20 opacity-0'}
             `}>
-                <Button size='large' style={style} raised icon='pi pi-info-circle'
+                <Button size="large" style={style} raised icon="pi pi-info-circle"
                     tooltip={getTooltip('Show Details')} tooltipOptions={{ position: 'top' }}
                     onClick={e => itemDetailsRef.current?.toggle(e)} />
 
                 {
                     (showDelete && path !== '/') &&
-                    <Button size='large' style={style} raised
+                    <Button size="large" style={style} raised
                         icon={`pi ${status === 'deleting' ? 'pi-spin pi-spinner' : 'pi-trash'}`}
                         tooltip={getTooltip('Delete')} tooltipOptions={{ position: 'top' }}
                         onClick={() => status === 'none' && deleteItems()} />
@@ -233,7 +235,7 @@ function BottomPanel() {
 
                 {
                     (showRename && path !== '/') &&
-                    <Button size='large' style={style} raised
+                    <Button size="large" style={style} raised
                         icon={`pi ${status === 'renaming' ? 'pi-spin pi-spinner' : 'pi-pen-to-square'}`}
                         tooltip={getTooltip('Rename')} tooltipOptions={{ position: 'top' }}
                         onClick={() => status === 'none' && renameItem()} />
@@ -241,36 +243,36 @@ function BottomPanel() {
 
                 {
                     showMultiDownload &&
-                    <Button size='large' style={style} raised
+                    <Button size="large" style={style} raised
                         icon={`pi ${status === 'donwloading' ? 'pi-spin pi-spinner' : 'pi-download'}`}
                         tooltip={getTooltip('Download All')} tooltipOptions={{ position: 'top' }}
                         onClick={() => status === 'none' && downloadAllFiles()} />
                 }
 
-                <Button size='large' style={style} raised pt={{ icon: { className: showAddShortcuts ? 'rotate-0' : 'rotate-180' } }}
-                    icon='pi pi-thumbtack' severity={showAddShortcuts ? undefined : 'danger'}
+                <Button size="large" style={style} raised pt={{ icon: { className: showAddShortcuts ? 'rotate-0' : 'rotate-180' } }}
+                    icon="pi pi-thumbtack" severity={showAddShortcuts ? undefined : 'danger'}
                     tooltip={getTooltip(showAddShortcuts ? 'Add Shortcuts' : 'Remove Shortcuts')} tooltipOptions={{ position: 'top' }}
                     onClick={() => showAddShortcuts ? addToShortcuts() : removeFromShortcuts()} />
 
                 {
                     (showSelectAll && path !== '/') &&
-                    <Button size='large' style={style} raised icon='pi pi-list-check'
+                    <Button size="large" style={style} raised icon="pi pi-list-check"
                         tooltip={getTooltip('Select All')} tooltipOptions={{ position: 'top' }}
                         onClick={selectAllItems} />
                 }
 
-                <Button size='large' style={style} raised
-                    icon='pi pi-times' severity='danger'
+                <Button size="large" style={style} raised
+                    icon="pi pi-times" severity="danger"
                     tooltip={getTooltip('Clear')} tooltipOptions={{ position: 'top' }}
                     onClick={clearSelection} />
 
-                <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape dismissable={false} className='max-w-[80%]'>
+                <OverlayPanel ref={itemDetailsRef} showCloseIcon closeOnEscape dismissable={false} className="max-w-[80%]">
                     {
                         itemsDetails?.type === 'folder'
-                            ? <ItemDetails type='folder' folder={itemsDetails.selection as FolderInfo} />
+                            ? <ItemDetails type="folder" folder={itemsDetails.selection as FolderInfo} />
                             : itemsDetails?.type === 'file'
-                                ? <ItemDetails type='file' file={itemsDetails.selection as FileInfo} />
-                                : <ItemDetails type='items' items={itemsDetails?.selection as ItemsInfo} />
+                                ? <ItemDetails type="file" file={itemsDetails.selection as FileInfo} />
+                                : <ItemDetails type="items" items={itemsDetails?.selection as ItemsInfo} />
                     }
                 </OverlayPanel>
 
@@ -278,10 +280,14 @@ function BottomPanel() {
 
                 {
                     dialogInfo !== null &&
-                    <Dialog header='Rename Item' pt={{ root: { className: 'w-[95%] md:w-[60%] lg:w-[34%]' } }}
+                    <Dialog header="Rename Item"
+                        pt={{ root: { className: 'w-[96%] md:w-[56%] lg:w-[32%]' } }}
                         visible={dialogInfo !== null} onHide={() => setDialogInfo(null)}>
-                        <RenameItem itemToRename={dialogInfo.itemToRename} isFileItem={selectedFiles.length === 1 && selectedFolders.length === 0}
-                            onRename={dialogInfo.onRename} onCancel={() => setDialogInfo(null)} />
+                        <RenameItem
+                            itemToRename={dialogInfo.itemToRename}
+                            isFileItem={selectedFiles.length === 1 && selectedFolders.length === 0}
+                            onRename={dialogInfo.onRename}
+                            onCancel={() => setDialogInfo(null)} />
                     </Dialog>
                 }
             </div>

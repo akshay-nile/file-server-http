@@ -35,18 +35,18 @@ function ItemDetails({ type, folder, file, items }: Props) {
     }, [type, folder, items]);
 
     return (
-        <div className='flex flex-col items-center'>
+        <div className="flex flex-col items-center">
             {
                 (type === 'folder' && folder !== undefined) &&
-                <div className='flex items-center gap-2.5'>
-                    <img src='/icons/folder.jpg' width='64px' className='shadow' />
-                    <div className='flex flex-col text-[13px]'>
-                        <h2 className='text-[16px] font-semibold leading-4.5 mb-1'>{folder.name}</h2>
+                <div className="flex items-center gap-2.5">
+                    <img src="/icons/folder.jpg" width="64px" className="shadow" />
+                    <div className="flex flex-col text-[13px]">
+                        <h2 className="text-[16px] font-semibold leading-4.5 mb-1">{folder.name}</h2>
                         <span>
                             Size:&nbsp;
                             {
                                 loading
-                                    ? <i className='pi pi-spinner pi-spin' style={{ fontSize: '12px' }} />
+                                    ? <i className="pi pi-spinner pi-spin" style={{ fontSize: '12px' }} />
                                     : formatSize(totalSize)
                             }
                             &nbsp;&nbsp; {folder.hidden && 'Hidden'}
@@ -57,10 +57,10 @@ function ItemDetails({ type, folder, file, items }: Props) {
             }
             {
                 (type === 'file' && file !== undefined) &&
-                <div className='flex items-center gap-2.5'>
-                    <img src={file?.thumbnail ?? '/icons/file.jpg'} width='64px' className='shadow' />
-                    <div className='flex flex-col text-[13px] font-medium'>
-                        <h2 className='text-[16px] font-semibold leading-4.5 mb-1'>{file.name}</h2>
+                <div className="flex items-center gap-2.5">
+                    <img src={file?.thumbnail ?? '/icons/file.jpg'} width="64px" className="shadow" />
+                    <div className="flex flex-col text-[13px] font-medium">
+                        <h2 className="text-[16px] font-semibold leading-4.5 mb-1">{file.name}</h2>
                         <span>Size: {formatSize(file.size)} &nbsp;&nbsp; {file.hidden && 'Hidden'}</span>
                         <span>Date: {formatDate(file.date)}</span>
                     </div>
@@ -68,13 +68,13 @@ function ItemDetails({ type, folder, file, items }: Props) {
             }
             {
                 (type === 'items' && items !== undefined) &&
-                <div className='flex flex-col text-center text-[14px] font-medium m-1'>
-                    <h2 className='text-[16px] font-semibold mb-1.5'>{items.folders.length} Folders + {items.files.length} Files</h2>
+                <div className="flex flex-col text-center text-[14px] font-medium m-1">
+                    <h2 className="text-[16px] font-semibold mb-1.5">{items.folders.length} Folders + {items.files.length} Files</h2>
                     <span>
                         Total Size:&nbsp;
                         {
                             loading
-                                ? <>{formatSize(totalSize)} + <i className='pi pi-spinner pi-spin' style={{ fontSize: '12px' }} /></>
+                                ? <>{formatSize(totalSize)} + <i className="pi pi-spinner pi-spin" style={{ fontSize: '12px' }} /></>
                                 : formatSize(totalSize)
                         }
                     </span>

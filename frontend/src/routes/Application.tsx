@@ -37,15 +37,15 @@ function Application() {
     }, [explore, navigate]);
 
     return (
-        <Layout theme='light'>
-            <div className='sticky top-0 bg-gray-50 z-10'>
+        <Layout theme="light">
+            <div className="sticky top-0 bg-gray-50 z-10">
                 <TopPanel />
                 {path !== '/' && <Breadcrumb />}
             </div>
             <SelectedItemsProvider>
                 {
                     loading
-                        ? <ProgressSpinner style={loaderStyle} strokeWidth='0.15rem' animationDuration='0.5s' />
+                        ? <ProgressSpinner style={loaderStyle} strokeWidth="0.15rem" animationDuration="0.5s" />
                         : path === '/' ? <Home /> : <Items />
                 }
                 <BottomPanel />
