@@ -17,10 +17,10 @@ function MusicVisualizer({ audioNode }: Props) {
         audioNode.connect(audioNode.context.destination);
 
         const leftAnalyser = audioNode.context.createAnalyser();
-        leftAnalyser.fftSize = 32;
+        leftAnalyser.fftSize = 1024 * 4;
 
         const rightAnalyser = audioNode.context.createAnalyser();
-        rightAnalyser.fftSize = 32;
+        rightAnalyser.fftSize = 1024 * 4;
 
         splitter.connect(leftAnalyser, 0);  // Left channel
         splitter.connect(rightAnalyser, 1); // Right channel
@@ -28,31 +28,32 @@ function MusicVisualizer({ audioNode }: Props) {
         const leftData = new Uint8Array(leftAnalyser.frequencyBinCount);
         const rightData = new Uint8Array(rightAnalyser.frequencyBinCount);
 
+        const length = Math.min(leftData.length, rightData.length);
+        const center = canvas.width / 2;
+
+        const ledCount = 26;
+        const gap = 2;
+        const ledWidth = (center - (ledCount - 1) * gap) / ledCount;
+
         let animationId = 0;
 
         function draw() {
             if (!context || !canvas) return;
 
-            leftAnalyser.getByteFrequencyData(leftData);
-            rightAnalyser.getByteFrequencyData(rightData);
+            leftAnalyser.getByteTimeDomainData(leftData);
+            rightAnalyser.getByteTimeDomainData(rightData);
 
             let leftSum = 0, rightSum = 0;
-            const lastBin = Math.ceil(leftData.length * 2 / 3);
-
-            for (let i = 1; i < lastBin; i++) {
-                leftSum += leftData[i];
-                rightSum += rightData[i];
+            for (let i = 0; i < length; i++) {
+                leftSum += Math.abs(leftData[i] - 128);
+                rightSum += Math.abs(rightData[i] - 128);
             }
 
-            const leftBeat = leftSum / (lastBin - 1);
-            const rightBeat = rightSum / (lastBin - 1);
+            const leftBeat = Math.floor(5 * leftSum / length);
+            const rightBeat = Math.floor(5 * rightSum / length);
 
-            const center = canvas.width / 2;
-            const ledCount = 26;
-            const gap = 2;
-            const ledWidth = (center - (ledCount - 1) * gap) / ledCount;
-            const leftLedsOn = Math.round((leftBeat / 255) * ledCount);
-            const rightLedsOn = Math.round((rightBeat / 255) * ledCount);
+            const leftLedsOn = Math.floor((leftBeat / 255) * ledCount);
+            const rightLedsOn = Math.floor((rightBeat / 255) * ledCount);
 
             context.clearRect(0, 0, canvas.width, canvas.height);
 
