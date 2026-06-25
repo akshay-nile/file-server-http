@@ -37,7 +37,7 @@ function MusicVisualizer({ audioNode }: Props) {
             rightAnalyser.getByteFrequencyData(rightData);
 
             let leftSum = 0, rightSum = 0;
-            const lastBin = Math.ceil(leftData.length / 2);
+            const lastBin = Math.ceil(leftData.length * 2 / 3);
 
             for (let i = 1; i < lastBin; i++) {
                 leftSum += leftData[i];
@@ -48,9 +48,8 @@ function MusicVisualizer({ audioNode }: Props) {
             const rightBeat = rightSum / (lastBin - 1);
 
             const center = canvas.width / 2;
-            const ledCount = 30;
+            const ledCount = 26;
             const gap = 2;
-
             const ledWidth = (center - (ledCount - 1) * gap) / ledCount;
             const leftLedsOn = Math.round((leftBeat / 255) * ledCount);
             const rightLedsOn = Math.round((rightBeat / 255) * ledCount);
@@ -80,7 +79,7 @@ function MusicVisualizer({ audioNode }: Props) {
                     context.fillStyle = color;
                     context.fillRect(xLeft, 0, ledWidth, canvas.height);
                 } else {
-                    context.strokeStyle = color;
+                    context.strokeStyle = 'gray';
                     context.strokeRect(xLeft, 0, ledWidth, canvas.height);
                 }
 
@@ -91,7 +90,7 @@ function MusicVisualizer({ audioNode }: Props) {
                     context.fillStyle = color;
                     context.fillRect(xRight, 0, ledWidth, canvas.height);
                 } else {
-                    context.strokeStyle = color;
+                    context.strokeStyle = 'gray';
                     context.strokeRect(xRight, 0, ledWidth, canvas.height);
                 }
             }
@@ -103,7 +102,7 @@ function MusicVisualizer({ audioNode }: Props) {
         return () => cancelAnimationFrame(animationId);
     }, [audioNode]);
 
-    return <canvas ref={canvasRef} className="w-full h-[20px]" />;
+    return <canvas ref={canvasRef} className="w-full h-[35px]" />;
 }
 
 export default MusicVisualizer;
