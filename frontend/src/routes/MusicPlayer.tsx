@@ -2,18 +2,22 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { ListBox } from 'primereact/listbox';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Layout from '../components/Layout';
+import MusicVisualizer from '../components/MusicVisualizer';
 import { getFileURL } from '../services/api';
 import type { Song } from '../services/models';
 import { getMusicPlayerData } from '../services/settings';
 import { formatSize, getCachedThumbnail, loaderStyle } from '../services/utilities';
 
 function MusicPlayer() {
+    const audioRef = useRef<HTMLAudioElement>(null);
+
     const [songs, setSongs] = useState<Song[]>([]);
     const [index, setIndex] = useState<number>(-1);
     const [playing, setPlaying] = useState<boolean>(false);
     const [showList, setShowList] = useState<boolean>(false);
+    const [audioNode, setAudioNode] = useState<AudioNode | null>(null);
 
     useEffect(() => {
         const loadMusicPlayerData = () => {
@@ -29,11 +33,20 @@ function MusicPlayer() {
                 setIndex(data.index);
             })();
         };
+
         loadMusicPlayerData();
+
         const channel = new BroadcastChannel('music_channel');
         channel.onmessage = loadMusicPlayerData;
+
         return () => channel.close();
-    }, []);
+    }, [audioNode]);
+
+    useEffect(() => {
+        if (audioRef.current && audioNode === null) {
+            setAudioNode(new AudioContext().createMediaElementSource(audioRef.current));
+        }
+    }, [songs.length, audioNode]);
 
     function getItemTemplate(song: Song) {
         return (
@@ -67,6 +80,8 @@ function MusicPlayer() {
                     (index === -1 || songs.length === 0)
                         ? <ProgressSpinner style={loaderStyle} strokeWidth="0.15rem" animationDuration="0.5s" />
                         : <>
+                            {audioNode && <MusicVisualizer audioNode={audioNode} />}
+
                             <div className="flex items-center gap-4">
                                 <img width="70px" height="70px" src={songs[index].thumbnail ?? '/icons/album.png'}
                                     className={`shadow ${playing ? 'rounded-full animate-[spin_3s_linear_infinite]' : 'rounded-[8px]'}`} />
@@ -83,6 +98,7 @@ function MusicPlayer() {
                             </div>
 
                             <audio autoPlay controls className="w-full h-12"
+                                ref={audioRef}
                                 src={getFileURL(songs[index].path, true)}
                                 onPlay={() => setPlaying(true)}
                                 onPause={() => setPlaying(false)}
