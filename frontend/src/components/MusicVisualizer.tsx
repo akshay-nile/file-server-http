@@ -35,8 +35,8 @@ function MusicVisualizer({ audioNode }: Props) {
 
         let smoothLeft = 0;
         let smoothRight = 0;
-        const jitter = 0.5;
-        const rmsGain = 2.0;
+        const jitter = 0.4;
+        const rmsGain = 2.2;
 
         const LEDCount = 26;
         const LEDGap = 2;
