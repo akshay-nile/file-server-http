@@ -5,8 +5,10 @@ type Props = { audioNode: AudioNode };
 
 function MusicVisualizer({ audioNode }: Props) {
     const { showToast } = useToastMessage();
+
     const fistStartRef = useRef<boolean>(true);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+
     const [beatMode, setBeatMode] = useState<boolean>(false);
 
     useEffect(() => {
@@ -16,14 +18,17 @@ function MusicVisualizer({ audioNode }: Props) {
         canvas.height = canvas.clientHeight;
         const context = canvas.getContext('2d');
 
+        const fftSize = 2048;
+        const length = Math.floor(fftSize / 2);
+
         const splitter = audioNode.context.createChannelSplitter(2);
 
         const leftAnalyser = audioNode.context.createAnalyser();
-        leftAnalyser.fftSize = 512;
+        leftAnalyser.fftSize = fftSize;
         leftAnalyser.smoothingTimeConstant = 0;
 
         const rightAnalyser = audioNode.context.createAnalyser();
-        rightAnalyser.fftSize = 512;
+        rightAnalyser.fftSize = fftSize;
         rightAnalyser.smoothingTimeConstant = 0;
 
         audioNode.connect(audioNode.context.destination);
@@ -32,7 +37,7 @@ function MusicVisualizer({ audioNode }: Props) {
             const filter = audioNode.context.createBiquadFilter();
             filter.type = 'lowpass';
             filter.frequency.value = 100;
-            filter.Q.value = 2;
+            filter.Q.value = 3;
             audioNode.connect(filter);
             filter.connect(splitter);
         } else audioNode.connect(splitter);
@@ -50,14 +55,12 @@ function MusicVisualizer({ audioNode }: Props) {
         const leftData = new Float32Array(leftAnalyser.frequencyBinCount);
         const rightData = new Float32Array(rightAnalyser.frequencyBinCount);
 
-        const length = Math.min(leftData.length, rightData.length);
-        const center = canvas.width / 2;
-
         let smoothLeft = 0;
         let smoothRight = 0;
         const jitter = 0.4;
         const rmsGain = 2;
 
+        const center = canvas.width / 2;
         const LEDCount = 26;
         const LEDGap = 2;
         const LEDWidth = (center - (LEDCount - 1) * LEDGap) / LEDCount;
@@ -70,15 +73,15 @@ function MusicVisualizer({ audioNode }: Props) {
 
             let leftSum = 0, rightSum = 0;
             for (let i = 0; i < length; i++) {
-                leftSum += leftData[i] * leftData[i];
-                rightSum += rightData[i] * rightData[i];
+                leftSum += Math.abs(leftData[i]);
+                rightSum += Math.abs(rightData[i]);
             }
 
-            const leftRMS = Math.sqrt(leftSum / leftData.length) * rmsGain;
-            const rightRMS = Math.sqrt(rightSum / rightData.length) * rmsGain;
+            const leftAverage = (leftSum / leftData.length) * rmsGain;
+            const rightAverage = (rightSum / rightData.length) * rmsGain;
 
-            smoothLeft += (leftRMS - smoothLeft) * jitter;
-            smoothRight += (rightRMS - smoothRight) * jitter;
+            smoothLeft += (leftAverage - smoothLeft) * jitter;
+            smoothRight += (rightAverage - smoothRight) * jitter;
 
             const leftLEDs = Math.min(LEDCount, Math.round(smoothLeft * LEDCount));
             const rightLEDs = Math.min(LEDCount, Math.round(smoothRight * LEDCount));
