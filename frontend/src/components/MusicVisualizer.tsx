@@ -1,93 +1,40 @@
-import { useEffect, useRef, useState } from 'react';
-import { useToastMessage } from '../contexts/ToastMessage/useToastMessage';
+import { useEffect, useRef } from 'react';
+import { AudioBand } from '../services/visualizer';
 
 type Props = { audioNode: AudioNode };
 
 function MusicVisualizer({ audioNode }: Props) {
-    const { showToast } = useToastMessage();
 
-    const fistStartRef = useRef<boolean>(true);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    const [beatMode, setBeatMode] = useState<boolean>(false);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
+
         const context = canvas.getContext('2d');
-
-        const fftSize = 2048;
-        const length = Math.floor(fftSize / 2);
-
-        const splitter = audioNode.context.createChannelSplitter(2);
-
-        const leftAnalyser = audioNode.context.createAnalyser();
-        leftAnalyser.fftSize = fftSize;
-        leftAnalyser.smoothingTimeConstant = 0;
-
-        const rightAnalyser = audioNode.context.createAnalyser();
-        rightAnalyser.fftSize = fftSize;
-        rightAnalyser.smoothingTimeConstant = 0;
+        if (!context) return;
+        context.strokeStyle = 'gray';
 
         audioNode.connect(audioNode.context.destination);
 
-        if (beatMode) {
-            const filter = audioNode.context.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 100;
-            filter.Q.value = 3;
-            audioNode.connect(filter);
-            filter.connect(splitter);
-        } else audioNode.connect(splitter);
+        const bands: AudioBand[] = [];
+        bands.push(new AudioBand(audioNode, { freq: 200, type: 'lowpass', Q: 1 }));
+        bands.push(new AudioBand(audioNode, { freq: 1000, type: 'bandpass', Q: 1.5 }));
+        bands.push(new AudioBand(audioNode, { freq: 2000, type: 'bandpass', Q: 1.5 }));
+        bands.push(new AudioBand(audioNode, { freq: 4000, type: 'bandpass', Q: 1.5 }));
+        bands.push(new AudioBand(audioNode, { freq: 8000, type: 'highpass', Q: 2 }));
 
-        splitter.connect(leftAnalyser, 0);
-        splitter.connect(rightAnalyser, 1);
+        const barGap = 20;
+        const barWidth = canvas.width / bands.length - barGap;
+        const barHeight = canvas.height;
 
-        if (!fistStartRef.current) showToast({
-            severity: 'info',
-            summary: 'Low Pass Filter ' + (beatMode ? 'ON' : 'OFF'),
-            detail: 'Visualizer shows ' + (beatMode ? '(bass) beats only.' : 'sound intensity.')
-        });
-        fistStartRef.current = false;
-
-        const leftData = new Float32Array(leftAnalyser.frequencyBinCount);
-        const rightData = new Float32Array(rightAnalyser.frequencyBinCount);
-
-        let smoothLeft = 0;
-        let smoothRight = 0;
-        const jitter = 0.4;
-        const rmsGain = 2;
-
-        const center = canvas.width / 2;
-        const LEDCount = 26;
-        const LEDGap = 2;
-        const LEDWidth = (center - (LEDCount - 1) * LEDGap) / LEDCount;
+        const LEDCount = 15;
+        const LEDGap = 3;
+        const LEDHeight = (barHeight - (LEDCount - 1) * LEDGap) / LEDCount;
 
         let animationId = 0;
-
-        function getRMSValueOfLEDs(): [number, number] {
-            leftAnalyser.getFloatTimeDomainData(leftData);
-            rightAnalyser.getFloatTimeDomainData(rightData);
-
-            let leftSum = 0, rightSum = 0;
-            for (let i = 0; i < length; i++) {
-                leftSum += Math.abs(leftData[i]);
-                rightSum += Math.abs(rightData[i]);
-            }
-
-            const leftAverage = (leftSum / leftData.length) * rmsGain;
-            const rightAverage = (rightSum / rightData.length) * rmsGain;
-
-            smoothLeft += (leftAverage - smoothLeft) * jitter;
-            smoothRight += (rightAverage - smoothRight) * jitter;
-
-            const leftLEDs = Math.min(LEDCount, Math.round(smoothLeft * LEDCount));
-            const rightLEDs = Math.min(LEDCount, Math.round(smoothRight * LEDCount));
-
-            return [leftLEDs, rightLEDs];
-        }
 
         function getLEDColor(i: number): string {
             const ratio = i / (LEDCount - 1);
@@ -107,32 +54,19 @@ function MusicVisualizer({ audioNode }: Props) {
         function draw() {
             if (!context || !canvas) return;
 
-            const [leftLEDs, rightLEDs] = getRMSValueOfLEDs();
             context.clearRect(0, 0, canvas.width, canvas.height);
 
-            for (let i = 0; i < LEDCount - 1; i++) {
-                const color = getLEDColor(i);
+            for (let i = 0, g = 0.5; i < bands.length; i++, g += 1.0) {
+                const x = g * barGap + i * barWidth;
+                const level = bands[i].getLevel(1);
+                const litLEDs = Math.round(level * LEDCount);
 
-                // Left Channel LED Strip
-                const xLeft = center - 5 - (i + 1) * LEDWidth - i * LEDGap;
+                for (let j = 0; j < LEDCount; j++) {
+                    context.fillStyle = getLEDColor(j);
+                    const y = barHeight - (j + 1) * LEDHeight - j * LEDGap;
 
-                if (i < leftLEDs) {
-                    context.fillStyle = color;
-                    context.fillRect(xLeft, 0, LEDWidth, canvas.height);
-                } else {
-                    context.strokeStyle = 'gray';
-                    context.strokeRect(xLeft, 0, LEDWidth, canvas.height);
-                }
-
-                // Right Channel LED Strip
-                const xRight = center + 5 + i * (LEDWidth + LEDGap);
-
-                if (i < rightLEDs) {
-                    context.fillStyle = color;
-                    context.fillRect(xRight, 0, LEDWidth, canvas.height);
-                } else {
-                    context.strokeStyle = 'gray';
-                    context.strokeRect(xRight, 0, LEDWidth, canvas.height);
+                    if (j < litLEDs) context.fillRect(x, y, barWidth, LEDHeight);
+                    else context.strokeRect(x, y, barWidth, LEDHeight);
                 }
             }
 
@@ -142,17 +76,23 @@ function MusicVisualizer({ audioNode }: Props) {
         draw();
         return () => {
             cancelAnimationFrame(animationId);
-            leftAnalyser.disconnect();
-            rightAnalyser.disconnect();
-            splitter.disconnect();
+            for (let i = 0; i < bands.length; i++) bands[i].disconnect();
             audioNode.disconnect();
         };
-    }, [audioNode, beatMode, showToast]);
+    }, [audioNode]);
 
-    return <canvas
-        ref={canvasRef}
-        className="w-full h-[35px]"
-        onClick={() => setBeatMode(prev => !prev)} />;
+    return (
+        <div className="w-full flex flex-col justify-center items-center">
+            <canvas ref={canvasRef} className="w-full h-[200px]" />
+            <div className="w-full flex justify-around items-center text-[11px] mt-1">
+                <span>200 Hz</span>
+                <span>1.0 KHz</span>
+                <span>2.0 KHz</span>
+                <span>4.0 KHz</span>
+                <span>8.0 KHz</span>
+            </div>
+        </div>
+    );
 }
 
 export default MusicVisualizer;
