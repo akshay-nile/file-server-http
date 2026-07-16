@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primereact/resources/themes/lara-light-blue/theme.css';
+
+audio,
+audio::-webkit-media-controls-enclosure {
+    border-radius: 8px;
+    background-color: #f9fafb;
+}
+
+.p-button:focus {
+    box-shadow: none !important;
+}
+
+.p-checkbox-box {
+    border-radius: 50% !important;
+}
+
+.selectbutton .p-button {
+    padding: 0.4rem 0.7rem;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.p-inputgroup {
+    height: 2.25rem;
+}
+
+input:focus {
+    outline: none;
+    border: 1px solid dodgerblue;
+    box-shadow: none;
+}
+
+.p-overlaypanel-content {
+    padding: 0.7rem;
+}
+
+.p-progressbar-label {
+    font-size: 14px;
+    font-weight: bold;
+}

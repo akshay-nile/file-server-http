@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# This script automates the process of setting-up 
+# the MyFileServer for Pydroid-3 on Android device
+
+# Command to execute this script in Pydroid-3 terminal
+# curl -sSL https://github.com/akshay-nile/file-server-http/raw/master/scripts/install.sh | sh
+
+
+set -e
+URL="https://github.com/akshay-nile/file-server-http/archive/refs/heads/package.zip"
+
+DOWNLOAD="/storage/emulated/0/Download"
+DOCUMENT="/storage/emulated/0/Documents/Pydroid 3"
+
+ZIP="$DOWNLOAD/package.zip"
+SRC="$DOWNLOAD/file-server-http-package"
+DST="$DOCUMENT/MyFileServer"
+
+echo "Pre-cleaning old junk..."
+rm -f "$ZIP"
+rm -rf "$SRC"
+
+echo "Downloading package..."
+mkdir -p "$DOWNLOAD"
+curl -sL "$URL" -o "$ZIP" || exit 1
+
+echo "Unzipping package..."
+cd "$DOWNLOAD" || exit 1
+unzip -oq package.zip || exit 1
+
+if [ -e "$DST" ]; then
+    echo "Updating existing setup..."
+    for item in "$DST"/* "$DST"/.*; do
+        name="$(basename "$item")"
+    
+        [ "$name" = "." ] || [ "$name" = ".." ] && continue
+    
+        [ "$name" = "thumbnails" ] && continue
+        [ "$name" = "tokens.txt" ] && continue
+        [ "$name" = ".nomedia" ] && continue
+    
+        rm -rf "$item"
+    done
+else
+    echo "Preparing fresh setup..."
+    mkdir -p "$DST"
+    touch "$DST/.nomedia"
+fi
+
+echo "Moving all the files..."
+mv "$SRC/MyFileServer"/* "$DST"
+
+echo "Removing unnecessary files..."
+rm -f "$DST/pyproject.toml"
+rm -f "$DST/uv.lock"
+rm -f "$DST/tone.mp3"
+rm -f "$DST/uninstall.ps1"
+
+echo "Cleaning downloaded junk..."
+rm -f "$ZIP"
+rm -rf "$SRC"
+
+echo "Setup finished successfully ✅"
+exit 0

@@ -1,0 +1,183 @@
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { ListBox } from 'primereact/listbox';
+import { ProgressSpinner } from 'primereact/progressspinner';
+import { useEffect, useRef, useState } from 'react';
+import Layout from '../components/Layout';
+import MusicVisualizer from '../components/MusicVisualizer';
+import { getFileURL } from '../services/api';
+import type { Song } from '../services/models';
+import { getMusicPlayerData } from '../services/settings';
+import { formatSize, getCachedThumbnail, loaderStyle } from '../services/utilities';
+
+function MusicPlayer() {
+    const audioRef = useRef<HTMLAudioElement>(null);
+
+    const [songs, setSongs] = useState<Song[]>([]);
+    const [index, setIndex] = useState<number>(-1);
+    const [playing, setPlaying] = useState<boolean>(false);
+    const [showList, setShowList] = useState<boolean>(false);
+    const [audioNode, setAudioNode] = useState<AudioNode | null>(null);
+
+    useEffect(() => {
+        const loadMusicPlayerData = () => {
+            const data = getMusicPlayerData();
+            if (!data) return;
+            (async () => {
+                for (const song of data.songs) {
+                    if (song.thumbnail && song.thumbnail.startsWith('/thumbnails/')) {
+                        song.thumbnail = await getCachedThumbnail(song.thumbnail);
+                    }
+                }
+                setSongs(data.songs);
+                setIndex(data.index);
+            })();
+        };
+
+        loadMusicPlayerData();
+
+        const channel = new BroadcastChannel('music_channel');
+        channel.onmessage = loadMusicPlayerData;
+
+        return () => channel.close();
+    }, []);
+
+    useEffect(() => {
+        if (!audioRef.current) return;
+
+        const context = new AudioContext();
+        const source = context.createMediaElementSource(audioRef.current);
+        source.connect(context.destination);
+
+        setAudioNode(source);
+        audioRef.current.focus();
+
+        return () => {
+            source.disconnect();
+            context.close();
+        };
+    }, [songs.length]);
+
+    function getItemTemplate(song: Song) {
+        return (
+            <div className="flex items-center gap-2">
+                <img src={song.thumbnail ?? '/icons/album.png'} width="40px" height="40px" className="shadow rounded-[4px]" />
+                <span className="font-medium text-[15px] leading-5 min-w-0 break-words">
+                    {song.name.substring(0, song.name.lastIndexOf('.'))}
+                </span>
+            </div>
+        );
+    }
+
+    function playNext() {
+        if (index < songs.length - 1) {
+            setIndex(index + 1);
+            setPlaying(false);
+            audioRef.current?.focus();
+        }
+    }
+
+    function playPrev() {
+        if (index > 0) {
+            setIndex(index - 1);
+            setPlaying(false);
+            audioRef.current?.focus();
+        }
+    }
+
+    function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        e.preventDefault();
+
+        switch (e.key) {
+            case 'Escape':
+            case 'Esc':
+                audio.pause();
+                audio.currentTime = 0;
+                break;
+
+            case 'ArrowLeft':
+                audio.currentTime = Math.max(0, audio.currentTime - 27);
+                break;
+
+            case 'ArrowRight':
+                audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 27);
+                break;
+
+            case 'ArrowUp':
+                playPrev();
+                break;
+
+            case 'ArrowDown':
+                playNext();
+                break;
+        }
+    }
+
+    return (
+        <Layout theme="dark">
+            <div className="h-full flex flex-col justify-center gap-4 mx-4" onKeyDown={onKeyDown}>
+                {
+                    (index === -1 || songs.length === 0)
+                        ? <ProgressSpinner style={loaderStyle} strokeWidth="0.15rem" animationDuration="0.5s" />
+                        : <>
+                            {audioNode !== null && <MusicVisualizer source={audioNode} />}
+
+                            <div className="flex items-center gap-4">
+                                <img width="70px" height="70px" src={songs[index].thumbnail ?? '/icons/album.png'}
+                                    className={`shadow ${playing ? 'rounded-full animate-[spin_3s_linear_infinite]' : 'rounded-[8px]'}`} />
+
+                                <div className=" w-full flex flex-col gap-1 group cursor-pointer">
+                                    <span className="text-lg leading-5.5 font-semibold min-w-0 break-words">
+                                        {songs[index].name.substring(0, songs[index].name.lastIndexOf('.'))}
+                                    </span>
+                                    <div className="flex justify-between text-[13px] tracking-wider ml-0.25">
+                                        <span>Size {formatSize(songs[index].size)}</span>
+                                        <span>{index + 1} of {songs.length} Songs</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <audio autoPlay controls className="w-full h-12"
+                                ref={audioRef}
+                                src={getFileURL(songs[index].path, true)}
+                                onPlay={() => setPlaying(true)}
+                                onPause={() => setPlaying(false)}
+                                onEnded={playNext} />
+
+                            <div className="flex justify-between items-center w-full h-12 gap-2">
+                                <Button label="Prev" icon="pi pi-arrow-left" size="small" raised
+                                    disabled={index <= 0}
+                                    onClick={playPrev} />
+
+                                <Button label="Playlist" size="small" raised
+                                    icon={showList ? 'pi pi-spin pi-spinner' : 'pi pi-list'}
+                                    disabled={showList}
+                                    onClick={() => setShowList(!showList)} />
+
+                                <Button label="Next" icon="pi pi-arrow-right" iconPos="right" size="small" raised
+                                    disabled={index >= songs.length - 1}
+                                    onClick={playNext} />
+                            </div>
+
+                            <Dialog header={'Playlist (' + songs.length + ' Songs)'}
+                                pt={{ root: { className: 'w-[95%] md:w-[60%] lg:w-[34%]' } }}
+                                contentStyle={{ padding: '0px', margin: '0px' }}
+                                visible={showList} onHide={() => { setShowList(false); audioRef.current?.focus(); }}>
+
+                                <ListBox filter optionValue="path" filterBy="name" filterPlaceholder="Search Songs"
+                                    pt={{ header: { className: 'sticky top-0 z-10' }, root: { className: 'relative overflow-visible' } }}
+                                    itemTemplate={song => getItemTemplate(song)}
+                                    options={songs} value={songs[index].path}
+                                    onChange={e => setIndex(songs.findIndex(s => s.path === e.value))} />
+                            </Dialog>
+                        </>
+                }
+            </div>
+        </Layout>
+    );
+}
+
+export default MusicPlayer;
