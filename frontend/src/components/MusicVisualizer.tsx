@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { AutomaticGainController, FilterBand, getLEDColor, getSmoothCurve } from '../services/utilities';
+import { AutomaticGainController, FilterBand, getLEDColor, getSmoothCurve } from '../services/visualizer';
 
 type Props = { source: AudioNode };
 
 function MusicVisualizer({ source }: Props) {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [showSmoothCurveVisualizer, setShowSmoothCurveVisualizer] = useState(false);
+    const [drawSmoothCurveVisualizer, setDrawSmoothCurveVisualizer] = useState(false);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -38,7 +38,7 @@ function MusicVisualizer({ source }: Props) {
 
         canvas.height = (LEDSize + LEDGap) * LEDCount;  // To keep LEDs exactly square shaped
 
-        if (showSmoothCurveVisualizer) {
+        if (drawSmoothCurveVisualizer) {
             const gradient = context.createLinearGradient(0, canvas.height, 0, 0);
             gradient.addColorStop(0.0, '#00FF00');
             gradient.addColorStop(0.4, '#FFFF00');
@@ -48,7 +48,7 @@ function MusicVisualizer({ source }: Props) {
 
         let animationId = 0;
 
-        const draw = showSmoothCurveVisualizer
+        const draw = drawSmoothCurveVisualizer
             ? () => {               // For drawing Smooth Curve Visualizer 
                 if (!context || !canvas) return;
 
@@ -96,12 +96,12 @@ function MusicVisualizer({ source }: Props) {
             cancelAnimationFrame(animationId);
             FilterBand.disconnectAllBands();
         };
-    }, [source, showSmoothCurveVisualizer]);
+    }, [source, drawSmoothCurveVisualizer]);
 
     return <canvas
         ref={canvasRef}
-        className={`w-full ${showSmoothCurveVisualizer && 'border border-neutral-700'}`}
-        onClick={() => setShowSmoothCurveVisualizer(prev => !prev)} />;
+        className={`w-full ${drawSmoothCurveVisualizer && 'border border-neutral-700'}`}
+        onClick={() => setDrawSmoothCurveVisualizer(prev => !prev)} />;
 }
 
 export default MusicVisualizer;
