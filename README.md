@@ -1,4 +1,4 @@
-# 📁 MyFileServer v1.8.14
+# 📁 MyFileServer v1.8.15
 
 A lightweight file server application to transfer/stream files over network with:
 
@@ -11,7 +11,7 @@ A lightweight file server application to transfer/stream files over network with
 - Now you can launch the MyFileServer from its desktop shortcut
 - Can be safely uninstalled from Windows (Add or Remove Programs) settings
 ```
-Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -c irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/install.ps1 | iex"
+Start-Process powershell.exe -Verb RunAs -ArgumentList '-ExecutionPolicy Bypass -Command "irm https://github.com/akshay-nile/file-server-http/raw/master/scripts/install.ps1 | iex"'
 ```
 
 
