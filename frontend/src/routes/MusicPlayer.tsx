@@ -87,7 +87,7 @@ function MusicPlayer() {
 
     function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
         const audio = audioRef.current;
-        if (!audio) return;
+        if (!audio || showList) return;
 
         e.preventDefault();
 
