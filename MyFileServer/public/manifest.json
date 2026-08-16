@@ -1,0 +1,15 @@
+{
+    "name": "MyFileServer",
+    "short_name": "MyFileServer",
+    "start_url": "/?path=/",
+    "display": "standalone",
+    "background_color": "#000",
+    "theme_color": "#000",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "128x128",
+            "type": "image/x-icon"
+        }
+    ]
+}
