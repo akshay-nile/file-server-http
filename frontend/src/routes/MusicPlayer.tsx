@@ -73,7 +73,6 @@ function MusicPlayer() {
         if (index < songs.length - 1) {
             setIndex(index + 1);
             setPlaying(false);
-            audioRef.current?.focus();
         }
     }
 
@@ -81,44 +80,12 @@ function MusicPlayer() {
         if (index > 0) {
             setIndex(index - 1);
             setPlaying(false);
-            audioRef.current?.focus();
-        }
-    }
-
-    function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-        const audio = audioRef.current;
-        if (!audio || showList) return;
-
-        e.preventDefault();
-
-        switch (e.key) {
-            case 'Escape':
-            case 'Esc':
-                audio.pause();
-                audio.currentTime = 0;
-                break;
-
-            case 'ArrowLeft':
-                audio.currentTime = Math.max(0, audio.currentTime - 27);
-                break;
-
-            case 'ArrowRight':
-                audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 27);
-                break;
-
-            case 'ArrowUp':
-                playPrev();
-                break;
-
-            case 'ArrowDown':
-                playNext();
-                break;
         }
     }
 
     return (
         <Layout theme="dark">
-            <div className="h-full flex flex-col justify-center gap-4 mx-4" onKeyDown={onKeyDown}>
+            <div className="h-full flex flex-col justify-center gap-4 mx-4">
                 {
                     (index === -1 || songs.length === 0)
                         ? <ProgressSpinner style={loaderStyle} strokeWidth="0.15rem" animationDuration="0.5s" />
@@ -165,7 +132,7 @@ function MusicPlayer() {
                             <Dialog header={'Playlist (' + songs.length + ' Songs)'}
                                 pt={{ root: { className: 'w-[95%] md:w-[60%] lg:w-[34%]' } }}
                                 contentStyle={{ padding: '0px', margin: '0px' }}
-                                visible={showList} onHide={() => { setShowList(false); audioRef.current?.focus(); }}>
+                                visible={showList} onHide={() => setShowList(false)}>
 
                                 <ListBox filter optionValue="path" filterBy="name" filterPlaceholder="Search Songs"
                                     pt={{ header: { className: 'sticky top-0 z-10' }, root: { className: 'relative overflow-visible' } }}
