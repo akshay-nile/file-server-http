@@ -105,26 +105,29 @@ def perform_app_update():
             'powershell.exe', '-NoProfile', '-Command',
             (
                 'Start-Process powershell.exe -Verb RunAs -ArgumentList '
-                f"'-ExecutionPolicy Bypass -Command {admin_command}'"
+                f"'-ExecutionPolicy Bypass -Command \"{admin_command}\"'"
             )
         ]
         result = subprocess.run(user_command, capture_output=True)
         if result.returncode == 0:      # User accepted UAC prompt
             with open(USER_HOME + '/restart.txt', 'wt') as file:
-                file.write('Yes' if is_public_ip else 'No')  # Store user ip selection
+                # Store user ip selection
+                file.write('Yes' if is_public_ip else 'No')
 
 
 def check_for_update():
     def updator():
         global update
         try:
-            remote_version = get(f'{github}/package/MyFileServer/version.txt', timeout=5).text
+            remote_version = get(
+                f'{github}/package/MyFileServer/version.txt', timeout=5).text
             with open('./version.txt', encoding='utf-8') as file:
                 local_version = file.read()
             update['version'] = remote_version
             update['available'] = remote_version != local_version
             if (update['available']):
-                log(f" ⚠️ Updated version {update['version']} is available", color='W')
+                log(
+                    f" ⚠️ Updated version {update['version']} is available", color='W')
                 perform_app_update()
         except Exception:
             log(' ❌ Failed to check for the update', color='R')
@@ -190,11 +193,13 @@ def get_stream_or_download_response(filepath: str, stream=True) -> Response:
 
     # Set Content-Range if Range header from client is respected
     if status == 206:
-        response.headers.set('Content-Range', f"bytes {start}-{end}/{file_info['size']}")
+        response.headers.set(
+            'Content-Range', f"bytes {start}-{end}/{file_info['size']}")
         response.headers.set('Cache-Control', 'no-cache')
 
     # Set Content-Disposition with quoted filename
     disposition = 'inline' if stream else 'attachment'
-    response.headers.set('Content-Disposition', f'{disposition}; filename="{file_info['name']}"')
+    response.headers.set('Content-Disposition',
+                         f'{disposition}; filename="{file_info['name']}"')
 
     return response
